@@ -1,0 +1,30 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artefacts (committed separately or via CI)
+# build/   ← keep build/ in the repo so the plugin is ready to install
+
+# WordPress / OS
+.DS_Store
+Thumbs.db
+*.log
+
+# PHP / Composer
+vendor/
+composer.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Sensitive / environment files
+.env
+*.env
+
+# WordPress local config
+wp-config.php
