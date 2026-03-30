@@ -2253,13 +2253,13 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 "pnfpb-admin-icpstyle-name",
                 plugin_dir_url(__FILE__) . "admin/css/pnfpb_admin_v3.css",
                 [],
-                "3.10.1"
+                "3.11.17"
             );
             wp_enqueue_style(
                 "pnfpb-admin-pwa-icpstyle-name",
                 plugin_dir_url(__FILE__) . "admin/css/pnfpb_pwa_admin.css",
                 [],
-                "2.14.11"
+                "2.14.14"
             );
 			
 			$pnfpb_ic_ios_pwa_prompt_reappear = '7';
@@ -6793,47 +6793,51 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                         $screen->base ||
                     "pnfpb-push-notification_page_pnfpb_icfm_pwa_app_settings" ==
                         $screen->base ||
+                    "pnfpb-push-notification_page_pnfpb_icfm_shortcode_settings" == 
+                        $screen->base ||
                     "toplevel_page_pnfpb-icfcm-slug" == $screen->base ||
                     "pnfpb-push-notification_page_pnfpb_icfm_button_settings" ==
                         $screen->base
                 ) {
                     wp_enqueue_media();
-                } else {
-                    return;
+
+                    $ajaxobject = "pnfpb_ajax_object_pwa_upload_icon";
+
+                    $filename = "/admin/js/pnfpb_ic_upload_icon.js";
+                    wp_register_script(
+                        "pnfpb_ic_upload_icon_script",
+                        plugins_url($filename, __FILE__),
+                        ["jquery", "wp-i18n"],
+                        "3.00.12",
+                        true
+                    );
+                    wp_enqueue_script("pnfpb_ic_upload_icon_script");
+
+                    $filename = "/admin/js/pnfpb_ic_pwa_upload_icon_v3.js";
+                    wp_register_script(
+                        "pnfpb_ic_pwa_upload_icon_script",
+                        plugins_url($filename, __FILE__),
+                        ["jquery", "wp-i18n"],
+                        "3.10.14",
+                        true
+                    );
+                    wp_localize_script("pnfpb_ic_pwa_upload_icon_script", $ajaxobject, [
+                        "ajax_url" => admin_url("admin-ajax.php"),
+                        "nonce" => wp_create_nonce('pnfpbuploadiconnonce'),
+                    ]);
+                    wp_enqueue_script("pnfpb_ic_pwa_upload_icon_script");
+
+                    $filename = "/admin/js/pnfpb_ic_ondemand_push_upload_image.js";
+                    wp_register_script(
+                        "pnfpb_ic_ondemand_push_upload_image_script",
+                        plugins_url($filename, __FILE__),
+                        ["jquery", "wp-i18n"],
+                        "3.00.1",
+                        true
+                    );
+                    wp_enqueue_script("pnfpb_ic_ondemand_push_upload_image_script");
                 }
             });
-            $ajaxobject = "pnfpb_ajax_object_pwa_upload_icon";
-            $filename = "/admin/js/pnfpb_ic_upload_icon.js";
-            wp_register_script(
-                "pnfpb_ic_upload_icon_script",
-                plugins_url($filename, __FILE__),
-                ["jquery", "wp-i18n"],
-                "3.00.1",
-                true
-            );
-            wp_enqueue_script("pnfpb_ic_upload_icon_script");
-            $filename = "/admin/js/pnfpb_ic_pwa_upload_icon_v3.js";
-            wp_register_script(
-                "pnfpb_ic_pwa_upload_icon_script",
-                plugins_url($filename, __FILE__),
-                ["jquery", "wp-i18n"],
-                "3.10.1",
-                true
-            );
-            wp_localize_script("pnfpb_ic_pwa_upload_icon_script", $ajaxobject, [
-                "ajax_url" => admin_url("admin-ajax.php"),
-				"nonce" => wp_create_nonce('pnfpbuploadiconnonce'),
-            ]);
-            wp_enqueue_script("pnfpb_ic_pwa_upload_icon_script");
-            $filename = "/admin/js/pnfpb_ic_ondemand_push_upload_image.js";
-            wp_register_script(
-                "pnfpb_ic_ondemand_push_upload_image_script",
-                plugins_url($filename, __FILE__),
-                ["jquery", "wp-i18n"],
-                "3.00.1",
-                true
-            );
-            wp_enqueue_script("pnfpb_ic_ondemand_push_upload_image_script");
         }
 		
 		/*

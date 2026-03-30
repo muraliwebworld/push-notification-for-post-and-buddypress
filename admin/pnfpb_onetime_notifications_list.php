@@ -19,20 +19,37 @@
 		</h2>
 	</div>
 
-	<div class="nav-tab-wrapper">
-		<a class="nav-tab" href="<?php echo esc_url(
-		admin_url()."admin.php?page=pnfpb_icfm_delivery_notifications_list&orderby=id&order=desc"); ?>">
-			<?php echo esc_html(__("Delivery and read report", "push-notification-for-post-and-buddypress")); ?>
-		</a>		
-		<a class="nav-tab" href="<?php echo esc_url(
-		admin_url()."admin.php?page=pnfpb_icfm_browser_delivery_notifications_list&orderby=id&order=desc"); ?>">
-			<?php echo esc_html(__("Delivery report with browser details", "push-notification-for-post-and-buddypress")); ?>
+	<nav class="nav-tab-wrapper pnfpb-reports-sub-bar"
+		 aria-label="<?php esc_attr_e( 'Report type', 'push-notification-for-post-and-buddypress' ); ?>">
+		<a class="nav-tab pnfpb-sub-tab pnfpb-sub-tab--delivery"
+		   href="<?php echo esc_url( admin_url( 'admin.php?page=pnfpb_icfm_delivery_notifications_list&orderby=id&order=desc' ) ); ?>">
+			<span class="pnfpb-sub-tab__icon" aria-hidden="true">
+				<span class="dashicons dashicons-chart-line"></span>
+			</span>
+			<span class="pnfpb-sub-tab__label">
+				<?php echo esc_html( __( 'Delivery and read report', 'push-notification-for-post-and-buddypress' ) ); ?>
+			</span>
 		</a>
-		<a id="pnfpb-Notificationdefault" class="nav-tab nav-tab-active" href="<?php echo esc_url(
-		admin_url()."admin.php?page=pnfpb_icfm_onetime_notifications_list&orderby=id&order=desc"); ?>">
-			<?php echo esc_html(__("Notifications sent from admin", "push-notification-for-post-and-buddypress")); ?>
+		<a class="nav-tab pnfpb-sub-tab pnfpb-sub-tab--browser"
+		   href="<?php echo esc_url( admin_url( 'admin.php?page=pnfpb_icfm_browser_delivery_notifications_list&orderby=id&order=desc' ) ); ?>">
+			<span class="pnfpb-sub-tab__icon" aria-hidden="true">
+				<span class="dashicons dashicons-desktop"></span>
+			</span>
+			<span class="pnfpb-sub-tab__label">
+				<?php echo esc_html( __( 'Delivery report with browser details', 'push-notification-for-post-and-buddypress' ) ); ?>
+			</span>
 		</a>
-	</div>
+		<a id="pnfpb-Notificationdefault" class="nav-tab pnfpb-sub-tab pnfpb-sub-tab--adminpush nav-tab-active"
+		   aria-current="page"
+		   href="<?php echo esc_url( admin_url( 'admin.php?page=pnfpb_icfm_onetime_notifications_list&orderby=id&order=desc' ) ); ?>">
+			<span class="pnfpb-sub-tab__icon" aria-hidden="true">
+				<span class="dashicons dashicons-megaphone"></span>
+			</span>
+			<span class="pnfpb-sub-tab__label">
+				<?php echo esc_html( __( 'Notifications sent from admin', 'push-notification-for-post-and-buddypress' ) ); ?>
+			</span>
+		</a>
+	</nav>
 	<div id="pnfpb-adminNotificationlist" class="pnfpb_notification_list_tabcontent pnfpb_ic_push_settings_table">
 		<div class="pnfpb_column_1200">
 			<div class="wrap">
