@@ -550,6 +550,11 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 $this->pre_name . "unsubscribe_push_callback",
             ]);
 
+			add_action("wp_ajax_pnfpb_analytics_chart_data", [
+				$this,
+				$this->pre_name . "analytics_chart_data_callback",
+			]);
+
             //Plugin settings in admin area
             add_action(
                 "admin_menu",
@@ -2253,7 +2258,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 "pnfpb-admin-icpstyle-name",
                 plugin_dir_url(__FILE__) . "admin/css/pnfpb_admin_v3.css",
                 [],
-                "3.11.17"
+                "3.11.19"
             );
             wp_enqueue_style(
                 "pnfpb-admin-pwa-icpstyle-name",
@@ -5293,6 +5298,20 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 $this,
                 $this->pre_name . "push_notifications_browser_delivery_list_screen_option",
             ]);
+
+			$hook_analytics = add_submenu_page(
+				"pnfpb-push-notification-configuration-slug",
+				__( "Analytics Chart", "push-notification-for-post-and-buddypress" ),
+				"Analytics Chart",
+				"administrator",
+				"pnfpb_icfm_analytics_notifications",
+				[$this, $this->pre_name . "icfm_analytics_notifications"],
+				6
+			);
+			add_action( "load-$hook_analytics", [
+				$this,
+				$this->pre_name . "push_notifications_analytics_screen_option",
+			] );
 			
             $hook_notifications_list = add_submenu_page(
                 "pnfpb-push-notification-configuration-slug", // -> Set to null - will hide menu link
@@ -5491,6 +5510,97 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             include_once plugin_dir_path(__FILE__) .
                 "admin/pnfpb_delivery_notifications_browser_list.php";
         }		
+
+		/**
+		 * Analytics chart page for delivery/read statistics
+		 * @since 2.21.0
+		 */
+		public function PNFPB_icfm_analytics_notifications()
+		{
+			include_once plugin_dir_path( __FILE__ ) . 'admin/pnfpb_delivery_notifications_analytics.php';
+		}
+
+		/**
+		 * Analytics chart page - enqueue Chart.js on this screen only
+		 * @since 2.21.0
+		 */
+		public function PNFPB_push_notifications_analytics_screen_option()
+		{
+			wp_enqueue_script(
+				'pnfpb-chartjs',
+				'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js',
+				[],
+				'4.4.3',
+				true
+			);
+		}
+
+		/**
+		 * AJAX endpoint: returns chart data grouped by day/month/year
+		 * @since 2.21.0
+		 */
+		public function PNFPB_analytics_chart_data_callback()
+		{
+			check_ajax_referer( 'pnfpb_analytics_chart_nonce', 'nonce' );
+			if ( ! current_user_can( 'administrator' ) ) {
+				wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
+			}
+
+			global $wpdb;
+
+			$group_by  = isset( $_POST['group_by'] ) ? sanitize_key( $_POST['group_by'] ) : 'month';
+			$date_from = isset( $_POST['date_from'] ) ? sanitize_text_field( wp_unslash( $_POST['date_from'] ) ) : '';
+			$date_to   = isset( $_POST['date_to'] )   ? sanitize_text_field( wp_unslash( $_POST['date_to'] ) )   : '';
+
+			$fmt_map = [
+				'day'   => '%Y-%m-%d',
+				'week'  => '%x-W%v',
+				'month' => '%Y-%m',
+				'year'  => '%Y',
+			];
+			$fmt = isset( $fmt_map[ $group_by ] ) ? $fmt_map[ $group_by ] : '%Y-%m';
+
+			$where = '';
+			if ( $date_from !== '' && $date_to !== '' ) {
+				$ts_from = strtotime( $date_from . ' 00:00:00' );
+				$ts_to   = strtotime( $date_to   . ' 23:59:59' );
+				if ( $ts_from && $ts_to && $ts_from <= $ts_to ) {
+					$where = $wpdb->prepare(
+						' WHERE notificationid BETWEEN %d AND %d',
+						$ts_from,
+						$ts_to
+					);
+				}
+			}
+
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$rows = $wpdb->get_results(
+				"SELECT FROM_UNIXTIME(notificationid, '{$fmt}') AS period,
+					COUNT(*) AS sent,
+					SUM(total_delivery_confirmation) AS delivered,
+					SUM(total_open_confirmation) AS `read`
+				FROM {$wpdb->prefix}pnfpb_ic_total_statistics_notifications
+				{$where}
+				GROUP BY period
+				ORDER BY period ASC",
+				ARRAY_A
+			);
+			// phpcs:enable
+
+			$labels    = [];
+			$sent      = [];
+			$delivered = [];
+			$read      = [];
+			foreach ( (array) $rows as $row ) {
+				$labels[]    = esc_html( $row['period'] );
+				$sent[]      = (int) $row['sent'];
+				$delivered[] = (int) $row['delivered'];
+				$read[]      = (int) $row['read'];
+			}
+
+			wp_send_json_success( compact( 'labels', 'sent', 'delivered', 'read' ) );
+		}
+
 
         /* On demand schedule push notification
          *

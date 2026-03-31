@@ -137,7 +137,6 @@ if (!class_exists("PNFPB_ICFM_browser_delivery_notifications_List")) {
                 case "id":
 				case "notificationid":
 					return $item[$column_name];
-				case "browser_type":
 				case "title":
 				case "content":
 				case "delivery_confirmation":
@@ -177,7 +176,101 @@ if (!class_exists("PNFPB_ICFM_browser_delivery_notifications_List")) {
 			$formattedDate = date('Y-m-d H:i:s', $item['notificationid']);
 
             return $formattedDate;
-        }		
+        }
+
+        /**
+         * Render the browser type column with device + browser icon badges.
+         *
+         * @param array $item
+         * @return string HTML
+         */
+        function column_browser_type( $item ) {
+            $ua       = isset( $item['browser_type'] ) ? (string) $item['browser_type'] : '';
+            $ua_lower = strtolower( $ua );
+            $title    = esc_attr( $ua );
+
+            $device_html  = $this->pnfpb_get_device_html( $ua_lower );
+            $browser_html = $this->pnfpb_get_browser_html( $ua_lower );
+
+            return '<span class="pnfpb-browser-cell" title="' . $title . '">' . $device_html . ' ' . $browser_html . '</span>';
+        }
+
+        /**
+         * Return device badge HTML based on lowercase UA string.
+         */
+        private function pnfpb_get_device_html( $ua_lower ) {
+            // Native iOS app (CFNetwork / Darwin in UA from WKWebView / background fetch)
+            if ( strpos( $ua_lower, 'cfnetwork' ) !== false || ( strpos( $ua_lower, 'darwin' ) !== false && strpos( $ua_lower, 'android' ) === false ) ) {
+                return '<span class="pnfpb-device-badge pnfpb-device--ios-app"><span class="dashicons dashicons-smartphone"></span> iOS App</span>';
+            }
+            // Android WebView / native Android app
+            if ( strpos( $ua_lower, 'android' ) !== false && strpos( $ua_lower, '; wv)' ) !== false ) {
+                return '<span class="pnfpb-device-badge pnfpb-device--android-app"><span class="dashicons dashicons-smartphone"></span> Android App</span>';
+            }
+            // iPad
+            if ( strpos( $ua_lower, 'ipad' ) !== false ) {
+                return '<span class="pnfpb-device-badge pnfpb-device--ios"><span class="dashicons dashicons-tablet"></span> iPad</span>';
+            }
+            // iPhone
+            if ( strpos( $ua_lower, 'iphone' ) !== false ) {
+                return '<span class="pnfpb-device-badge pnfpb-device--ios"><span class="dashicons dashicons-smartphone"></span> iPhone</span>';
+            }
+            // Android phone (has "mobile" keyword)
+            if ( strpos( $ua_lower, 'android' ) !== false && strpos( $ua_lower, 'mobile' ) !== false ) {
+                return '<span class="pnfpb-device-badge pnfpb-device--android"><span class="dashicons dashicons-smartphone"></span> Android</span>';
+            }
+            // Android tablet (android without mobile)
+            if ( strpos( $ua_lower, 'android' ) !== false ) {
+                return '<span class="pnfpb-device-badge pnfpb-device--android"><span class="dashicons dashicons-tablet"></span> Android Tab</span>';
+            }
+            // Windows Phone
+            if ( strpos( $ua_lower, 'windows phone' ) !== false ) {
+                return '<span class="pnfpb-device-badge pnfpb-device--windows-phone"><span class="dashicons dashicons-smartphone"></span> WinPhone</span>';
+            }
+            // macOS
+            if ( strpos( $ua_lower, 'macintosh' ) !== false || strpos( $ua_lower, 'mac os x' ) !== false ) {
+                return '<span class="pnfpb-device-badge pnfpb-device--desktop"><span class="dashicons dashicons-desktop"></span> Mac</span>';
+            }
+            // Windows Desktop
+            if ( strpos( $ua_lower, 'windows nt' ) !== false ) {
+                return '<span class="pnfpb-device-badge pnfpb-device--desktop"><span class="dashicons dashicons-desktop"></span> Windows</span>';
+            }
+            // Linux
+            if ( strpos( $ua_lower, 'linux' ) !== false ) {
+                return '<span class="pnfpb-device-badge pnfpb-device--desktop"><span class="dashicons dashicons-desktop"></span> Linux</span>';
+            }
+            return '<span class="pnfpb-device-badge pnfpb-device--desktop"><span class="dashicons dashicons-desktop"></span></span>';
+        }
+
+        /**
+         * Return browser badge HTML based on lowercase UA string.
+         */
+        private function pnfpb_get_browser_html( $ua_lower ) {
+            if ( strpos( $ua_lower, 'samsungbrowser' ) !== false ) {
+                return '<span class="pnfpb-browser-badge pnfpb-browser--samsung">Samsung</span>';
+            }
+            if ( strpos( $ua_lower, 'edg/' ) !== false || strpos( $ua_lower, 'edge/' ) !== false ) {
+                return '<span class="pnfpb-browser-badge pnfpb-browser--edge">Edge</span>';
+            }
+            if ( strpos( $ua_lower, 'opr/' ) !== false || strpos( $ua_lower, 'opera/' ) !== false ) {
+                return '<span class="pnfpb-browser-badge pnfpb-browser--opera">Opera</span>';
+            }
+            if ( strpos( $ua_lower, 'firefox/' ) !== false ) {
+                return '<span class="pnfpb-browser-badge pnfpb-browser--firefox">Firefox</span>';
+            }
+            // Chrome for iOS uses CriOS, Chrome for Android uses Chrome
+            if ( strpos( $ua_lower, 'crios/' ) !== false || strpos( $ua_lower, 'chrome/' ) !== false ) {
+                return '<span class="pnfpb-browser-badge pnfpb-browser--chrome">Chrome</span>';
+            }
+            if ( strpos( $ua_lower, 'safari/' ) !== false ) {
+                return '<span class="pnfpb-browser-badge pnfpb-browser--safari">Safari</span>';
+            }
+            // Native app UA (no recognisable browser token)
+            if ( strpos( $ua_lower, 'cfnetwork' ) !== false || strpos( $ua_lower, 'darwin' ) !== false ) {
+                return '<span class="pnfpb-browser-badge pnfpb-browser--app">App</span>';
+            }
+            return '<span class="pnfpb-browser-badge pnfpb-browser--unknown">?</span>';
+        }
 
         public function row_actions($actions, $always_visible = false)
         {

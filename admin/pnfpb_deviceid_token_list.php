@@ -65,25 +65,16 @@ if (get_option('pnfpb_index_status_of_device_token_table') === false || (get_opt
 	if (!$index_name_exists) {
 ?>
 			<div class="pnfpb_column_1200">
-				<h4 class="pnfpb_ic_push_settings_header2"><?php echo esc_html(
-				__(
-					"Create index for subscription device_token column in db table to improve performance. It is essential, if you have subscribers more than 20000 (device tokens)",
-					"push-notification-for-post-and-buddypress"
-				)
-			); ?></h4>
-				<h4 class="pnfpb_ic_push_settings_header2"><?php echo esc_html(
-				__(
-					"Before proceed, take backup of your database and start indexing subscription table when your site has few users/less load or by enabling maintenance mode",
-					"push-notification-for-post-and-buddypress"
-				)
-			); ?></h4>				
-				<h4 class="pnfpb_ic_push_settings_header2"><?php echo esc_html(
-				__(
-					"It is one time task, this option appears only when index for device token column not available (for plugin users before release 3.09 version)",
-					"push-notification-for-post-and-buddypress"
-				)
-			); ?></h4>				
-				<form method="post" enctype="multipart/form-data" class="form-field">
+				<div class="pnfpb-info-box pnfpb-info-box--warning" style="margin-bottom:12px;">
+					<span class="pnfpb-info-box__icon dashicons dashicons-performance" style="color:#B45309;"></span>
+					<div>
+						<strong><?php esc_html_e( 'One-time database index required', 'push-notification-for-post-and-buddypress' ); ?></strong><br>
+						<?php esc_html_e( 'Create an index on the subscription token table to improve query performance when you have more than 20,000 subscribers.', 'push-notification-for-post-and-buddypress' ); ?>
+						<br><em><small><?php esc_html_e( 'Take a database backup first and run this during low-traffic hours or with maintenance mode enabled.', 'push-notification-for-post-and-buddypress' ); ?></small></em>
+						<br><em><small><?php esc_html_e( 'This is a one-time option, visible only for sites upgraded from plugin version 3.08 or earlier.', 'push-notification-for-post-and-buddypress' ); ?></small></em>
+					</div>
+				</div>
+				<form method="post" enctype="multipart/form-data" class="form-field" style="margin-top:10px;">
 					<div>
 						<?php
 						$pnfpb_nonce = wp_create_nonce("pnfpb_index_subscription_tokens");
@@ -119,29 +110,22 @@ if (get_option('pnfpb_index_status_of_device_token_table') === false || (get_opt
 
 <div class="pnfpb_column_1200">
 	<div class="wrap">
-		<div class="pnfpb_row">
-			<div class="pnfpb_column_400">					
-				<h2><?php echo esc_html(
-	__(
-		"List of device tokens registered for push notification",
-		"push-notification-for-post-and-buddypress"
-	)
-); ?>
-				</h2>
+		<?php $pnfpb_total_tokens = PNFPB_ICFM_Device_tokens_List::record_count(); ?>
+		<div class="pnfpb-stats-cards" style="margin-bottom:12px;">
+			<div class="pnfpb-stat-card pnfpb-stat-card--tokens">
+				<div class="pnfpb-stat-card__icon"><span class="dashicons dashicons-admin-network"></span></div>
+				<div class="pnfpb-stat-card__body">
+					<div class="pnfpb-stat-card__value"><?php echo esc_html( number_format_i18n( (int) $pnfpb_total_tokens ) ); ?></div>
+					<div class="pnfpb-stat-card__label"><?php esc_html_e( 'Registered Tokens', 'push-notification-for-post-and-buddypress' ); ?></div>
+					<div class="pnfpb-stat-card__rate"><?php esc_html_e( 'active push subscriptions', 'push-notification-for-post-and-buddypress' ); ?></div>
+				</div>
 			</div>
 		</div>
-		<div class="pnfpb_row">
-			<div class="pnfpb_column_400">
-				<p>
-					<b>
-						<?php echo esc_html(
-	__(
-		"(Do not delete tokens unneccessarily it will result in user will not receive push notification, unless it is needed, avoid deleting tokens )",
-		"push-notification-for-post-and-buddypress"
-	)
-); ?>
-					</b>
-				</p>
+		<div class="pnfpb-info-box pnfpb-info-box--warning" style="margin-bottom:12px;">
+			<span class="pnfpb-info-box__icon dashicons dashicons-warning" style="color:#B45309;"></span>
+			<div>
+				<strong><?php esc_html_e( 'Do not delete tokens unnecessarily', 'push-notification-for-post-and-buddypress' ); ?></strong> &mdash;
+				<?php esc_html_e( 'Deleting a token will prevent that user from receiving push notifications on that device until they re-subscribe.', 'push-notification-for-post-and-buddypress' ); ?>
 			</div>
 		</div>
 		<?php settings_fields("pnfpb_icfcm_token"); ?>
