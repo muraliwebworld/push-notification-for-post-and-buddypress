@@ -193,8 +193,8 @@
 					<p class="pnfpb-field-card__desc"><?php esc_html_e( 'Available when Google Analytics is enabled in your Firebase project.', 'push-notification-for-post-and-buddypress' ); ?></p>
 				</div>
 
-				<!-- FCM Push Icon — full width -->
-				<div class="pnfpb-field-card" style="grid-column:1/-1;">
+				<!-- FCM Push Icon -->
+				<div class="pnfpb-field-card">
 					<div class="pnfpb-field-card__label">
 						<span class="dashicons dashicons-format-image"></span>
 						<label for="pnfpb_ic_fcm_upload_icon"><?php esc_html_e( 'FCM Push Notification Icon (16&times;16 px)', 'push-notification-for-post-and-buddypress' ); ?></label>

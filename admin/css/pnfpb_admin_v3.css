@@ -40,7 +40,7 @@
 	line-height:1.0em;
 }
 
-.pnfpb_ic_push_settings_upload_icon, .pnfpb_ic_push_settings_upload_icon_shortcode {
+.pnfpb_ic_push_settings_upload_icon {
 	width:100%;
     white-space:normal;
     word-wrap:break-word;
@@ -55,6 +55,11 @@
   	margin: 4px 2px !important;
   	cursor: pointer !important;
   	border-radius: 8px !important;	
+}
+.pnfpb_ic_push_settings_upload_icon_shortcode {
+	font-size: 13px !important;
+	padding: 4px 8px !important;
+	width: auto !important;
 }
 .devicetokens .column-id { width: 15%; }
 .devicetokens .column-device_id { width: 45% !important; }

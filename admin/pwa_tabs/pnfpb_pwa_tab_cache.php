@@ -83,7 +83,7 @@ function pnfpb_render_cache_page_select( $id, $req = false ) {
 		</h3>
 		<p class="pnfpb-settings-section__desc"><?php esc_html_e( 'Up to 3 extra pages to pre-cache for offline use.', 'push-notification-for-post-and-buddypress' ); ?></p>
 
-		<div class="pnfpb-settings-grid pnfpb-settings-grid--3col">
+		<div class="pnfpb-settings-grid pnfpb-settings-grid--2col">
 
 			<div class="pnfpb-field-card">
 				<div class="pnfpb-field-card__label">

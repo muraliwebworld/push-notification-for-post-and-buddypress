@@ -2258,7 +2258,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 "pnfpb-admin-icpstyle-name",
                 plugin_dir_url(__FILE__) . "admin/css/pnfpb_admin_v3.css",
                 [],
-                "3.11.19"
+                "3.11.20"
             );
             wp_enqueue_style(
                 "pnfpb-admin-pwa-icpstyle-name",
