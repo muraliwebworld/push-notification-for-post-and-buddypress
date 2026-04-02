@@ -7,6 +7,9 @@
  *
  * @since 2.20.0
  */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 $pnfpb_top_tabs_data = array(
 	array(
 		'url'    => admin_url( 'admin.php?page=pnfpb-push-notification-configuration-slug' ),

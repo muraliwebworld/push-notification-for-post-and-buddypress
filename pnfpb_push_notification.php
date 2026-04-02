@@ -536,11 +536,6 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 $this,
                 $this->pre_name . "icpushadmincallback_callback",
             ]);
-            add_action("wp_ajax_nopriv_icpushadmincallback", [
-                $this,
-                $this->pre_name . "icpushadmincallback_callback",
-            ]);
-
             add_action("wp_ajax_unsubscribepush", [
                 $this,
                 $this->pre_name . "unsubscribe_push_callback",
@@ -5214,7 +5209,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                     "PNFPB Push Notification",
                     "push-notification-for-post-and-buddypress"
                 ),
-                "administrator", // -> Capability level
+                "manage_options", // -> Capability level
                 "pnfpb-push-notification-configuration-slug",
                 [$this, "PNFPB_push_notification_configuration_page"],
                 "dashicons-bell",
@@ -5260,7 +5255,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                     "push-notification-for-post-and-buddypress"
                 ), // -> Page Title
                 "Send Notification", // -> Title that would otherwise appear in the menu
-                "administrator", // -> Capability level
+                "manage_options", // -> Capability level
                 "pnfpb_icfmtest_notification", // -> Still accessible via admin.php?page=menu_handle
                 [$this, $this->pre_name . "icfcm_test_notification"], // -> To render the page
                 3
@@ -5273,7 +5268,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                     "push-notification-for-post-and-buddypress"
                 ), // -> Page Title
                 "Delivered/read report", // -> Title that would otherwise appear in the menu
-                "administrator", // -> Capability level
+                "manage_options", // -> Capability level
                 "pnfpb_icfm_delivery_notifications_list", // -> Still accessible via admin.php?page=menu_handle
                 [$this, $this->pre_name . "icfm_delivery_notifications_list"], // -> To render the page
                 4
@@ -5289,7 +5284,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                     "push-notification-for-post-and-buddypress"
                 ), // -> Page Title
                 "Browser based Delivery reports", // -> Title that would otherwise appear in the menu
-                "administrator", // -> Capability level
+                "manage_options", // -> Capability level
                 "pnfpb_icfm_browser_delivery_notifications_list", // -> Still accessible via admin.php?page=menu_handle
                 [$this, $this->pre_name . "icfm_browser_delivery_notifications_list"], // -> To render the page
                 5
@@ -5299,11 +5294,11 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 $this->pre_name . "push_notifications_browser_delivery_list_screen_option",
             ]);
 
-			$hook_analytics = add_submenu_page(
+            $hook_analytics = add_submenu_page(
 				"pnfpb-push-notification-configuration-slug",
 				__( "Analytics Chart", "push-notification-for-post-and-buddypress" ),
 				"Analytics Chart",
-				"administrator",
+                "manage_options",
 				"pnfpb_icfm_analytics_notifications",
 				[$this, $this->pre_name . "icfm_analytics_notifications"],
 				6
@@ -5320,7 +5315,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                     "push-notification-for-post-and-buddypress"
                 ), // -> Page Title
                 "Notifications from admin", // -> Title that would otherwise appear in the menu
-                "administrator", // -> Capability level
+                "manage_options", // -> Capability level
                 "pnfpb_icfm_onetime_notifications_list", // -> Still accessible via admin.php?page=menu_handle
                 [$this, $this->pre_name . "icfm_onetime_notifications_list"], // -> To render the page
                 6
@@ -5337,7 +5332,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                     "push-notification-for-post-and-buddypress"
                 ), // -> Page Title
                 "PWA settings", // -> Title that would otherwise appear in the menu
-                "administrator", // -> Capability level
+                "manage_options", // -> Capability level
                 "pnfpb_icfm_pwa_app_settings", // -> Still accessible via admin.php?page=menu_handle
                 [$this, $this->pre_name . "icfcm_pwa_app_settings"], // -> To render the page
                 7
@@ -5350,7 +5345,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                     "push-notification-for-post-and-buddypress"
                 ), // -> Page Title
                 "Tokens list", // -> Title that would otherwise appear in the menu
-                "administrator", // -> Capability level
+                "manage_options", // -> Capability level
                 "pnfpb_icfm_device_tokens_list", // -> Still accessible via admin.php?page=menu_handle
                 [$this, $this->pre_name . "icfcm_device_tokens_list"], // -> To render the page
                 8
@@ -5367,7 +5362,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                     "push-notification-for-post-and-buddypress"
                 ), // -> Page Title
                 "Frontend settings", // -> Title that would otherwise appear in the menu
-                "administrator", // -> Capability level
+                "manage_options", // -> Capability level
                 "pnfpb_icfm_frontend_settings", // -> Still accessible via admin.php?page=menu_handle
                 [$this, $this->pre_name . "icfcm_frontend_settings"], // -> To render the page
                 9
@@ -5380,7 +5375,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                     "push-notification-for-post-and-buddypress"
                 ), // -> Page Title
                 "Shortcodes", // -> Title that would otherwise appear in the menu
-                "administrator", // -> Capability level
+                "manage_options", // -> Capability level
                 "pnfpb_icfm_shortcode_settings", // -> Still accessible via admin.php?page=menu_handle
                 [$this, $this->pre_name . "icfcm_shortcode_settings"], // -> To render the page
                 10
@@ -5393,7 +5388,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                     "push-notification-for-post-and-buddypress"
                 ), // -> Page Title
                 "Buttons", // -> Title that would otherwise appear in the menu
-                "administrator", // -> Capability level
+                "manage_options", // -> Capability level
                 "pnfpb_icfm_button_settings", // -> Still accessible via admin.php?page=menu_handle
                 [$this, $this->pre_name . "icfcm_button_settings"], // -> To render the page
                 11
@@ -5406,7 +5401,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                     "push-notification-for-post-and-buddypress"
                 ), // -> Page Title
                 "Integrate Mobile App", // -> Title that would otherwise appear in the menu
-                "administrator", // -> Capability level
+                "manage_options", // -> Capability level
                 "pnfpb_icfm_integrate_app", // -> Still accessible via admin.php?page=menu_handle
                 [$this, $this->pre_name . "icfcm_integrate_app"], // -> To render the page
                 12
@@ -5416,7 +5411,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 "pnfpb-push-notification-configuration-slug", // -> Set to null - will hide menu link
                 __("NGNIX", "push-notification-for-post-and-buddypress"), // -> Page Title
                 "NGNIX", // -> Title that would otherwise appear in the menu
-                "administrator", // -> Capability level
+                "manage_options", // -> Capability level
                 "pnfpb_icfm_settings_for_ngnix_server", // -> Still accessible via admin.php?page=menu_handle
                 [$this, $this->pre_name . "icfcm_settings_for_ngnix_server"], // -> To render the page
                 13
@@ -5429,7 +5424,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                     "push-notification-for-post-and-buddypress"
                 ), // -> Page Title
                 "Action scheduler", // -> Title that would otherwise appear in the menu
-                "administrator", // -> Capability level
+                "manage_options", // -> Capability level
                 "pnfpb_icfm_action_scheduler", // -> Still accessible via admin.php?page=menu_handle
                 [$this, $this->pre_name . "icfcm_action_scheduler"], // -> To render the page
                 14
@@ -5542,7 +5537,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 		public function PNFPB_analytics_chart_data_callback()
 		{
 			check_ajax_referer( 'pnfpb_analytics_chart_nonce', 'nonce' );
-			if ( ! current_user_can( 'administrator' ) ) {
+            if ( ! current_user_can( 'manage_options' ) ) {
 				wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
 			}
 

@@ -9,6 +9,9 @@
  *
  * @since 2.08
  */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 ?>
 <form method="post" enctype="multipart/form-data" class="form-field">
 
@@ -219,6 +222,7 @@
 						</option>
 						<?php for ( $d = 1; $d <= 31; $d++ ) : ?>
 						<option value="<?php echo esc_attr( $d ); ?>"<?php selected( $onetime_recurring_day_number, (string) $d ); ?>>
+							<?php /* translators: %d: Onetime push notification recurring schedule day number */ ?>
 							<?php echo esc_html( sprintf( __( 'Day %d', 'push-notification-for-post-and-buddypress' ), $d ) ); ?>
 						</option>
 						<?php endfor; ?>
@@ -249,7 +253,7 @@
 						];
 						foreach ( $_months as $_num => $_name ) : ?>
 						<option value="<?php echo esc_attr( $_num ); ?>"<?php selected( $onetime_recurring_month_number, (string) $_num ); ?>>
-							<?php echo esc_html( __( $_name, 'push-notification-for-post-and-buddypress' ) ); ?>
+							<?php echo esc_html($_num); ?>
 						</option>
 						<?php endforeach; ?>
 					</select>
@@ -278,7 +282,7 @@
 						];
 						foreach ( $_days as $_val => $_day ) : ?>
 						<option value="<?php echo esc_attr( $_val ); ?>"<?php selected( $onetime_recurring_day_name, $_val ); ?>>
-							<?php echo esc_html( __( $_day, 'push-notification-for-post-and-buddypress' ) ); ?>
+							<?php echo esc_html( $_day ); ?>
 						</option>
 						<?php endforeach; ?>
 					</select>

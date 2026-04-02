@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 $post_type = $post->post_type;
 
 $pnfpb_post_meta_send_push_notification = get_post_meta(

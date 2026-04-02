@@ -1,0 +1,8 @@
+{
+    "require": {
+        "minishlink/web-push": "^9.0"
+    },
+    "scripts": {
+        "pre-autoload-dump": "Google\\Task\\Composer::cleanup"
+    }
+}

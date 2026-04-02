@@ -5,6 +5,9 @@
 *
 * @since 1.0.0
 */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 ?>
 <h1 class="pnfpb_ic_push_settings_header">
 	<span class="dashicons dashicons-bell" style="font-size:26px;width:26px;height:26px;color:#2271b1;margin-top:3px;"></span>

@@ -3,6 +3,9 @@
  * BuddyPress activities and comments settings for push notification
  * @since 2.08
  */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 ?>
 
 <?php /* ─── Section 1: BuddyPress Activities ──────────────────────────────── */ ?>

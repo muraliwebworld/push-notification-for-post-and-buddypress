@@ -5,6 +5,9 @@
 *
 * @since 2.20.0
 */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 use Minishlink\WebPush\VAPID;
 ?>
 <h1 class="pnfpb_ic_push_settings_header">

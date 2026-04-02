@@ -1,5 +1,7 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 			$register_settings_args = array(
     				'sanitize_callback' => 'sanitize_text_field'
    				);

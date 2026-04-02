@@ -780,7 +780,8 @@ if (!class_exists("PNFPB_group_activities_notification_class")) {
 											]
 										);
 									} else {
-										$this->PNFPB_icfcm_httpv1_send_push_notification(
+									$FB_httpv1_notification_class_obj = new PNFPB_firebase_httpv1_notification_class();
+									$FB_httpv1_notification_class_obj->PNFPB_firebase_httpv1_notification(
 											0,
 											stripslashes(wp_strip_all_tags($grouptitle)),
 											stripslashes(wp_strip_all_tags($localactivitycontent)),
