@@ -5964,7 +5964,22 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                             "pnfpb_post",
                             true
                         );						
-					}
+					} else {
+                        if (wp_next_scheduled("PNFPB_cron_post_hook")) {
+                            $timestamp = wp_next_scheduled(
+                                "PNFPB_cron_post_hook"
+                            );
+                            wp_unschedule_event(
+                                $timestamp,
+                                "PNFPB_cron_post_hook"
+                            );
+                        }
+                        as_unschedule_all_actions(
+                            "PNFPB_cron_post_hook",
+                            [],
+                            ""
+                        );
+                    }
 					/* For custom post types */
 					foreach ($custposttypes as $post_type) {
 						$fieldname ="pnfpb_ic_fcm_".$post_type."_post_schedule_enable";
@@ -6001,6 +6016,28 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 			
 					}
                 } else {
+                    if (as_has_scheduled_action("PNFPB_cron_post_hook")) {
+                        if (wp_next_scheduled("PNFPB_cron_post_hook")) {
+                            $timestamp = wp_next_scheduled(
+                                "PNFPB_cron_post_hook"
+                            );
+                            wp_unschedule_event(
+                                $timestamp,
+                                "PNFPB_cron_post_hook"
+                            );
+                        }
+                        as_unschedule_all_actions(
+                            "PNFPB_cron_post_hook",
+                            [],
+                            ""
+                        );
+                        delete_option("pnfpb_ic_fcm_new_post_id");
+                        delete_option("pnfpb_ic_fcm_new_post_title");
+                        delete_option("pnfpb_ic_fcm_new_post_content");
+                        delete_option("pnfpb_ic_fcm_new_post_link");
+                        delete_option("pnfpb_ic_fcm_new_post_type");
+                        delete_option("pnfpb_ic_fcm_new_post_author");                        
+                    }              
 					foreach ($custposttypes as $post_type) {
 						if (as_has_scheduled_action("PNFPB_cron_".$post_type."_hook")) {
 							if (wp_next_scheduled("PNFPB_cron_".$post_type."_hook")) {
