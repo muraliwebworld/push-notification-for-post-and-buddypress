@@ -11,6 +11,8 @@
 
 Send free push notifications for WordPress posts, custom post types, BuddyPress activities, and mobile app webviews — and generate a Progressive Web App (PWA) — all powered by Firebase Cloud Messaging (FCM HTTP v1), OneSignal, Progressier, or Web Push.
 
+PNFPB 3.14 also adds an optional AI assistant for notification drafting. It currently supports on-demand sends and post-editor notification workflows, with a provider contract that keeps the AI backend swappable and a privacy toggle that limits how much content is sent to the provider.
+
 ---
 
 ## Features
@@ -57,6 +59,13 @@ Supports sending to Firebase/OneSignal and webtoapp.design users **simultaneousl
 - Shortcode `[subscribe_PNFPB_push_notification]` for anywhere-on-site subscription UI
 - Shortcode `[PNFPB_PWA_PROMPT]` for PWA install button
 - Dynamic shortcodes: `[member name]`, `[group name]` in notification body
+
+### AI Notification Assistant
+
+- Generate a draft before sending an on-demand notification
+- Generate suggested title, content, and send time from the post editor
+- Use a provider contract so AI backends can be replaced without rewriting the workflows
+- Keep content sharing conservative with privacy controls and content-length limits
 
 ---
 
@@ -185,6 +194,8 @@ Via the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/dat
 ## Changelog
 
 ### 3.14
+- Added AI assistant support for on-demand and post notification drafts
+- Added dismissible upgrade notice for the 3.14 AI release
 - Performance improvement: three-tier async topic subscription (fastcgi → named transient queue → WP-Cron)
 - AJAX handler refactored: `if/else` chains replaced with `switch/case`
 - Pending topic sync flushed before every FCM dispatch to eliminate race conditions on shared hosting

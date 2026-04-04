@@ -33,6 +33,9 @@ if (!defined("ABSPATH")) {
 if (!defined("PNFPB_VERSION_CURRENT")) {
     define("PNFPB_VERSION_CURRENT", "1");
 }
+if (!defined("PNFPB_PLUGIN_VERSION")) {
+    define("PNFPB_PLUGIN_VERSION", "3.14");
+}
 if (!defined("PNFPB_URL")) {
     define("PNFPB_URL", plugin_dir_url(__FILE__));
 }
@@ -279,6 +282,8 @@ include_once plugin_dir_path(__FILE__) .
 include_once plugin_dir_path(__FILE__) .
         "public/pnfpb_send_notification_routines/pnfpb_progressier_notification/pnfpb_progressier_notification.php";
 include_once plugin_dir_path(__FILE__) .
+		"public/pnfpb_ai_assistant/pnfpb_ai_assistant.php";
+include_once plugin_dir_path(__FILE__) .
 	"public/pnfpb_activity_notification/pnfpb_all_activities_notification.php";	
 include_once plugin_dir_path(__FILE__) .
 	"public/pnfpb_activity_notification/pnfpb_group_activities_notification.php";	
@@ -325,6 +330,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 		public $pnfpb_onesignal_notification_class_obj;
 		public $pnfpb_progressier_notification_class_obj;
 		public $pnfpb_webtoapp_notification_class_obj;
+        public $pnfpb_ai_notification_assistant_obj;
 		public $pnfpb_webpush_notification_class_obj;
 		public $pnfpb_all_activities_notification_obj;
 		public $pnfpb_group_activities_notification_obj;
@@ -368,6 +374,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 			$this->pnfpb_progressier_notification_class_obj = new PNFPB_progressier_notification_class();
 			$this->pnfpb_webtoapp_notification_class_obj = new PNFPB_webtoapp_notification_class();
 			$this->pnfpb_webpush_notification_class_obj = new PNFPB_web_push_notification_class();
+            $this->pnfpb_ai_notification_assistant_obj = new PNFPB_ai_notification_assistant_class();
 			
             add_filter(
                 "set-screen-option",
@@ -550,6 +557,11 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 				$this->pre_name . "analytics_chart_data_callback",
 			]);
 
+            add_action("wp_ajax_pnfpb_ai_notification_preview", [
+                $this,
+                $this->pre_name . "ai_notification_preview_callback",
+            ]);
+
             //Plugin settings in admin area
             add_action(
                 "admin_menu",
@@ -565,6 +577,18 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             add_action("admin_init", [
                 $this,
                 $this->pre_name . "send_push_post_options",
+            ]);
+            add_action("admin_init", [
+                $this,
+                $this->pre_name . "ai_upgrade_notice_bootstrap",
+            ]);
+            add_action("admin_notices", [
+                $this,
+                $this->pre_name . "ai_upgrade_notice",
+            ]);
+            add_action("wp_ajax_pnfpb_dismiss_ai_upgrade_notice", [
+                $this,
+                $this->pre_name . "dismiss_ai_upgrade_notice",
             ]);
 
             //create service worker file which is needed for push notification using FCM
@@ -1186,6 +1210,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
         public function PNFPB_activate($network_wide)
         {
             global $wpdb;
+			update_option('pnfpb_plugin_version', PNFPB_PLUGIN_VERSION);
 			
     		if ( is_multisite() && $network_wide ) {
         		// Get all blogs in the network and activate plugin on each one
@@ -2238,6 +2263,76 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
         }
 
         /**
+         * Track upgrades so the AI notice only appears after 3.14 installs and upgrades.
+         */
+        public function PNFPB_ai_upgrade_notice_bootstrap()
+        {
+            $current_version = PNFPB_PLUGIN_VERSION;
+            $stored_version = (string) get_option('pnfpb_plugin_version', '');
+
+            if ($stored_version === '') {
+                update_option('pnfpb_plugin_version', $current_version);
+                return;
+            }
+
+            if (version_compare($stored_version, $current_version, '<')) {
+                update_option('pnfpb_plugin_version', $current_version);
+                update_option('pnfpb_ai_upgrade_notice_pending', '1');
+            }
+        }
+
+        /**
+         * Show a dismissible upgrade notice for the AI assistant release.
+         */
+        public function PNFPB_ai_upgrade_notice()
+        {
+            if (get_option('pnfpb_ai_upgrade_notice_pending') !== '1') {
+                return;
+            }
+
+            if (get_option('pnfpb_ai_upgrade_notice_dismissed_version') === PNFPB_PLUGIN_VERSION) {
+                delete_option('pnfpb_ai_upgrade_notice_pending');
+                return;
+            }
+
+            $notice_nonce = wp_create_nonce('pnfpb_ai_upgrade_notice_nonce');
+            $ajax_url = admin_url('admin-ajax.php');
+            ?>
+            <div class="notice notice-info is-dismissible pnfpb-ai-upgrade-notice">
+                <p><strong><?php echo esc_html__('PNFPB 3.14 AI assistant update', 'push-notification-for-post-and-buddypress'); ?></strong></p>
+                <p><?php echo esc_html__('On-demand sends and post-editor notifications now include an optional AI draft assistant with provider contract support, preview generation, and privacy controls. Enable it in Push Notification settings.', 'push-notification-for-post-and-buddypress'); ?></p>
+            </div>
+            <script type="text/javascript">
+                jQuery(function ($) {
+                    $(document).on('click', '.pnfpb-ai-upgrade-notice .notice-dismiss', function () {
+                        $.post(<?php echo wp_json_encode($ajax_url); ?>, {
+                            action: 'pnfpb_dismiss_ai_upgrade_notice',
+                            nonce: <?php echo wp_json_encode($notice_nonce); ?>
+                        });
+                    });
+                });
+            </script>
+            <?php
+        }
+
+        /**
+         * Save the AI notice dismissal state.
+         */
+        public function PNFPB_dismiss_ai_upgrade_notice()
+        {
+            check_ajax_referer('pnfpb_ai_upgrade_notice_nonce', 'nonce');
+
+            if (!current_user_can('manage_options')) {
+                wp_send_json_error(['message' => __('Unauthorized', 'push-notification-for-post-and-buddypress')], 403);
+            }
+
+            update_option('pnfpb_ai_upgrade_notice_dismissed_version', PNFPB_PLUGIN_VERSION);
+            delete_option('pnfpb_ai_upgrade_notice_pending');
+
+            wp_send_json_success(['message' => __('Dismissed', 'push-notification-for-post-and-buddypress')]);
+        }
+
+        /**
          * Enqueue and localize scripts needed for push notification using FCM
          *
          * @since 1.0.0
@@ -2253,7 +2348,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 "pnfpb-admin-icpstyle-name",
                 plugin_dir_url(__FILE__) . "admin/css/pnfpb_admin_v3.css",
                 [],
-                "3.11.20"
+                "3.11.21"
             );
             wp_enqueue_style(
                 "pnfpb-admin-pwa-icpstyle-name",
@@ -5247,6 +5342,22 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 [$this, "PNFPB_icfcm_admin_page"],
                 2
             );
+
+            add_submenu_page(
+                "pnfpb-push-notification-configuration-slug",
+                __(
+                    "AI assistant",
+                    "push-notification-for-post-and-buddypress"
+                ),
+                __(
+                    "AI assistant",
+                    "push-notification-for-post-and-buddypress"
+                ),
+                "manage_options",
+                "pnfpb_icfm_ai_assistant_settings",
+                [$this, "PNFPB_ai_assistant_admin_page"],
+                3
+            );
 			
             add_submenu_page(
                 "pnfpb-push-notification-configuration-slug", // -> Set to null - will hide menu link
@@ -5596,6 +5707,69 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 			wp_send_json_success( compact( 'labels', 'sent', 'delivered', 'read' ) );
 		}
 
+        /**
+         * AJAX endpoint: returns AI-generated push notification preview data.
+         *
+         * @since 3.15.0
+         */
+        public function PNFPB_ai_notification_preview_callback()
+        {
+            check_ajax_referer( 'pnfpb_ai_notification_nonce', 'nonce' );
+
+            if ( ! current_user_can( 'edit_posts' ) && ! current_user_can( 'manage_options' ) ) {
+                wp_send_json_error(
+                    [ 'message' => __( 'Unauthorized', 'push-notification-for-post-and-buddypress' ) ],
+                    403
+                );
+            }
+
+            $feature = isset( $_POST['feature'] ) ? sanitize_key( wp_unslash( $_POST['feature'] ) ) : 'on_demand';
+            $title = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
+            $content = isset( $_POST['content'] ) ? wp_kses_post( wp_unslash( $_POST['content'] ) ) : '';
+            $post_type = isset( $_POST['post_type'] ) ? sanitize_text_field( wp_unslash( $_POST['post_type'] ) ) : 'post';
+            $audience = isset( $_POST['audience'] ) ? sanitize_text_field( wp_unslash( $_POST['audience'] ) ) : 'broad';
+            $sender_name = isset( $_POST['sender_name'] ) ? sanitize_text_field( wp_unslash( $_POST['sender_name'] ) ) : '';
+            $click_url = isset( $_POST['click_url'] ) ? esc_url_raw( wp_unslash( $_POST['click_url'] ) ) : '';
+            $language = isset( $_POST['language'] ) ? sanitize_text_field( wp_unslash( $_POST['language'] ) ) : get_locale();
+            $tone = isset( $_POST['tone'] ) ? sanitize_text_field( wp_unslash( $_POST['tone'] ) ) : 'clear';
+
+            $preview = $this->pnfpb_ai_notification_assistant_obj->pnfpb_build_preview(
+                [
+                    'feature' => $feature,
+                    'title' => $title,
+                    'content' => $content,
+                    'post_type' => $post_type,
+                    'audience' => $audience,
+                    'sender_name' => $sender_name,
+                    'click_url' => $click_url,
+                    'language' => $language,
+                    'tone' => $tone,
+                    'source' => $feature,
+                ]
+            );
+
+            if ( is_wp_error( $preview ) ) {
+                wp_send_json_error(
+                    [
+                        'message' => $preview->get_error_message(),
+                    ],
+                    400
+                );
+            }
+
+            wp_send_json_success(
+                [
+                    'title' => isset( $preview['title'] ) ? $preview['title'] : '',
+                    'content' => isset( $preview['content'] ) ? $preview['content'] : '',
+                    'send_time' => isset( $preview['send_time'] ) ? $preview['send_time'] : '',
+                    'audience_hint' => isset( $preview['audience_hint'] ) ? $preview['audience_hint'] : '',
+                    'confidence' => isset( $preview['confidence'] ) ? $preview['confidence'] : 0,
+                    'source' => isset( $preview['source'] ) ? $preview['source'] : 'fallback',
+                    'provider_error' => isset( $preview['provider_error'] ) ? $preview['provider_error'] : '',
+                ]
+            );
+        }
+
 
         /* On demand schedule push notification
          *
@@ -5625,6 +5799,17 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
         {
             include_once plugin_dir_path(__FILE__) .
                 "admin/pnfpb_admin_ic_push_notification.php";
+        }
+
+        /**
+         * Create push notification settings page for AI assistant configuration.
+         *
+         * @since 3.14
+         */
+        public function PNFPB_ai_assistant_admin_page()
+        {
+            include_once plugin_dir_path(__FILE__) .
+                "admin/pnfpb_admin_ai_assistant_settings.php";
         }
 
         /**
@@ -6917,8 +7102,11 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             add_action("admin_enqueue_scripts", function ($hook) {
                 /** @var \WP_Screen $screen */
                 $screen = get_current_screen();
+                $screen_id = $screen ? (string) $screen->id : '';
                 if (
                     "settings_page_pnfpb-icfcm-slug" == $screen->base ||
+                    "settings_page_pnfpb_icfm_ai_assistant_settings" ==
+                        $screen->base ||
                     "settings_page_pnfpb_icfm_pwa_app_settings" ==
                         $screen->base ||
                     "settings_page_pnfpb_icfmtest_notification" ==
@@ -6933,13 +7121,17 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 						$screen->base ||
                     "pnfpb-push-notification_page_pnfpb-icfcm-slug" ==
                         $screen->base ||
+					"pnfpb-push-notification_page_pnfpb_icfm_ai_assistant_settings" ==
+						$screen->base ||
                     "pnfpb-push-notification_page_pnfpb_icfm_pwa_app_settings" ==
                         $screen->base ||
                     "pnfpb-push-notification_page_pnfpb_icfm_shortcode_settings" == 
                         $screen->base ||
                     "toplevel_page_pnfpb-icfcm-slug" == $screen->base ||
                     "pnfpb-push-notification_page_pnfpb_icfm_button_settings" ==
-                        $screen->base
+                        $screen->base ||
+                    "post" == $screen->base ||
+                    "post-new" == $screen->base
                 ) {
                     wp_enqueue_media();
 
@@ -6978,6 +7170,41 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                         true
                     );
                     wp_enqueue_script("pnfpb_ic_ondemand_push_upload_image_script");
+
+                    $should_load_ai_script = false;
+                    if (
+                        in_array($screen->base, ["post", "post-new"], true) ||
+                        strpos($screen_id, "pnfpb") !== false ||
+                        strpos($screen_id, "pnfpb-push-notification") !== false
+                    ) {
+                        $should_load_ai_script = true;
+                    }
+
+                    if ($should_load_ai_script) {
+                        $filename = "/admin/js/pnfpb_ai_assistant.js";
+                        wp_register_script(
+                            "pnfpb_ai_assistant_script",
+                            plugins_url($filename, __FILE__),
+                            ["jquery", "wp-i18n"],
+                            "1.0.2",
+                            true
+                        );
+                        wp_localize_script("pnfpb_ai_assistant_script", "pnfpb_ai_notification_object", [
+                            "ajax_url" => admin_url("admin-ajax.php"),
+                            "nonce" => wp_create_nonce("pnfpb_ai_notification_nonce"),
+                            "configured" => get_option("pnfpb_ai_assistant_enable") === "1" && trim((string) get_option("pnfpb_ai_assistant_endpoint")) !== '' && trim((string) get_option("pnfpb_ai_assistant_api_key")) !== '',
+                            "workflow_on_demand_enabled" => get_option("pnfpb_ai_assistant_enable") === "1" && get_option("pnfpb_ai_assistant_enable_on_demand") === "1",
+                            "workflow_post_enabled" => get_option("pnfpb_ai_assistant_enable") === "1" && get_option("pnfpb_ai_assistant_enable_post_editor") === "1",
+                            "strings" => [
+                                "loading" => esc_html__("Generating AI draft...", "push-notification-for-post-and-buddypress"),
+                                "error" => esc_html__("AI draft generation failed.", "push-notification-for-post-and-buddypress"),
+                                "not_configured" => esc_html__("AI assistant requires configuration in the AI assistant tab. Add the endpoint and credentials first.", "push-notification-for-post-and-buddypress"),
+                                "workflow_disabled_on_demand" => esc_html__("AI assistant is disabled for on-demand sends in the AI assistant tab.", "push-notification-for-post-and-buddypress"),
+                                "workflow_disabled_post" => esc_html__("AI assistant is disabled for post editor notifications in the AI assistant tab.", "push-notification-for-post-and-buddypress"),
+                            ],
+                        ]);
+                        wp_enqueue_script("pnfpb_ai_assistant_script");
+                    }
                 }
             });
         }

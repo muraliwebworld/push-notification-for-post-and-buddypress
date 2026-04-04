@@ -18,6 +18,13 @@ $pnfpb_top_tabs_data = array(
 		'slug'   => 'config',
 		'active' => isset( $pnfpb_tab_config_active )   ? $pnfpb_tab_config_active   : '',
 	),
+		array(
+			'url'    => admin_url( 'admin.php?page=pnfpb_icfm_ai_assistant_settings' ),
+			'label'  => __( 'AI assistant', 'push-notification-for-post-and-buddypress' ),
+			'icon'   => 'dashicons-art',
+			'slug'   => 'aiassistant',
+			'active' => isset( $pnfpb_tab_ai_active )      ? $pnfpb_tab_ai_active      : '',
+		),
 	array(
 		'url'    => admin_url( 'admin.php?page=pnfpb-icfcm-slug' ),
 		'label'  => __( 'Options', 'push-notification-for-post-and-buddypress' ),

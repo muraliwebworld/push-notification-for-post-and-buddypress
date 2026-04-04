@@ -10,7 +10,7 @@ Stable tag: 3.14
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Send free push notifications for WordPress posts, custom post types, BuddyPress events and WooCommerce. Includes PWA and mobile app integration.
+Send free push notifications for WordPress posts, custom post types, BuddyPress events and WooCommerce. Includes PWA, mobile app integration, and an AI assistant for draft notification generation.
 
 == Description ==
 
@@ -64,6 +64,15 @@ Every notification type can be sent immediately or scheduled using WordPress Cro
 = On-Demand Push =
 
 Send a push notification to all subscribers at any time from the admin panel — with a custom title, message body, image, and click URL. One-time and recurring schedules (daily, weekly, monthly) are supported.
+
+= AI Assistant =
+
+PNFPB includes an optional AI assistant for two workflows:
+
+* **On-demand push** - generate a notification draft from the current form data before sending.
+* **Post notification** - generate suggested title, content, and send time from the post editor.
+
+The AI layer uses a provider contract so the backend can be swapped later without changing the notification workflow. You can also control privacy settings so only the required content is shared with the AI provider.
 
 = Frontend Subscription Controls =
 
@@ -227,9 +236,11 @@ Report security bugs through the Patchstack Vulnerability Disclosure Program. [R
 
 == Changelog ==
 = 3.14 version =
+* Added optional AI assistant for on-demand push and post notification drafts
+* Added provider contract, privacy controls, and dismissible upgrade notice
 * Performance improvement and bug fixes
 = 3.13 version
 * Bug fixes
 
 == Upgrade Notice ==
-*  Bug fixes
+* Optional AI assistant now helps draft on-demand and post notifications in 3.14.

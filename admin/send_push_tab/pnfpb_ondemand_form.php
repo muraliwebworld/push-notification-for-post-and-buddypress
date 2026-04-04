@@ -87,6 +87,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<p class="pnfpb-field-card__desc"><?php esc_html_e( 'Paste an image URL or use the button to select from Media Library.', 'push-notification-for-post-and-buddypress' ); ?></p>
 			</div>
 
+			<div class="pnfpb-field-card" style="grid-column:1/-1;">
+				<div class="pnfpb-field-card__label">
+					<span class="dashicons dashicons-art"></span>
+					<?php esc_html_e( 'AI Assistant', 'push-notification-for-post-and-buddypress' ); ?>
+				</div>
+				<div class="pnfpb-field-card__control" style="flex-direction:column; align-items:flex-start; gap:10px;">
+					<button type="button" id="pnfpb_ai_generate_on_demand_button" class="button button-secondary">
+						<?php esc_html_e( 'Generate AI draft', 'push-notification-for-post-and-buddypress' ); ?>
+					</button>
+					<p class="pnfpb-field-card__desc" style="margin:0;">
+						<?php esc_html_e( 'AI can suggest a stronger title, clearer body text, and a better send time. Configure the endpoint and credentials in the AI assistant tab before using it here.', 'push-notification-for-post-and-buddypress' ); ?>
+					</p>
+					<div id="pnfpb_ai_on_demand_status" class="description"></div>
+					<div id="pnfpb_ai_on_demand_preview" class="pnfpb-ai-preview" style="display:none; width:100%; padding:12px; border:1px solid #dcdcde; border-radius:10px; background:#fff; box-sizing:border-box;"></div>
+				</div>
+			</div>
+
 		</div>
 	</section>
 

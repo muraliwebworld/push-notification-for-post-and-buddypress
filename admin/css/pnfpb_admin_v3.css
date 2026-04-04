@@ -1655,6 +1655,18 @@ td.pnfpb_ic_push_settings_table_column {
 	box-shadow: 0 -3px 10px rgba(67,56,202,0.18);
 }
 
+/* AI assistant — Teal */
+.pnfpb-main-nav-bar > a.pnfpb-main-tab--aiassistant                       { border-top-color: #0F766E; }
+.pnfpb-main-nav-bar > a.pnfpb-main-tab--aiassistant .pnfpb-main-tab__icon { background: #0F766E; }
+.pnfpb-main-nav-bar > a.pnfpb-main-tab--aiassistant:hover                  { color: #115E59; border-top-color: #0F766E; }
+.pnfpb-main-nav-bar > a.pnfpb-main-tab--aiassistant.nav-tab-active {
+	color: #115E59;
+	border-color: #0F766E;
+	border-bottom: none;
+	background: #F0FDFA;
+	box-shadow: 0 -3px 10px rgba(15,118,110,0.18);
+}
+
 /* Send Push — Emerald */
 .pnfpb-main-nav-bar > a.pnfpb-main-tab--sendpush                       { border-top-color: #059669; }
 .pnfpb-main-nav-bar > a.pnfpb-main-tab--sendpush .pnfpb-main-tab__icon { background: #059669; }
