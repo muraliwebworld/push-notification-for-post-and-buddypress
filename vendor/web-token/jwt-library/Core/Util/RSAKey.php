@@ -27,7 +27,7 @@ final class RSAKey
 {
     private null|Sequence $sequence = null;
 
-    private array $values;
+    private readonly array $values;
 
     private BigInteger $modulus;
 

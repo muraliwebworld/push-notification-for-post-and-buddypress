@@ -29,13 +29,13 @@ final class DNParser
     /**
      * DN string length.
      */
-    private int $_len;
+    private readonly int $_len;
 
     /**
      * @param string $_dn Distinguised name
      */
     private function __construct(
-        private string $_dn
+        private readonly string $_dn
     ) {
         $this->_len = mb_strlen($_dn, '8bit');
     }

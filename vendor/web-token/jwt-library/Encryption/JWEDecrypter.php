@@ -24,9 +24,9 @@ use function strlen;
 
 class JWEDecrypter
 {
-    private AlgorithmManager $keyEncryptionAlgorithmManager;
+    private readonly AlgorithmManager $keyEncryptionAlgorithmManager;
 
-    private AlgorithmManager $contentEncryptionAlgorithmManager;
+    private readonly AlgorithmManager $contentEncryptionAlgorithmManager;
 
     public function __construct(AlgorithmManager $algorithmManager)
     {

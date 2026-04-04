@@ -24,9 +24,9 @@ use UnexpectedValueException;
 final class AttributeCertificate implements Stringable
 {
     private function __construct(
-        private AttributeCertificateInfo $acInfo,
-        private SignatureAlgorithmIdentifier $signatureAlgorithm,
-        private Signature $signatureValue
+        private readonly AttributeCertificateInfo $acInfo,
+        private readonly SignatureAlgorithmIdentifier $signatureAlgorithm,
+        private readonly Signature $signatureValue
     ) {
     }
 

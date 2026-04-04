@@ -23,7 +23,7 @@ final class Length implements Encodable
     /**
      * Length.
      */
-    private BigInt $_length;
+    private readonly BigInt $_length;
 
     /**
      * @param BigInteger|int $length Length
@@ -31,7 +31,7 @@ final class Length implements Encodable
      */
     private function __construct(
         BigInteger|int $length,
-        private bool $_indefinite = false
+        private readonly bool $_indefinite = false
     ) {
         $this->_length = BigInt::create($length);
     }

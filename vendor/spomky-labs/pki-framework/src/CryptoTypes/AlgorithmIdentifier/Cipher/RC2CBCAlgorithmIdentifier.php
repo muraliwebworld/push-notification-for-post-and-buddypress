@@ -93,7 +93,7 @@ final class RC2CBCAlgorithmIdentifier extends BlockCipherAlgorithmIdentifier
      * @param null|string $iv Initialization vector
      */
     private function __construct(
-        private int $effectiveKeyBits,
+        private readonly int $effectiveKeyBits,
         ?string $iv
     ) {
         parent::__construct(self::OID_RC2_CBC, $iv);

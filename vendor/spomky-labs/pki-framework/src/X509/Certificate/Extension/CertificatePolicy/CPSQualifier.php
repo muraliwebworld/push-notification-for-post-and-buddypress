@@ -16,7 +16,7 @@ use SpomkyLabs\Pki\ASN1\Type\UnspecifiedType;
 final class CPSQualifier extends PolicyQualifierInfo
 {
     private function __construct(
-        private string $uri
+        private readonly string $uri
     ) {
         parent::__construct(self::OID_CPS);
     }

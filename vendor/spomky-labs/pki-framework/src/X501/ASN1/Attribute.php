@@ -25,14 +25,14 @@ final class Attribute implements Countable, IteratorAggregate
     /**
      * Attribute type.
      */
-    private AttributeType $type;
+    private readonly AttributeType $type;
 
     /**
      * Attribute values.
      *
      * @var AttributeValue[]
      */
-    private array $values;
+    private readonly array $values;
 
     /**
      * @param AttributeType $type Attribute type

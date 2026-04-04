@@ -21,7 +21,7 @@ final class CertificationPathBuilder
      * @param CertificateBundle $trustList List of trust anchors
      */
     private function __construct(
-        private CertificateBundle $trustList
+        private readonly CertificateBundle $trustList
     ) {
     }
 

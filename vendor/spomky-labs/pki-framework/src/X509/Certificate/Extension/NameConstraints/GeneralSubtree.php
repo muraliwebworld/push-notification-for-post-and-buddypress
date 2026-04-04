@@ -19,9 +19,9 @@ use function count;
 final class GeneralSubtree
 {
     private function __construct(
-        private GeneralName $base,
-        private int $min,
-        private ?int $max
+        private readonly GeneralName $base,
+        private readonly int $min,
+        private readonly ?int $max
     ) {
     }
 

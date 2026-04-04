@@ -22,7 +22,7 @@ abstract class BaseTime extends Element implements TimeType, Stringable
 
     protected function __construct(
         int $typeTag,
-        protected DateTimeImmutable $dateTime
+        protected readonly DateTimeImmutable $dateTime
     ) {
         parent::__construct($typeTag);
     }

@@ -41,7 +41,7 @@ class JWSBuilder
     protected ?bool $isPayloadEncoded = null;
 
     public function __construct(
-        private AlgorithmManager $signatureAlgorithmManager
+        private readonly AlgorithmManager $signatureAlgorithmManager
     ) {
     }
 

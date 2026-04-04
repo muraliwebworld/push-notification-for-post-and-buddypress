@@ -17,8 +17,8 @@ final class GenericSignature extends Signature
      * @param AlgorithmIdentifierType $signatureAlgorithm Algorithm identifier
      */
     private function __construct(
-        private BitString $signature,
-        private AlgorithmIdentifierType $signatureAlgorithm
+        private readonly BitString $signature,
+        private readonly AlgorithmIdentifierType $signatureAlgorithm
     ) {
     }
 

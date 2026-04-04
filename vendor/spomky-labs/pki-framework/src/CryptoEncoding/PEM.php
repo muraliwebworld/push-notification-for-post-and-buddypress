@@ -62,8 +62,8 @@ final class PEM implements Stringable
      * @param string $data Payload
      */
     private function __construct(
-        private string $type,
-        private string $data
+        private readonly string $type,
+        private readonly string $data
     ) {
     }
 

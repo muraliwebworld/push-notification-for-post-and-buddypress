@@ -17,7 +17,7 @@ final class SubjectKeyIdentifierExtension extends Extension
 {
     private function __construct(
         bool $critical,
-        private string $keyIdentifier
+        private readonly string $keyIdentifier
     ) {
         parent::__construct(self::OID_SUBJECT_KEY_IDENTIFIER, $critical);
     }

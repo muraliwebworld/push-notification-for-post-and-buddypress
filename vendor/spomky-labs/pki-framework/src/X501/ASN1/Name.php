@@ -30,7 +30,7 @@ final class Name implements Countable, IteratorAggregate, Stringable
      *
      * @var RDN[]
      */
-    private array $rdns;
+    private readonly array $rdns;
 
     /**
      * @param RDN ...$rdns RDN components

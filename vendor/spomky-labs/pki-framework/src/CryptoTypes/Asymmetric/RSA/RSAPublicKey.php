@@ -23,8 +23,8 @@ use UnexpectedValueException;
 final class RSAPublicKey extends PublicKey
 {
     private function __construct(
-        private string $modulus,
-        private string $publicExponent
+        private readonly string $modulus,
+        private readonly string $publicExponent
     ) {
     }
 

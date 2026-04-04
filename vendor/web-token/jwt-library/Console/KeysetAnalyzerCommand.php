@@ -25,8 +25,8 @@ use function sprintf;
 final class KeysetAnalyzerCommand extends Command
 {
     public function __construct(
-        private KeysetAnalyzerManager $keysetAnalyzerManager,
-        private KeyAnalyzerManager $keyAnalyzerManager,
+        private readonly KeysetAnalyzerManager $keysetAnalyzerManager,
+        private readonly KeyAnalyzerManager $keyAnalyzerManager,
         ?string $name = null
     ) {
         parent::__construct($name);

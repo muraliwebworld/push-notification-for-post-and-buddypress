@@ -32,14 +32,14 @@ final class RSASSAPSSPrivateKey extends PrivateKey
      * @param string $coefficient CRT coefficient of the second factor
      */
     private function __construct(
-        private string $modulus,
-        private string $publicExponent,
-        private string $privateExponent,
-        private string $prime1,
-        private string $prime2,
-        private string $exponent1,
-        private string $exponent2,
-        private string $coefficient
+        private readonly string $modulus,
+        private readonly string $publicExponent,
+        private readonly string $privateExponent,
+        private readonly string $prime1,
+        private readonly string $prime2,
+        private readonly string $exponent1,
+        private readonly string $exponent2,
+        private readonly string $coefficient
     ) {
     }
 

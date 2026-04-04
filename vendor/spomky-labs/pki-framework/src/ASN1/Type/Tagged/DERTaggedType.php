@@ -30,11 +30,11 @@ class DERTaggedType extends TaggedType implements ExplicitTagging, ImplicitTaggi
      * @param int $_valueLength Content length
      */
     final private function __construct(
-        private Identifier $_identifier,
-        private string $_data,
-        private int $_offset,
-        private int $_valueOffset,
-        private int $_valueLength,
+        private readonly Identifier $_identifier,
+        private readonly string $_data,
+        private readonly int $_offset,
+        private readonly int $_valueOffset,
+        private readonly int $_valueLength,
         bool $indefinite_length
     ) {
         parent::__construct($_identifier->intTag(), $indefinite_length);

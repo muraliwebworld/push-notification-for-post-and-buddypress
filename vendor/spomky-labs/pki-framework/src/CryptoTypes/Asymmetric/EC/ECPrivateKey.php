@@ -32,9 +32,9 @@ final class ECPrivateKey extends PrivateKey
      * @param null|string $publicKey ECPoint value
      */
     private function __construct(
-        private string $privateKey,
+        private readonly string $privateKey,
         private ?string $namedCurve,
-        private ?string $publicKey
+        private readonly ?string $publicKey
     ) {
     }
 

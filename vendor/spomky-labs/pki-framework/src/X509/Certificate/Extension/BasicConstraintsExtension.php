@@ -24,8 +24,8 @@ final class BasicConstraintsExtension extends Extension
      */
     private function __construct(
         bool $critical,
-        private bool $ca,
-        private ?int $pathLen
+        private readonly bool $ca,
+        private readonly ?int $pathLen
     ) {
         parent::__construct(self::OID_BASIC_CONSTRAINTS, $critical);
     }

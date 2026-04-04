@@ -23,7 +23,7 @@ final class CertificateChain implements Countable, IteratorAggregate
      *
      * @var Certificate[]
      */
-    private array $certs;
+    private readonly array $certs;
 
     /**
      * @param Certificate ...$certs List of certificates, end-entity first

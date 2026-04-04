@@ -21,7 +21,7 @@ abstract class RFC8410PublicKey extends PublicKey
      * @param string $publicKey Public key data
      */
     protected function __construct(
-        private string $publicKey
+        private readonly string $publicKey
     ) {
     }
 

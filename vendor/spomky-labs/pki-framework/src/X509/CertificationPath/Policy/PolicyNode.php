@@ -38,8 +38,8 @@ final class PolicyNode implements IteratorAggregate, Countable
      * @param string[] $expectedPolicies
      */
     private function __construct(
-        private string $validPolicy,
-        private array $qualifiers,
+        private readonly string $validPolicy,
+        private readonly array $qualifiers,
         private array $expectedPolicies
     ) {
         $this->children = [];

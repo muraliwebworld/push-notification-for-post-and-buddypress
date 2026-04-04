@@ -17,7 +17,7 @@ use SpomkyLabs\Pki\X509\GeneralName\UniformResourceIdentifier;
 final class FullName extends DistributionPointName
 {
     private function __construct(
-        private GeneralNames $names
+        private readonly GeneralNames $names
     ) {
         parent::__construct(self::TAG_FULL_NAME);
     }

@@ -31,7 +31,7 @@ final class BitString extends BaseString
      */
     private function __construct(
         string $string,
-        private int $unusedBits = 0
+        private readonly int $unusedBits = 0
     ) {
         parent::__construct(self::TYPE_BIT_STRING, $string);
     }

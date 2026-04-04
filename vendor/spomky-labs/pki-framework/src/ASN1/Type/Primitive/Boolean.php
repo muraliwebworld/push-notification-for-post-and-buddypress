@@ -23,7 +23,7 @@ final class Boolean extends Element
     use PrimitiveType;
 
     private function __construct(
-        private bool $_bool
+        private readonly bool $_bool
     ) {
         parent::__construct(self::TYPE_BOOLEAN);
     }

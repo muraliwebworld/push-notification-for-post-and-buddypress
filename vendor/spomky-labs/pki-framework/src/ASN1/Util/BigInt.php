@@ -19,7 +19,7 @@ final class BigInt implements Stringable
     /**
      * Number as a BigInteger object.
      */
-    private BigInteger $value;
+    private readonly BigInteger $value;
 
     /**
      * Number as a base 10 integer string.

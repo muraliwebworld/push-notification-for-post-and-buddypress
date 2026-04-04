@@ -15,8 +15,8 @@ use function is_string;
 class NestedTokenLoader
 {
     public function __construct(
-        private JWELoader $jweLoader,
-        private JWSLoader $jwsLoader
+        private readonly JWELoader $jweLoader,
+        private readonly JWSLoader $jwsLoader
     ) {
     }
 

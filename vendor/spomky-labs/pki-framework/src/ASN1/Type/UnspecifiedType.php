@@ -48,7 +48,7 @@ use function sprintf;
 final class UnspecifiedType implements ElementBase
 {
     private function __construct(
-        private Element $element
+        private readonly Element $element
     ) {
     }
 

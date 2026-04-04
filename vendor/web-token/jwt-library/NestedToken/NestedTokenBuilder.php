@@ -14,10 +14,10 @@ use function array_key_exists;
 class NestedTokenBuilder
 {
     public function __construct(
-        private JWEBuilder $jweBuilder,
-        private JWESerializerManager $jweSerializerManager,
-        private JWSBuilder $jwsBuilder,
-        private JWSSerializerManager $jwsSerializerManager
+        private readonly JWEBuilder $jweBuilder,
+        private readonly JWESerializerManager $jweSerializerManager,
+        private readonly JWSBuilder $jwsBuilder,
+        private readonly JWSSerializerManager $jwsSerializerManager
     ) {
     }
 

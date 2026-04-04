@@ -20,7 +20,7 @@ final class RegisteredID extends GeneralName
      * @param string $oid OID in dotted format
      */
     private function __construct(
-        private string $oid
+        private readonly string $oid
     ) {
         parent::__construct(self::TAG_REGISTERED_ID);
     }

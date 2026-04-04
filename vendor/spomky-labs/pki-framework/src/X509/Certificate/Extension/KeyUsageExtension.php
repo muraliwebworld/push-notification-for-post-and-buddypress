@@ -35,7 +35,7 @@ final class KeyUsageExtension extends Extension
 
     private function __construct(
         bool $critical,
-        private int $keyUsage
+        private readonly int $keyUsage
     ) {
         parent::__construct(self::OID_KEY_USAGE, $critical);
     }

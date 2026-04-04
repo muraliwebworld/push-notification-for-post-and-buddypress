@@ -54,7 +54,7 @@ final class Identifier implements Encodable
     /**
      * Primitive or Constructed.
      */
-    private int $_pc;
+    private readonly int $_pc;
 
     /**
      * Content type tag.

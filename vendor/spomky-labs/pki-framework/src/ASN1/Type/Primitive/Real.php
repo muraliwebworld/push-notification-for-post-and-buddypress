@@ -99,19 +99,19 @@ final class Real extends Element implements Stringable
     /**
      * Signed integer mantissa.
      */
-    private BigInt $_mantissa;
+    private readonly BigInt $_mantissa;
 
     /**
      * Signed integer exponent.
      */
-    private BigInt $_exponent;
+    private readonly BigInt $_exponent;
 
     /**
      * Abstract value base.
      *
      * Must be 2 or 10.
      */
-    private int $_base;
+    private readonly int $_base;
 
     /**
      * Whether to encode strictly in DER.

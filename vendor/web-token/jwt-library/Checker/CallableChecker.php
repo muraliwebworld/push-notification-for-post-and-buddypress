@@ -21,9 +21,9 @@ final class CallableChecker implements ClaimChecker, HeaderChecker
      * @param callable(mixed $value): bool $callable The callable function that will be invoked.
      */
     public function __construct(
-        private string $key,
+        private readonly string $key,
         private $callable,
-        private bool $protectedHeaderOnly = true
+        private readonly bool $protectedHeaderOnly = true
     ) {
         if (! is_callable($this->callable)) {
             throw new InvalidArgumentException('The $callable argument must be a callable.');

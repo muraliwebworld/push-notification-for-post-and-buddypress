@@ -17,7 +17,7 @@ use SpomkyLabs\Pki\ASN1\Type\UnspecifiedType;
 final class UniformResourceIdentifier extends GeneralName
 {
     private function __construct(
-        private string $uri
+        private readonly string $uri
     ) {
         parent::__construct(self::TAG_URI);
     }

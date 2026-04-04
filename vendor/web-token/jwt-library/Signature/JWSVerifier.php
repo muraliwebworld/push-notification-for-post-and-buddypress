@@ -19,7 +19,7 @@ use function sprintf;
 class JWSVerifier
 {
     public function __construct(
-        private AlgorithmManager $signatureAlgorithmManager
+        private readonly AlgorithmManager $signatureAlgorithmManager
     ) {
     }
 

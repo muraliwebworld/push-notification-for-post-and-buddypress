@@ -22,9 +22,9 @@ use UnexpectedValueException;
 final class CertificationRequest implements Stringable
 {
     private function __construct(
-        private CertificationRequestInfo $certificationRequestInfo,
-        private SignatureAlgorithmIdentifier $signatureAlgorithm,
-        private Signature $signature
+        private readonly CertificationRequestInfo $certificationRequestInfo,
+        private readonly SignatureAlgorithmIdentifier $signatureAlgorithm,
+        private readonly Signature $signature
     ) {
     }
 

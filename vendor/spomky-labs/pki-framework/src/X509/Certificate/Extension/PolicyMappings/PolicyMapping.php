@@ -19,8 +19,8 @@ final class PolicyMapping
      * @param string $subjectDomainPolicy OID of the subject policy
      */
     private function __construct(
-        private string $issuerDomainPolicy,
-        private string $subjectDomainPolicy
+        private readonly string $issuerDomainPolicy,
+        private readonly string $subjectDomainPolicy
     ) {
     }
 

@@ -18,7 +18,7 @@ final class GenericAlgorithmIdentifier extends AlgorithmIdentifier
      */
     private function __construct(
         string $oid,
-        private ?UnspecifiedType $params
+        private readonly ?UnspecifiedType $params
     ) {
         parent::__construct($oid);
     }

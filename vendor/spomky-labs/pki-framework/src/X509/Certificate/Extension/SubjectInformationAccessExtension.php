@@ -26,7 +26,7 @@ final class SubjectInformationAccessExtension extends Extension implements Count
      *
      * @var SubjectAccessDescription[]
      */
-    private array $accessDescriptions;
+    private readonly array $accessDescriptions;
 
     private function __construct(bool $critical, SubjectAccessDescription ...$accessDescriptions)
     {

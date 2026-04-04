@@ -19,9 +19,9 @@ use SpomkyLabs\Pki\X509\GeneralName\GeneralNames;
 final class DistributionPoint
 {
     private function __construct(
-        private ?DistributionPointName $distributionPoint,
-        private ?ReasonFlags $reasons,
-        private ?GeneralNames $issuer
+        private readonly ?DistributionPointName $distributionPoint,
+        private readonly ?ReasonFlags $reasons,
+        private readonly ?GeneralNames $issuer
     ) {
     }
 

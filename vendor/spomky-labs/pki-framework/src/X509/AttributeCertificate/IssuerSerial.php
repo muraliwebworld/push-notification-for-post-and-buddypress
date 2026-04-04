@@ -21,9 +21,9 @@ use SpomkyLabs\Pki\X509\GeneralName\GeneralNames;
 final class IssuerSerial
 {
     private function __construct(
-        private GeneralNames $issuer,
-        private string $serial,
-        private ?UniqueIdentifier $issuerUID
+        private readonly GeneralNames $issuer,
+        private readonly string $serial,
+        private readonly ?UniqueIdentifier $issuerUID
     ) {
     }
 

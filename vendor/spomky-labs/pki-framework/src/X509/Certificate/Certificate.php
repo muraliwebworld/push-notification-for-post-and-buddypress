@@ -28,9 +28,9 @@ final class Certificate implements Stringable
      * @param Signature $signatureValue Signature value.
      */
     private function __construct(
-        private TBSCertificate $tbsCertificate,
-        private SignatureAlgorithmIdentifier $signatureAlgorithm,
-        private Signature $signatureValue
+        private readonly TBSCertificate $tbsCertificate,
+        private readonly SignatureAlgorithmIdentifier $signatureAlgorithm,
+        private readonly Signature $signatureValue
     ) {
     }
 

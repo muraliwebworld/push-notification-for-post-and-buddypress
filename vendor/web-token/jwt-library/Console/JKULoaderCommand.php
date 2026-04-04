@@ -17,7 +17,7 @@ use function is_string;
 final class JKULoaderCommand extends ObjectOutputCommand
 {
     public function __construct(
-        private JKUFactory $jkuFactory,
+        private readonly JKUFactory $jkuFactory,
         ?string $name = null
     ) {
         parent::__construct($name);

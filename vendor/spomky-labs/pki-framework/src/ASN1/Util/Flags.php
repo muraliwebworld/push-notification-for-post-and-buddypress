@@ -32,7 +32,7 @@ final class Flags
      */
     private function __construct(
         BigInteger|int|string $flags,
-        private int $_width
+        private readonly int $_width
     ) {
         if ($_width === 0) {
             $this->_flags = '';

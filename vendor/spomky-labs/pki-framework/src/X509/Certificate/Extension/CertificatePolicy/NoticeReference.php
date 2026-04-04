@@ -20,10 +20,10 @@ final class NoticeReference
      *
      * @var int[]
      */
-    private array $numbers;
+    private readonly array $numbers;
 
     private function __construct(
-        private DisplayText $organization,
+        private readonly DisplayText $organization,
         int ...$numbers
     ) {
         $this->numbers = $numbers;

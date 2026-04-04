@@ -25,7 +25,7 @@ final class ACValidator
     /**
      * Crypto engine.
      */
-    private Crypto $crypto;
+    private readonly Crypto $crypto;
 
     /**
      * @param AttributeCertificate $ac Attribute certificate to validate
@@ -33,8 +33,8 @@ final class ACValidator
      * @param null|Crypto $crypto Crypto engine, use default if not set
      */
     private function __construct(
-        private AttributeCertificate $ac,
-        private ACValidationConfig $config,
+        private readonly AttributeCertificate $ac,
+        private readonly ACValidationConfig $config,
         ?Crypto $crypto
     ) {
         $this->crypto = $crypto ?? Crypto::getDefault();

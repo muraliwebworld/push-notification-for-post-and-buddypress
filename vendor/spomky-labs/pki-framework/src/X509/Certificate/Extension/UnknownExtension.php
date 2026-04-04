@@ -17,8 +17,8 @@ final class UnknownExtension extends Extension
     private function __construct(
         string $oid,
         bool $critical,
-        private Element $element,
-        private string $data
+        private readonly Element $element,
+        private readonly string $data
     ) {
         parent::__construct($oid, $critical);
     }

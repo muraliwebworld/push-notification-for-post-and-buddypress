@@ -20,7 +20,7 @@ final class Ed448Signature extends Signature
     /**
      * Signature value.
      */
-    private string $signature;
+    private readonly string $signature;
 
     private function __construct(string $signature)
     {

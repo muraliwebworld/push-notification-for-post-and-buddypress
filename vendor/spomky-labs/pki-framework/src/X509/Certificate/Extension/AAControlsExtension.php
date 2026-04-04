@@ -26,10 +26,10 @@ final class AAControlsExtension extends Extension
      */
     private function __construct(
         bool $critical,
-        private ?int $pathLenConstraint,
-        private ?array $permittedAttrs,
-        private ?array $excludedAttrs,
-        private bool $permitUnSpecified
+        private readonly ?int $pathLenConstraint,
+        private readonly ?array $permittedAttrs,
+        private readonly ?array $excludedAttrs,
+        private readonly bool $permitUnSpecified
     ) {
         parent::__construct(self::OID_AA_CONTROLS, $critical);
     }

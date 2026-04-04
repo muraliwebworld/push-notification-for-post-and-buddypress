@@ -17,8 +17,8 @@ use SpomkyLabs\Pki\ASN1\Type\UnspecifiedType;
 final class UserNoticeQualifier extends PolicyQualifierInfo
 {
     private function __construct(
-        private ?DisplayText $text,
-        private ?NoticeReference $ref
+        private readonly ?DisplayText $text,
+        private readonly ?NoticeReference $ref
     ) {
         parent::__construct(self::OID_UNOTICE);
     }

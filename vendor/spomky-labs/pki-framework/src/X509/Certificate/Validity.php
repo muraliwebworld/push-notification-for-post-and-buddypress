@@ -14,8 +14,8 @@ use SpomkyLabs\Pki\ASN1\Type\Constructed\Sequence;
 final class Validity
 {
     private function __construct(
-        private Time $notBefore,
-        private Time $notAfter
+        private readonly Time $notBefore,
+        private readonly Time $notAfter
     ) {
     }
 

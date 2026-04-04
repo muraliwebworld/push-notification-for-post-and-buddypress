@@ -17,7 +17,7 @@ final class IssuerAlternativeNameExtension extends Extension
 {
     private function __construct(
         bool $critical,
-        private GeneralNames $names
+        private readonly GeneralNames $names
     ) {
         parent::__construct(self::OID_ISSUER_ALT_NAME, $critical);
     }

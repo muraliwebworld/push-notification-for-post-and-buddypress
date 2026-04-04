@@ -28,7 +28,7 @@ final class PolicyMappingsExtension extends Extension implements Countable, Iter
      *
      * @var PolicyMapping[]
      */
-    private array $mappings;
+    private readonly array $mappings;
 
     /**
      * @param PolicyMapping ...$mappings One or more PolicyMapping objects

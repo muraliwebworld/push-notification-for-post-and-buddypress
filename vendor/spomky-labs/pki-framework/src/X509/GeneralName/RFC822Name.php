@@ -17,7 +17,7 @@ use SpomkyLabs\Pki\ASN1\Type\UnspecifiedType;
 final class RFC822Name extends GeneralName
 {
     private function __construct(
-        private string $email
+        private readonly string $email
     ) {
         parent::__construct(self::TAG_RFC822_NAME);
     }

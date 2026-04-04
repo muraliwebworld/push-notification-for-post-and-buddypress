@@ -12,7 +12,7 @@ use SpomkyLabs\Pki\X501\StringPrep\StringPreparer;
 abstract class StringPrepMatchingRule extends MatchingRule
 {
     protected function __construct(
-        private StringPreparer $preparer
+        private readonly StringPreparer $preparer
     ) {
     }
 

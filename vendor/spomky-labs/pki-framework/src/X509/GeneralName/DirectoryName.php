@@ -17,7 +17,7 @@ use SpomkyLabs\Pki\X501\ASN1\Name;
 final class DirectoryName extends GeneralName
 {
     private function __construct(
-        private Name $directoryName
+        private readonly Name $directoryName
     ) {
         parent::__construct(self::TAG_DIRECTORY_NAME);
     }

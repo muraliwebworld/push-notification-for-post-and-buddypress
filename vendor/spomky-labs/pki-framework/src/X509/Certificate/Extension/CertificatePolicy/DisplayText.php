@@ -21,8 +21,8 @@ use UnexpectedValueException;
 final class DisplayText implements Stringable
 {
     private function __construct(
-        private string $text,
-        private int $tag
+        private readonly string $text,
+        private readonly int $tag
     ) {
     }
 

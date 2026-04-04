@@ -20,7 +20,7 @@ abstract class UrlKeySetFactory
     private int $expiresAfter = 3600;
 
     public function __construct(
-        private HttpClientInterface $client,
+        private readonly HttpClientInterface $client,
     ) {
         $this->cacheItemPool = new NullAdapter();
     }

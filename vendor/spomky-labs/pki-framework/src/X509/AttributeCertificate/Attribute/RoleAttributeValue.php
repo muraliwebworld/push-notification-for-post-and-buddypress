@@ -30,8 +30,8 @@ final class RoleAttributeValue extends AttributeValue
      * @param null|GeneralNames $roleAuthority Issuing authority
      */
     private function __construct(
-        private GeneralName $roleName,
-        private ?GeneralNames $roleAuthority
+        private readonly GeneralName $roleName,
+        private readonly ?GeneralNames $roleAuthority
     ) {
         parent::__construct(AttributeType::OID_ROLE);
     }

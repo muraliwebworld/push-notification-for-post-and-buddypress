@@ -20,8 +20,8 @@ final class AttributeTypeAndValue implements Stringable
      * @param AttributeValue $value Attribute value
      */
     private function __construct(
-        private AttributeType $type,
-        private AttributeValue $value
+        private readonly AttributeType $type,
+        private readonly AttributeValue $value
     ) {
     }
 

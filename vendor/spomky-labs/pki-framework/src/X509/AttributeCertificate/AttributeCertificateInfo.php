@@ -32,7 +32,7 @@ final class AttributeCertificateInfo
     /**
      * AC version.
      */
-    private int $version;
+    private readonly int $version;
 
     /**
      * Signature algorithm identifier.

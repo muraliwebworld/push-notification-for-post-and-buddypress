@@ -17,7 +17,7 @@ final class InhibitAnyPolicyExtension extends Extension
 {
     private function __construct(
         bool $critical,
-        private int $skipCerts
+        private readonly int $skipCerts
     ) {
         parent::__construct(self::OID_INHIBIT_ANY_POLICY, $critical);
     }

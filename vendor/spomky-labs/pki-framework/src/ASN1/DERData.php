@@ -21,12 +21,12 @@ final class DERData extends Element
     /**
      * DER encoded data.
      */
-    private string $der;
+    private readonly string $der;
 
     /**
      * Identifier of the underlying type.
      */
-    private Identifier $identifier;
+    private readonly Identifier $identifier;
 
     /**
      * Offset to the content in DER data.

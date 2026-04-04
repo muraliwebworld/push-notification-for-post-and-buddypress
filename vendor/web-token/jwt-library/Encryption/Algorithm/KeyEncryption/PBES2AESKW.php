@@ -20,8 +20,8 @@ use function is_string;
 abstract class PBES2AESKW implements KeyWrapping
 {
     public function __construct(
-        private int $salt_size = 64,
-        private int $nb_count = 4096
+        private readonly int $salt_size = 64,
+        private readonly int $nb_count = 4096
     ) {
         if (! interface_exists(WrapperInterface::class)) {
             throw new RuntimeException('Please install "spomky-labs/aes-key-wrap" to use AES-KW algorithms');

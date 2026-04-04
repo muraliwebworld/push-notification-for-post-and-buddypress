@@ -25,7 +25,7 @@ final class SubjectDirectoryAttributesExtension extends Extension implements Cou
     /**
      * Attributes.
      */
-    private SequenceOfAttributes $attributes;
+    private readonly SequenceOfAttributes $attributes;
 
     /**
      * @param Attribute ...$attribs One or more Attribute objects

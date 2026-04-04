@@ -20,9 +20,9 @@ use SpomkyLabs\Pki\X509\GeneralName\GeneralNames;
 final class V2Form extends AttCertIssuer
 {
     private function __construct(
-        private ?GeneralNames $issuerName,
-        private ?IssuerSerial $baseCertificateID,
-        private ?ObjectDigestInfo $objectDigestInfo
+        private readonly ?GeneralNames $issuerName,
+        private readonly ?IssuerSerial $baseCertificateID,
+        private readonly ?ObjectDigestInfo $objectDigestInfo
     ) {
     }
 

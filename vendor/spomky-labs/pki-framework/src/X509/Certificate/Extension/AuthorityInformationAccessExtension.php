@@ -26,7 +26,7 @@ final class AuthorityInformationAccessExtension extends Extension implements Cou
      *
      * @var AuthorityAccessDescription[]
      */
-    private array $accessDescriptions;
+    private readonly array $accessDescriptions;
 
     private function __construct(bool $critical, AuthorityAccessDescription ...$access)
     {

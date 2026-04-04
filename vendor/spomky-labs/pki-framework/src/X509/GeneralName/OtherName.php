@@ -23,8 +23,8 @@ final class OtherName extends GeneralName
      * @param string $type OID
      */
     private function __construct(
-        private string $type,
-        private Element $element
+        private readonly string $type,
+        private readonly Element $element
     ) {
         parent::__construct(self::TAG_OTHER_NAME);
     }

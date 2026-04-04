@@ -34,8 +34,8 @@ final class PublicKeyInfo
      * @param BitString $publicKey Public key data
      */
     private function __construct(
-        private AlgorithmIdentifierType $algo,
-        private BitString $publicKey
+        private readonly AlgorithmIdentifierType $algo,
+        private readonly BitString $publicKey
     ) {
     }
 

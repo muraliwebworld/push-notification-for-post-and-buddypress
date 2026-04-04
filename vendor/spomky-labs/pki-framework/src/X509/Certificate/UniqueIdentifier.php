@@ -14,7 +14,7 @@ use SpomkyLabs\Pki\ASN1\Type\Primitive\BitString;
 final class UniqueIdentifier
 {
     private function __construct(
-        private BitString $uid
+        private readonly BitString $uid
     ) {
     }
 

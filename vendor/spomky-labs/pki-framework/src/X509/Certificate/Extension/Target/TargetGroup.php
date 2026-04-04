@@ -17,7 +17,7 @@ use SpomkyLabs\Pki\X509\GeneralName\GeneralName;
 final class TargetGroup extends Target
 {
     private function __construct(
-        private GeneralName $name
+        private readonly GeneralName $name
     ) {
         parent::__construct(self::TYPE_GROUP);
     }

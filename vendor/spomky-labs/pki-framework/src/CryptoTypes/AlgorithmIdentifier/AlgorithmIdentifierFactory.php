@@ -102,7 +102,7 @@ final class AlgorithmIdentifierFactory
      *
      * @var AlgorithmIdentifierProvider[]
      */
-    private array $_additionalProviders;
+    private readonly array $_additionalProviders;
 
     /**
      * @param AlgorithmIdentifierProvider ...$providers Additional providers

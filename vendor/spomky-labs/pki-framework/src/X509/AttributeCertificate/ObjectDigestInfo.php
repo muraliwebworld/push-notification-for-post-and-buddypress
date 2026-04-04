@@ -27,10 +27,10 @@ final class ObjectDigestInfo
     final public const TYPE_OTHER_OBJECT_TYPES = 2;
 
     private function __construct(
-        private int $digestedObjectType,
-        private AlgorithmIdentifierType $digestAlgorithm,
-        private BitString $objectDigest,
-        private ?string $otherObjectTypeID
+        private readonly int $digestedObjectType,
+        private readonly AlgorithmIdentifierType $digestAlgorithm,
+        private readonly BitString $objectDigest,
+        private readonly ?string $otherObjectTypeID
     ) {
     }
 

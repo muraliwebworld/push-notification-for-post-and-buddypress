@@ -24,17 +24,17 @@ final class PathValidationResult
      *
      * @var Certificate[]
      */
-    private array $certificates;
+    private readonly array $certificates;
 
     /**
      * @param Certificate[] $certificates
      */
     private function __construct(
         array $certificates,
-        private ?PolicyTree $policyTree,
-        private PublicKeyInfo $publicKeyInfo,
-        private AlgorithmIdentifierType $publicKeyAlgo,
-        private ?Element $publicKeyParameters
+        private readonly ?PolicyTree $policyTree,
+        private readonly PublicKeyInfo $publicKeyInfo,
+        private readonly AlgorithmIdentifierType $publicKeyAlgo,
+        private readonly ?Element $publicKeyParameters
     ) {
         $this->certificates = array_values($certificates);
     }

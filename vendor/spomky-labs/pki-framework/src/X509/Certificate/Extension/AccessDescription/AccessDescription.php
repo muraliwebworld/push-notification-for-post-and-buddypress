@@ -21,8 +21,8 @@ abstract class AccessDescription
      * @param GeneralName $accessLocation Access location
      */
     protected function __construct(
-        protected string $accessMethod,
-        protected GeneralName $accessLocation
+        protected readonly string $accessMethod,
+        protected readonly GeneralName $accessLocation
     ) {
     }
 

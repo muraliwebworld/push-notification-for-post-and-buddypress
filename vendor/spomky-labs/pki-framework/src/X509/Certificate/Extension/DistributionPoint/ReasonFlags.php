@@ -32,7 +32,7 @@ final class ReasonFlags
     final public const AA_COMPROMISE = 0x001;
 
     private function __construct(
-        private int $flags
+        private readonly int $flags
     ) {
     }
 

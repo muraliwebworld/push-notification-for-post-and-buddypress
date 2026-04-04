@@ -24,9 +24,9 @@ final class AuthorityKeyIdentifierExtension extends Extension
 {
     private function __construct(
         bool $critical,
-        private ?string $keyIdentifier,
-        private ?GeneralNames $authorityCertIssuer,
-        private null|string $authorityCertSerialNumber
+        private readonly ?string $keyIdentifier,
+        private readonly ?GeneralNames $authorityCertIssuer,
+        private readonly null|string $authorityCertSerialNumber
     ) {
         parent::__construct(self::OID_AUTHORITY_KEY_IDENTIFIER, $critical);
     }

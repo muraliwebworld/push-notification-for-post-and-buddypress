@@ -19,8 +19,8 @@ use SpomkyLabs\Pki\ASN1\Type\UnspecifiedType;
 final class ECSignature extends Signature
 {
     private function __construct(
-        private string $r,
-        private string $s
+        private readonly string $r,
+        private readonly string $s
     ) {
     }
 

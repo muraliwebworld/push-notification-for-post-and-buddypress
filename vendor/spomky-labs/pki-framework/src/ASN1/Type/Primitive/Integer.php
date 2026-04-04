@@ -29,7 +29,7 @@ class Integer extends Element
     /**
      * The number.
      */
-    private BigInt $_number;
+    private readonly BigInt $_number;
 
     /**
      * @param BigInteger|int|string $number Base 10 integer

@@ -35,13 +35,13 @@ final class ObjectIdentifier extends Element
      *
      * @var BigInteger[]
      */
-    private array $subids;
+    private readonly array $subids;
 
     /**
      * @param string $oid OID in dotted format
      */
     private function __construct(
-        private string $oid,
+        private readonly string $oid,
         ?int $typeTag
     ) {
         $this->subids = self::explodeDottedOID($oid);

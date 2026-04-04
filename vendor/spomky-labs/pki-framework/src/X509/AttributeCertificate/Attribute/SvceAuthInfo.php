@@ -23,9 +23,9 @@ abstract class SvceAuthInfo extends AttributeValue
 {
     protected function __construct(
         string $oid,
-        private GeneralName $service,
-        private GeneralName $ident,
-        private ?string $authInfo = null
+        private readonly GeneralName $service,
+        private readonly GeneralName $ident,
+        private readonly ?string $authInfo = null
     ) {
         parent::__construct($oid);
     }

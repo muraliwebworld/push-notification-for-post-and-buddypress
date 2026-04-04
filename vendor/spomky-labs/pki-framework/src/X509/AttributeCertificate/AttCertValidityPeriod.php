@@ -19,8 +19,8 @@ final class AttCertValidityPeriod
     use DateTimeHelper;
 
     private function __construct(
-        private DateTimeImmutable $notBeforeTime,
-        private DateTimeImmutable $notAfterTime
+        private readonly DateTimeImmutable $notBeforeTime,
+        private readonly DateTimeImmutable $notAfterTime
     ) {
     }
 

@@ -22,7 +22,7 @@ use function is_string;
 final class KeyAnalyzerCommand extends Command
 {
     public function __construct(
-        private KeyAnalyzerManager $analyzerManager,
+        private readonly KeyAnalyzerManager $analyzerManager,
         ?string $name = null
     ) {
         parent::__construct($name);

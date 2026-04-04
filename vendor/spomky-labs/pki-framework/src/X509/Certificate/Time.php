@@ -24,7 +24,7 @@ final class Time
     /**
      * Time ASN.1 type tag.
      */
-    private int $type;
+    private readonly int $type;
 
     private function __construct(
         protected DateTimeImmutable $dt,

@@ -20,8 +20,8 @@ final class PolicyConstraintsExtension extends Extension
 {
     private function __construct(
         bool $critical,
-        private ?int $requireExplicitPolicy,
-        private ?int $inhibitPolicyMapping
+        private readonly ?int $requireExplicitPolicy,
+        private readonly ?int $inhibitPolicyMapping
     ) {
         parent::__construct(self::OID_POLICY_CONSTRAINTS, $critical);
     }

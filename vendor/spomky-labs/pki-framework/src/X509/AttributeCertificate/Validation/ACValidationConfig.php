@@ -30,8 +30,8 @@ final class ACValidationConfig
      * @param CertificationPath $issuerPath Certification path of the AC issuer
      */
     private function __construct(
-        private CertificationPath $holderPath,
-        private CertificationPath $issuerPath
+        private readonly CertificationPath $holderPath,
+        private readonly CertificationPath $issuerPath
     ) {
         $this->evalTime = new DateTimeImmutable();
         $this->targets = [];

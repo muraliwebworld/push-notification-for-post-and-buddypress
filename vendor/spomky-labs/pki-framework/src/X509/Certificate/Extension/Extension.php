@@ -229,8 +229,8 @@ abstract class Extension implements Stringable
      * @param bool $critical Whether extension is critical
      */
     protected function __construct(
-        private string $oid,
-        private bool $critical
+        private readonly string $oid,
+        private readonly bool $critical
     ) {
     }
 

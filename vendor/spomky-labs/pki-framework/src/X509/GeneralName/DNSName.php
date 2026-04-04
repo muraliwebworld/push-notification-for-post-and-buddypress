@@ -20,7 +20,7 @@ final class DNSName extends GeneralName
      * @param string $name Domain name
      */
     private function __construct(
-        private string $name
+        private readonly string $name
     ) {
         parent::__construct(self::TAG_DNS_NAME);
     }

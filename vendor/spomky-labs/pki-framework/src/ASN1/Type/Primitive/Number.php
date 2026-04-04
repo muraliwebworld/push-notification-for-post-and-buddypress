@@ -25,7 +25,7 @@ abstract class Number extends Element
     /**
      * The number.
      */
-    private BigInt $number;
+    private readonly BigInt $number;
 
     /**
      * @param BigInteger|int|string $number Base 10 integer

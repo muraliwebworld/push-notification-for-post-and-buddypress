@@ -33,13 +33,13 @@ final class RelativeOID extends Element
      *
      * @var BigInteger[]
      */
-    private array $subids;
+    private readonly array $subids;
 
     /**
      * @param string $oid OID in dotted format
      */
     private function __construct(
-        private string $oid
+        private readonly string $oid
     ) {
         parent::__construct(self::TYPE_RELATIVE_OID);
         $this->subids = self::explodeDottedOID($oid);

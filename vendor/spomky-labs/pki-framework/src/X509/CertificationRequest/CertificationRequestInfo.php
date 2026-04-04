@@ -31,7 +31,7 @@ final class CertificationRequestInfo
     /**
      * Version.
      */
-    private int $version;
+    private readonly int $version;
 
     /**
      * Attributes.
@@ -44,7 +44,7 @@ final class CertificationRequestInfo
      */
     private function __construct(
         private Name $subject,
-        private PublicKeyInfo $subjectPKInfo
+        private readonly PublicKeyInfo $subjectPKInfo
     ) {
         $this->version = self::VERSION_1;
     }

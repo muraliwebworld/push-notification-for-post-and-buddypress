@@ -10,22 +10,22 @@ use function sprintf;
 
 class Signature
 {
-    private ?string $encodedProtectedHeader;
+    private readonly ?string $encodedProtectedHeader;
 
     /**
      * @var array<string, mixed>
      */
-    private array $protectedHeader;
+    private readonly array $protectedHeader;
 
     /**
      * @param array{alg?: string, string?: mixed} $protectedHeader
      * @param array{alg?: string, string?: mixed} $header
      */
     public function __construct(
-        private string $signature,
+        private readonly string $signature,
         array $protectedHeader,
         ?string $encodedProtectedHeader,
-        private array $header
+        private readonly array $header
     ) {
         $this->protectedHeader = $encodedProtectedHeader === null ? [] : $protectedHeader;
         $this->encodedProtectedHeader = $encodedProtectedHeader;

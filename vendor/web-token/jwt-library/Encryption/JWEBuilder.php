@@ -42,9 +42,9 @@ class JWEBuilder
 
     private ?ContentEncryptionAlgorithm $contentEncryptionAlgorithm = null;
 
-    private AlgorithmManager $keyEncryptionAlgorithmManager;
+    private readonly AlgorithmManager $keyEncryptionAlgorithmManager;
 
-    private AlgorithmManager $contentEncryptionAlgorithmManager;
+    private readonly AlgorithmManager $contentEncryptionAlgorithmManager;
 
     public function __construct(AlgorithmManager $algorithmManager)
     {

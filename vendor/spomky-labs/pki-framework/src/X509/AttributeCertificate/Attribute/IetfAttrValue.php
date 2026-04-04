@@ -21,8 +21,8 @@ use UnexpectedValueException;
 final class IetfAttrValue implements Stringable
 {
     private function __construct(
-        private string $value,
-        private int $type
+        private readonly string $value,
+        private readonly int $type
     ) {
     }
 

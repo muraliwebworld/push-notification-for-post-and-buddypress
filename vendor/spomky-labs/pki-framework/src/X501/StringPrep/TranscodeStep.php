@@ -34,7 +34,7 @@ final class TranscodeStep implements PrepareStep
      * @param int $_type ASN.1 type tag of the string
      */
     private function __construct(
-        private int $_type
+        private readonly int $_type
     ) {
     }
 

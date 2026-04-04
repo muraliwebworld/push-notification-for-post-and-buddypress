@@ -223,7 +223,7 @@ abstract class Element implements ElementBase
      * @param bool $indefiniteLength Whether type shall be encoded with indefinite length.
      */
     protected function __construct(
-        protected int $typeTag,
+        protected readonly int $typeTag,
         protected bool $indefiniteLength = false
     ) {
     }

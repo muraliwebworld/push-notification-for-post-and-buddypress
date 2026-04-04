@@ -20,8 +20,8 @@ final class NameConstraintsExtension extends Extension
 {
     private function __construct(
         bool $critical,
-        private ?GeneralSubtrees $permitted,
-        private ?GeneralSubtrees $excluded
+        private readonly ?GeneralSubtrees $permitted,
+        private readonly ?GeneralSubtrees $excluded
     ) {
         parent::__construct(self::OID_NAME_CONSTRAINTS, $critical);
     }

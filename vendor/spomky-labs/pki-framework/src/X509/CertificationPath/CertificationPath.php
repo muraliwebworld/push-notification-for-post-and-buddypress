@@ -33,7 +33,7 @@ final class CertificationPath implements Countable, IteratorAggregate
      *
      * @var Certificate[]
      */
-    private array $certificates;
+    private readonly array $certificates;
 
     /**
      * @param Certificate ...$certificates Certificates from the trust anchor

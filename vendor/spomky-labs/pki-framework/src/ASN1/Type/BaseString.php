@@ -17,7 +17,7 @@ abstract class BaseString extends Element implements StringType, Stringable
     /**
      * String value.
      */
-    private string $string;
+    private readonly string $string;
 
     protected function __construct(int $typeTag, string $string)
     {

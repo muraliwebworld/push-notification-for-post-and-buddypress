@@ -32,7 +32,7 @@ final class ECPublicKey extends PublicKey
     /**
      * Elliptic curve public key.
      */
-    private string $ecPoint;
+    private readonly string $ecPoint;
 
     /**
      * @param string $ecPoint ECPoint
@@ -40,7 +40,7 @@ final class ECPublicKey extends PublicKey
      */
     private function __construct(
         string $ecPoint,
-        private ?string $namedCurve
+        private readonly ?string $namedCurve
     ) {
         // first octet must be 0x04 for uncompressed form, and 0x02 or 0x03
         // for compressed form.

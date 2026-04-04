@@ -16,7 +16,7 @@ use SpomkyLabs\Pki\X501\ASN1\RDN;
 final class RelativeName extends DistributionPointName
 {
     private function __construct(
-        private RDN $rdn
+        private readonly RDN $rdn
     ) {
         parent::__construct(self::TAG_RDN);
     }
