@@ -315,6 +315,7 @@ if (!class_exists('PNFPB_ai_notification_assistant_class')) {
             $title = isset($context['title']) ? $context['title'] : '';
 
             if ($title === '') {
+                /* translators: %s is the post type label used in the fallback AI preview title. */
                 $title = isset($context['post_type']) ? sprintf(__('New %s update', 'push-notification-for-post-and-buddypress'), $context['post_type']) : __('New update', 'push-notification-for-post-and-buddypress');
             }
 

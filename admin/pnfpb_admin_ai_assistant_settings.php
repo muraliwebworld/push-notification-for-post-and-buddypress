@@ -33,8 +33,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 
 	<form action="options.php" method="post" enctype="multipart/form-data" class="form-field">
-		<?php settings_fields("pnfpb_icfcm_group_config"); ?>
-		<?php do_settings_sections("pnfpb_icfcm_group_config"); ?>
+		<?php settings_fields( 'pnfpb_icfcm_group_ai_assistant' ); ?>
+		<?php do_settings_sections( 'pnfpb_icfcm_group_ai_assistant' ); ?>
 
 		<?php require_once( plugin_dir_path( __FILE__ ) . 'pnfpb_admin_ai_assistant_configuration_content.php' ); ?>
 

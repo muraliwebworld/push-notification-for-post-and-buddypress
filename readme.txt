@@ -10,7 +10,7 @@ Stable tag: 3.14
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Send free push notifications for WordPress posts, custom post types, BuddyPress events and WooCommerce. Includes PWA, mobile app integration, and an AI assistant for draft notification generation.
+Push notifications for WordPress post, BuddyPress, WooCommerce with PWA support, mobile app integration, and AI Notification drafts.
 
 == Description ==
 
@@ -236,11 +236,10 @@ Report security bugs through the Patchstack Vulnerability Disclosure Program. [R
 
 == Changelog ==
 = 3.14 version =
-* Added optional AI assistant for on-demand push and post notification drafts
-* Added provider contract, privacy controls, and dismissible upgrade notice
+* Added optional AI assistant for on-demand push and post notification drafts.
+* Added provider contract, privacy controls, and dismissible upgrade notice.
+* Modernized admin plugin settings.
 * Performance improvement and bug fixes
-= 3.13 version
-* Bug fixes
 
 == Upgrade Notice ==
 * Optional AI assistant now helps draft on-demand and post notifications in 3.14.
