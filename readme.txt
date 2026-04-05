@@ -118,11 +118,11 @@ When Google Analytics is linked to your Firebase project the plugin sends `notif
 
 = Demo =
 
-[Test PNFPB on the demo site](https://www.muraliwebworld.com/)
+[Test PNFPB on the demo site](https://www.pnfpb.com/)
 
-= Firebase Setup Video Tutorial =
+= Knowledgebase =
 
-[youtube https://www.youtube.com/watch?v=02oymYLt3qo]
+[Documentation on PNFPB plugin available at wiki.pnfpb.com](https://wiki.pnfpb.com/)
 
 == Installation ==
 

@@ -51,9 +51,11 @@ $pnfpb_subscriptionoptions = "";
 
 if (
     isset($pnfpb_request["subscriptionoptions"]) &&
-    $pnfpb_request["subscriptionoptions"] !== ""
+    $pnfpb_request["subscriptionoptions"] !== "" && is_numeric(sanitize_text_field(wp_unslash($pnfpb_request["subscriptionoptions"])))
 ) {
-    $pnfpb_subscriptionoptions = absint( wp_unslash( $pnfpb_request["subscriptionoptions"] ) );
+    $pnfpb_subscriptionoptions = sanitize_text_field( wp_unslash( $pnfpb_request["subscriptionoptions"] ) );
+} else {
+	$pnfpb_subscriptionoptions = '10000000000000000000000000';
 }
 
 $pnfpb_parts = explode(":", $pnfpb_encrypted);

@@ -67,7 +67,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     <li>
         <?php echo esc_html(
               __(
-              "To get Firebase config fields (for fields 2 to 8 in admin firebase settings)",
+              "To get Firebase config fields (for fields Api key, Auth domain, DB url, Project ID, Storage bucket, Sender ID, App ID, Measurement ID in admin firebase settings)",
               "push-notification-for-post-and-buddypress"
               )
           ); ?>
@@ -83,7 +83,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     <li>
         <?php echo esc_html(
               __(
-              "Project settings > General under your apps section > click on config button to view configuration fields",
+              "Go to Project settings > Go to General -> under your apps section > click on config button to view above configuration fields",
               "push-notification-for-post-and-buddypress"
               )
           ); ?>
@@ -91,7 +91,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     <li>
         <?php echo esc_html(
               __(
-                  "To get Firebase public key (for field 9 in admin firebase settings)",
+                  "To get Firebase Web Push certificate in admin firebase settings",
                   "push-notification-for-post-and-buddypress"
               )
           ); ?>

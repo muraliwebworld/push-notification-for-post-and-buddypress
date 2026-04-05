@@ -431,21 +431,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php echo esc_html(
     				__("Check out the", "push-notification-for-post-and-buddypress")
  				); ?>
-				<a href="https://wordpress.org/support/plugin/push-notification-for-post-and-buddypress/"><?php echo esc_html(
+				<a href="https://wordpress.org/support/plugin/push-notification-for-post-and-buddypress/" target="_blank"><?php echo esc_html(
     				__("support forum", "push-notification-for-post-and-buddypress")
 				); ?></a>
 				<?php echo esc_html(
     				__("and", "push-notification-for-post-and-buddypress")
 				); ?>
-				<a href="https://wordpress.org/plugins/push-notification-for-post-and-buddypress/#do%20you%20have%20any%20questions%3F"><?php echo esc_html(
+				<a href="https://wordpress.org/plugins/push-notification-for-post-and-buddypress/#do%20you%20have%20any%20questions%3F" target="_blank"><?php echo esc_html(
     				__("FAQ", "push-notification-for-post-and-buddypress")
  				); ?></a>.
 			</li>
 			<li>
+				<a href="https://wiki.pnfpb.com/" target="_blank">
+					<?php echo esc_html( __( "Knowledgebase", "push-notification-for-post-and-buddypress" ) ); ?>
+				</a>			
+			</li>			
+			<li>
 				<?php echo esc_html(
     				__("Visit", "push-notification-for-post-and-buddypress")
  				); ?>
-				<a href="https://wordpress.org/plugins/push-notification-for-post-and-buddypress/"><?php echo esc_html(
+				<a href="https://wordpress.org/plugins/push-notification-for-post-and-buddypress/" target="_blank"><?php echo esc_html(
     				__("plugin homepage", "push-notification-for-post-and-buddypress")
 				); ?></a>.
 			</li>
@@ -467,7 +472,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</h4>
 		<span class="pnfpb-sidebar-rate-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
 		<p>
-			<a href="https://wordpress.org/support/plugin/push-notification-for-post-and-buddypress/reviews/#new-post"><?php echo esc_html(
+			<a href="https://wordpress.org/support/plugin/push-notification-for-post-and-buddypress/reviews/#new-post" target="_blank"><?php echo esc_html(
     			__("Leave a rating &amp; feedback", "push-notification-for-post-and-buddypress")
  			); ?></a>
 		</p>
@@ -481,7 +486,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  			); ?>
 		</h4>
 		<p>
-			<a href="https://www.muraliwebworld.com/support-to-push-notification-plugin-for-buddypress-and-for-post/"><?php echo esc_html(
+			<a href="https://www.muraliwebworld.com/support-to-push-notification-plugin-for-buddypress-and-for-post/" target="_blank"><?php echo esc_html(
     			__("Donate to support this plugin", "push-notification-for-post-and-buddypress")
  			); ?></a>
 		</p>
@@ -522,10 +527,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</h4>
 		<ul>
 			<li>
-				<a href="https://www.muraliwebworld.com" target="_blank"><?php echo esc_html(
+				<a href="https://www.pnfpb.com" target="_blank"><?php echo esc_html(
     				__("Plugin support site", "push-notification-for-post-and-buddypress")
  				); ?></a>
 			</li>
+			<li>
+				<a href="https://wiki.pnfpb.com/"  target="_blank">
+					<?php echo esc_html( __( "Plugin documentation", "push-notification-for-post-and-buddypress" ) ); ?>
+				</a>			
+			</li>			
 		</ul>
 	</div>
 	

@@ -44,9 +44,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="pnfpb-info-box pnfpb-info-box--blue" style="flex-direction:column;align-items:flex-start;">
 				<ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.7;">
 					<li><?php esc_html_e( 'Sign in to Firebase, open your project, click the settings icon and select Project settings.', 'push-notification-for-post-and-buddypress' ); ?></li>
-					<li><?php esc_html_e( 'Server Key (Field 1): project settings → cloud messaging tab → get/add server key.', 'push-notification-for-post-and-buddypress' ); ?></li>
-					<li><?php esc_html_e( 'Config fields (Fields 2–8): create a web app if you don\'t have one, then project settings → General → your apps → Config button.', 'push-notification-for-post-and-buddypress' ); ?></li>
-					<li><?php esc_html_e( 'Web Push Certificate (Field 9): project settings → cloud messaging → Web configuration → Generate Key Pair.', 'push-notification-for-post-and-buddypress' ); ?></li>
+					<li><?php esc_html_e( 'Config fields (for fields Api key, Auth domain, DB url, Project ID, Storage bucket, Sender ID, App ID, Measurement ID in admin firebase settings): create a web app if you don\'t have one, then project settings → General → your apps → Config button.', 'push-notification-for-post-and-buddypress' ); ?></li>
+					<li><?php esc_html_e( 'For Web Push Certificate field: project settings → cloud messaging → Web configuration → Generate Key Pair.', 'push-notification-for-post-and-buddypress' ); ?></li>
 					<li><?php esc_html_e( 'If you already generated a key pair, do not generate it again.', 'push-notification-for-post-and-buddypress' ); ?></li>
 					<li><?php esc_html_e( 'After saving, your browser will prompt to allow notifications — click Allow.', 'push-notification-for-post-and-buddypress' ); ?></li>
 				</ul>
