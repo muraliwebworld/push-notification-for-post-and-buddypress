@@ -263,7 +263,7 @@ if (!defined("PNFPB_PLUGIN_NM_ACTION_SCHEDULER")) {
     );
 }
 define("PNFPB_PLUGIN_DIR_PATH", plugin_dir_url(__FILE__));
-use Firebase\Auth\Token\Exception\InvalidToken;
+
 // phpcs:ignoreFile WordPress.DB.DirectDatabaseQuery
 /**
  * Class to load required functions for push notification
