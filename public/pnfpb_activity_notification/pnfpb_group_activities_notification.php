@@ -13,6 +13,10 @@
  *
  * @since 1.0.0
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_group_activities_notification_class")) {
     class PNFPB_group_activities_notification_class
     {

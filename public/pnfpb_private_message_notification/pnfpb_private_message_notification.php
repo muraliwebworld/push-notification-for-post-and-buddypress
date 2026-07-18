@@ -11,6 +11,11 @@
  *
  * @since 1.13
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_private_message_notification_class")) {
     class PNFPB_private_message_notification_class
     {

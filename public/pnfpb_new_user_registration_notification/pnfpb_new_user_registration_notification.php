@@ -1,5 +1,10 @@
 <?php
 // phpcs:ignoreFile WordPress.DB.DirectDatabaseQuery
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_new_user_registration_notification_class")) {
     class PNFPB_new_user_registration_notification_class
     {

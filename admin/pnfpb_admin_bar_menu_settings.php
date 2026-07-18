@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_ICFM_admin_bar_menu_class")) {
     class PNFPB_ICFM_admin_bar_menu_class
     {

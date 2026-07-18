@@ -13,6 +13,10 @@
  */
 // phpcs:ignoreFile WordPress.DB.DirectDatabaseQuery
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_all_activities_notification_class")) {
     class PNFPB_all_activities_notification_class
     {

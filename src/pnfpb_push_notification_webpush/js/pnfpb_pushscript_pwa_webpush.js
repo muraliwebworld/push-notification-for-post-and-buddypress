@@ -1107,7 +1107,7 @@ if (pnfpb_ajax_object_push.pwaapponlyenable === '1') {
 		
 				}
 		
-				if (c.indexOf(name) == 0) {
+				/*if (c.indexOf(name) == 0) {
 
 					const pnfpb_custom_prompt_currentDate = new Date();
 
@@ -1130,7 +1130,32 @@ if (pnfpb_ajax_object_push.pwaapponlyenable === '1') {
 		
 						}
 					}			
-				}
+				}*/
+				if (c.indexOf(name) == 0) {
+
+					const pnfpb_custom_prompt_currentDate = new Date();
+		
+					try {
+						// Get the raw cookie value string (the date)
+						let cookieValueString = c.substring(name.length, c.length);
+						
+						// CORRECT FIX: Parse the string into a valid Date object
+						let pnfpb_custom_prompt_cookieDate = new Date(cookieValueString);
+
+						// Verify both are valid dates before comparing
+						if (!isNaN(pnfpb_custom_prompt_cookieDate.getTime()) && 
+							pnfpb_custom_prompt_cookieDate.getTime() > pnfpb_custom_prompt_currentDate.getTime()) {
+							
+							PNFPB_custom_prompt_display = 'OFF';
+
+							if (pnfpb_ajax_object_push.pwainstallpromptenabled === '1' || $j('.pnfpb-pwa-dialog-container').length) {
+								$j('.pnfpb-pwa-dialog-container').hide();
+							}
+						}
+					} catch (e) {
+						console.error("Error parsing PWA prompt cookie date:", e);
+					}
+				}						
 			}
 
 			registration.pushManager.getSubscription().then(async function (subscription) {
@@ -1888,7 +1913,7 @@ if (pnfpb_ajax_object_push.pwaapponlyenable === '1') {
 		
 				}
 		
-				if (c.indexOf(name) == 0) {
+				/*if (c.indexOf(name) == 0) {
 
 					const pnfpb_custom_prompt_currentDate = new Date();
 
@@ -1911,7 +1936,32 @@ if (pnfpb_ajax_object_push.pwaapponlyenable === '1') {
 		
 						}
 					}			
-				}
+				}*/
+				if (c.indexOf(name) == 0) {
+
+					const pnfpb_custom_prompt_currentDate = new Date();
+		
+					try {
+						// Get the raw cookie value string (the date)
+						let cookieValueString = c.substring(name.length, c.length);
+						
+						// CORRECT FIX: Parse the string into a valid Date object
+						let pnfpb_custom_prompt_cookieDate = new Date(cookieValueString);
+
+						// Verify both are valid dates before comparing
+						if (!isNaN(pnfpb_custom_prompt_cookieDate.getTime()) && 
+							pnfpb_custom_prompt_cookieDate.getTime() > pnfpb_custom_prompt_currentDate.getTime()) {
+							
+							PNFPB_custom_prompt_display = 'OFF';
+
+							if (pnfpb_ajax_object_push.pwainstallpromptenabled === '1' || $j('.pnfpb-pwa-dialog-container').length) {
+								$j('.pnfpb-pwa-dialog-container').hide();
+							}
+						}
+					} catch (e) {
+						console.error("Error parsing PWA prompt cookie date:", e);
+					}
+				}						
 			}
 					
 

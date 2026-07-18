@@ -11,6 +11,11 @@
  *
  * @since 1.47
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_friendship_request_notification_class")) {
     class PNFPB_friendship_request_notification_class
     {

@@ -1,6 +1,6 @@
 # Push Notification for Post and BuddyPress (PNFPB)
 
-**Version:** 3.14  
+**Version:** 3.18  
 **Author:** [Muralidharan Ramasamy](https://www.muraliwebworld.com)  
 **License:** [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html)  
 **Requires WordPress:** 6.2+  
@@ -11,7 +11,7 @@
 
 Send free push notifications for WordPress posts, custom post types, BuddyPress activities, and mobile app webviews — and generate a Progressive Web App (PWA) — all powered by Firebase Cloud Messaging (FCM HTTP v1), OneSignal, Progressier, or Web Push.
 
-PNFPB 3.14 also adds an optional AI assistant for notification drafting. It currently supports on-demand sends and post-editor notification workflows, with a provider contract that keeps the AI backend swappable and a privacy toggle that limits how much content is sent to the provider.
+PNFPB 3.18 also adds an optional AI assistant for notification drafting. It currently supports on-demand sends and post-editor notification workflows, with a provider contract that keeps the AI backend swappable and a privacy toggle that limits how much content is sent to the provider.
 
 ---
 
@@ -193,9 +193,9 @@ Via the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/dat
 
 ## Changelog
 
-### 3.14
+### 3.18
 - Added AI assistant support for on-demand and post notification drafts
-- Added dismissible upgrade notice for the 3.14 AI release
+- Added dismissible upgrade notice for the 3.15 AI release
 - Performance improvement: three-tier async topic subscription (fastcgi → named transient queue → WP-Cron)
 - AJAX handler refactored: `if/else` chains replaced with `switch/case`
 - Pending topic sync flushed before every FCM dispatch to eliminate race conditions on shared hosting

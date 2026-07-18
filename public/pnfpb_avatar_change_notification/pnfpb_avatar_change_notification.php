@@ -11,6 +11,10 @@
  *
  * @since 1.47
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_avatar_change_notification_class")) {
     class PNFPB_avatar_change_notification_class
     {

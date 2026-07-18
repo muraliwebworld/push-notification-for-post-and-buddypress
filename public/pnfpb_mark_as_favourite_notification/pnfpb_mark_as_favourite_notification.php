@@ -11,6 +11,11 @@
  *
  * @since 2.14
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_mark_as_favourite_notification_class")) {
     class PNFPB_mark_as_favourite_notification_class
     {

@@ -11,6 +11,11 @@
  *
  * @since 1.47
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_cover_image_change_notification_class")) {
     class PNFPB_cover_image_change_notification_class
     {

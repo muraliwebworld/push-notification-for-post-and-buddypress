@@ -10,6 +10,11 @@ use WpOrg\Requests\Requests;
  * Post, custom post types, activities, group activities, comments, new memeber joined
  * Group invite, group update, avatar change, cover image change
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_firebase_httpv1_notification_class")) {
 	
     class PNFPB_firebase_httpv1_notification_class

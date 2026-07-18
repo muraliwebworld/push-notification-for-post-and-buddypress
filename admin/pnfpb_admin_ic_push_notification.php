@@ -325,35 +325,46 @@ if ( ! defined( 'ABSPATH' ) ) {
 				); ?></p>
 			</div>
 
-			<div class="pnfpb-settings-panels">
+		<div class="pnfpb-settings-controls" style="margin-bottom: 14px; display: flex; gap: 8px;">
+			<button type="button" class="button button-secondary" id="pnfpb-expand-all" style="display: flex; align-items: center; gap: 5px;" onclick="pnfpbExpandAll()">
+				<span class="dashicons dashicons-arrow-down" style="width: 16px; height: 16px; font-size: 16px; margin: 0;"></span>
+				<?php esc_html_e("Expand All", "push-notification-for-post-and-buddypress"); ?>
+			</button>
+			<button type="button" class="button button-secondary" id="pnfpb-collapse-all" style="display: flex; align-items: center; gap: 5px;" onclick="pnfpbCollapseAll()">
+				<span class="dashicons dashicons-arrow-right" style="width: 16px; height: 16px; font-size: 16px; margin: 0;"></span>
+				<?php esc_html_e("Collapse All", "push-notification-for-post-and-buddypress"); ?>
+			</button>
+		</div>
 
-				<?php if (get_option("pnfpb_progressier_push") !== "1") { ?>
-				<div class="pnfpb-section-card">
-					<div class="pnfpb-section-header pnfpb-section-header--prompt">
-						<span class="dashicons dashicons-megaphone pnfpb-section-icon"></span>
-						<div>
-							<h3><?php esc_html_e("Subscription Prompt", "push-notification-for-post-and-buddypress"); ?></h3>
-							<span class="pnfpb-section-desc"><?php esc_html_e("Custom browser prompt to subscribe users — required for Apple / iOS and Firefox Android", "push-notification-for-post-and-buddypress"); ?></span>
-						</div>
-					</div>
-					<div class="pnfpb-section-body">
-						<?php require_once( plugin_dir_path( __FILE__ ) . 'pnfpb_admin_custom_push_prompt.php' ); ?>
+		<div class="pnfpb-settings-panels">
+
+			<?php if (get_option("pnfpb_progressier_push") !== "1") { ?>
+			<div class="pnfpb-section-card">
+				<div class="pnfpb-section-header pnfpb-section-header--prompt">
+					<span class="dashicons dashicons-megaphone pnfpb-section-icon"></span>
+					<div>
+						<h3><?php esc_html_e("Subscription Prompt", "push-notification-for-post-and-buddypress"); ?></h3>
+						<span class="pnfpb-section-desc"><?php esc_html_e("Custom browser prompt to subscribe users — required for Apple / iOS and Firefox Android", "push-notification-for-post-and-buddypress"); ?></span>
 					</div>
 				</div>
-				<?php } ?>
+				<div class="pnfpb-section-body">
+					<?php require_once( plugin_dir_path( __FILE__ ) . 'pnfpb_admin_custom_push_prompt.php' ); ?>
+				</div>
+			</div>
+			<?php } ?>
 
-				<div class="pnfpb-section-card">
-					<div class="pnfpb-section-header pnfpb-section-header--posts">
-						<span class="dashicons dashicons-admin-post pnfpb-section-icon"></span>
-						<div>
-							<h3><?php esc_html_e("Posts &amp; Custom Post Types", "push-notification-for-post-and-buddypress"); ?></h3>
-							<span class="pnfpb-section-desc"><?php esc_html_e("Send notifications when new posts or custom post types are published from the frontend or backend", "push-notification-for-post-and-buddypress"); ?></span>
-						</div>
-					</div>
-					<div class="pnfpb-section-body">
-						<?php require_once( plugin_dir_path( __FILE__ ) . 'pnfpb_admin_push_settings_post.php' ); ?>
+			<div class="pnfpb-section-card">
+				<div class="pnfpb-section-header pnfpb-section-header--posts">
+					<span class="dashicons dashicons-admin-post pnfpb-section-icon"></span>
+					<div>
+						<h3><?php esc_html_e("Posts &amp; Custom Post Types", "push-notification-for-post-and-buddypress"); ?></h3>
+						<span class="pnfpb-section-desc"><?php esc_html_e("Send notifications when new posts or custom post types are published from the frontend or backend", "push-notification-for-post-and-buddypress"); ?></span>
 					</div>
 				</div>
+				<div class="pnfpb-section-body">
+					<?php require_once( plugin_dir_path( __FILE__ ) . 'pnfpb_admin_push_settings_post.php' ); ?>
+				</div>
+			</div>
 
 				<div class="pnfpb-section-card">
 					<div class="pnfpb-section-header pnfpb-section-header--activities">
@@ -414,7 +425,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php } ?>
 </div>
 
-<div id="pnfpb-admin-right_sidebar" class="pnfpb_column_left_300 pnfpb-admin-right_sidebar" >
+<div id="pnfpb-admin-right_sidebar" class="pnfpb-admin-right_sidebar">
 
 	<div class="pnfpb-sidebar-help-card">
 		<h4>

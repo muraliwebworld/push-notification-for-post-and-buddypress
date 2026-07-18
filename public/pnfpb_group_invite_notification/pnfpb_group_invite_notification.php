@@ -6,6 +6,10 @@
  *
  * @since 1.58
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_group_invite_notification_class")) {
     class PNFPB_group_invite_notification_class
     {

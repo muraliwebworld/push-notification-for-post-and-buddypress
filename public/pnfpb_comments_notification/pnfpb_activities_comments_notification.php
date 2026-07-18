@@ -12,6 +12,11 @@
  *
  * @since 1.0.0
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_activities_comments_notification_class")) {
     class PNFPB_activities_comments_notification_class
     {

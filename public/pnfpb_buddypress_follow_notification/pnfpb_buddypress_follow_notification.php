@@ -11,6 +11,11 @@
  *
  * @since 2.14
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_buddypress_follow_notification_class")) {
     class PNFPB_buddypress_follow_notification_class
     {

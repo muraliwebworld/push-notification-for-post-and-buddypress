@@ -6,6 +6,11 @@
  *
  */
 // phpcs:ignoreFile WordPress.DB.DirectDatabaseQuery
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_webtoapp_notification_class")) {
 	
     class PNFPB_webtoapp_notification_class

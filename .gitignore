@@ -24,6 +24,8 @@ composer.lock
 # Sensitive / environment files
 .env
 *.env
+*.zip
+ACCORDION*
 
 # WordPress local config
 wp-config.php

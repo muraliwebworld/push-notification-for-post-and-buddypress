@@ -4,9 +4,9 @@ Author URI: https://www.muraliwebworld.com
 Tags: push notification, buddypress, firebase, progressive web app, mobile app
 Donate link: https://www.muraliwebworld.com/support-to-push-notification-plugin-for-buddypress-and-for-post/
 Requires at least: 6.2
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 3.14
+Stable tag: 3.18
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -217,7 +217,6 @@ Report security bugs through the Patchstack Vulnerability Disclosure Program. [R
 
 * [Plugin support forum on WordPress.org](https://wordpress.org/support/plugin/push-notification-for-post-and-buddypress/)
 * [Community forum](https://www.muraliwebworld.com/groups/wordpress-plugins-by-muralidharan-indiacitys-com-technologies/forum/topic/push-notification-for-post-and-buddypress/)
-* [Contact form](https://indiacitys.com/#contact)
 
 == Screenshots ==
 
@@ -232,14 +231,11 @@ Report security bugs through the Patchstack Vulnerability Disclosure Program. [R
 9. On-demand push notification admin panel.
 10. Customize buttons and labels settings.
 11. Mobile app REST API configuration tab.
-12.Special settings for NGINX based server
+12. Special settings for NGINX based server
 
 == Changelog ==
-= 3.14 version =
-* Added optional AI assistant for on-demand push and post notification drafts.
-* Added provider contract, privacy controls, and dismissible upgrade notice.
-* Modernized admin plugin settings.
-* Performance improvement and bug fixes
+= 3.18 version =
+* Bug fix: PWA prompt
 
 == Upgrade Notice ==
-* Optional AI assistant now helps draft on-demand and post notifications in 3.14.
+* Modernized admin plugin settings and compatible with WordPress 7.0.

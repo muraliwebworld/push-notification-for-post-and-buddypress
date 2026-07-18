@@ -4,6 +4,11 @@ use Minishlink\WebPush\Subscription;
 
 // phpcs:ignoreFile WordPress.DB.DirectDatabaseQuery
 // 
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if (!class_exists("PNFPB_web_push_notification_class")) {
 	
     class PNFPB_web_push_notification_class
