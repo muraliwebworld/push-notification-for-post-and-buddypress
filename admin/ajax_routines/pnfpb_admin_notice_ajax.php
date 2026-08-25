@@ -13,7 +13,10 @@
 		// Check the nonce first
   		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['nonce'])), 'icpushadmincallback' ) ) {
     		echo 'Security validation failed.';
-  		} else {
+  		} elseif ( ! current_user_can( 'manage_options' ) ) {
+			// Capability check: only administrators can upload service account credentials
+			echo 'Insufficient permissions.';
+		} else {
 			if (is_user_logged_in() && isset($_FILES['file']) && isset($_FILES['file']['tmp_name']) ) {
 				
 				$pnfpb_user_info = get_userdata( get_current_user_id() );
@@ -51,7 +54,10 @@
 			// Check the nonce first
   			if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['nonce'])), 'icpushadmincallback' ) ) {
     			echo 'Security validation failed.';
-  			} else {
+  			} elseif ( ! current_user_can( 'manage_options' ) ) {
+				// Capability check: only administrators can enumerate users
+				echo 'Insufficient permissions.';
+			} else {
 				$search_term = isset($_POST['pnfpb_ic_on_demand_push_select_user']) ? sanitize_text_field(wp_unslash($_POST['pnfpb_ic_on_demand_push_select_user'])) : '';
 				$args = array(
 					'search' => '*' . $search_term . '*',
@@ -76,6 +82,9 @@
 			// Check the nonce first
   			if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['nonce'])), 'icpushadmincallback' ) ) {
     			echo 'Security validation failed.';
+			} elseif ( ! current_user_can( 'manage_options' ) ) {
+				// Capability check: only administrators can dismiss admin notices
+				echo 'Insufficient permissions.';
 			} else {
 				update_option('PNFBP_admin_notice','notalive');
 				echo 'Admin notice dismissed';
