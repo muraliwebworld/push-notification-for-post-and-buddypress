@@ -3,13 +3,13 @@
 Plugin Name: Push Notification for Post and BuddyPress
 Plugin URI: https://www.muraliwebworld.com/groups/wordpress-plugins-by-muralidharan-indiacitys-com-technologies/forum/topic/push-notification-for-post-and-buddypress/
 Description: Push notification for Post,custom post,BuddyPress,Woocommerce,Android/IOS mobile apps. Configure push notification settings in <a href="admin.php?page=pnfpb-icfcm-slug"><strong>settings page</strong></a>
-Version: 3.18
+Version: 3.20
 Author: Muralidharan Ramasamy
 Author URI: https://www.muraliwebworld.com
 Text Domain: push-notification-for-post-and-buddypress
 Requires at least: 6.2
 Requires PHP: 8.1
-Updated: 18 July 2026
+Updated: 20 July 2026
 */
 /**
  * License: GPLv2 or later
@@ -34,7 +34,7 @@ if (!defined("PNFPB_VERSION_CURRENT")) {
     define("PNFPB_VERSION_CURRENT", "1");
 }
 if (!defined("PNFPB_PLUGIN_VERSION")) {
-    define("PNFPB_PLUGIN_VERSION", "3.18");
+    define("PNFPB_PLUGIN_VERSION", "3.20");
 }
 if (!defined("PNFPB_URL")) {
     define("PNFPB_URL", plugin_dir_url(__FILE__));
@@ -2307,8 +2307,8 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             $ajax_url = admin_url('admin-ajax.php');
             ?>
             <div class="notice notice-info is-dismissible pnfpb-ai-upgrade-notice">
-                <p><strong><?php echo esc_html__('PNFPB 3.18 version update', 'push-notification-for-post-and-buddypress'); ?></strong></p>
-                <p><?php echo esc_html__('PWA custom prompt updates', 'push-notification-for-post-and-buddypress'); ?></p>
+                <p><strong><?php echo esc_html__('PNFPB 3.20 version update', 'push-notification-for-post-and-buddypress'); ?></strong></p>
+                <p><?php echo esc_html__('Push notification custom prompt and PWA custom prompt updates and bug fixes', 'push-notification-for-post-and-buddypress'); ?></p>
             </div>
             <script type="text/javascript">
                 jQuery(function ($) {
@@ -3012,7 +3012,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                         "pnfpb-icajax-script-push",
                         plugins_url($filename, __FILE__),
                         [],
-                        "3.10.11",
+                        "3.10.13",
                         true
                     );
                     wp_localize_script(
@@ -3112,7 +3112,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                             "pnfpb-icajax-script-push",
                             plugins_url($filename, __FILE__),
                             ["jquery"],
-                            "3.10.11",
+                            "3.10.13",
                             true
                         );
                         $pnfpb_ic_fcm_prompt_style = "";
@@ -4320,7 +4320,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 							"pnfpb-icajax-script-push",
 							plugins_url($filename, __FILE__),
 							[],
-							"3.04.17",
+							"3.04.19",
 							true
 						);
 
@@ -4526,7 +4526,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 							"pnfpb-icajax-script-push",
 							plugins_url($filename, __FILE__),
 							[],
-							"3.10.11",
+							"3.10.13",
 							true
 						);
 
@@ -4771,7 +4771,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                             "pnfpb-icajax-script-push",
                             plugins_url($filename, __FILE__),
                             ["jquery"],
-                            "3.10.11",
+                            "3.10.13",
                             true
                         );
                         $pnfpb_ic_fcm_prompt_style = "";

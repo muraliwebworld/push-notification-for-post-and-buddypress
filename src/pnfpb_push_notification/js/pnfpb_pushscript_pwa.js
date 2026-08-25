@@ -1567,49 +1567,20 @@ if (pnfpb_ajax_object_push.pwaapponlyenable === '1') {
 
 			}
 
-			let name = 'PNFPB_custom_prompt' + "=";
-
-			let PNFPB_custom_prompt_display = 'ON';
-
+			let name = 'PNFPB_custom_prompt=';
+			let PNFPB_custom_prompt_display = 'ON'; // Default to showing the prompt
 			let decodedCookie = decodeURIComponent(document.cookie);
-		
 			let ca = decodedCookie.split(';');
+
+			for (let i = 0; i < ca.length; i++) {
+				let c = ca[i].trim(); // Cleaner way to remove leading spaces
+
+				// If the cookie exists, the user dismissed it less than 7 days ago
+				if (c.indexOf(name) === 0) {
+					PNFPB_custom_prompt_display = 'OFF'; // Hide the prompt
 		
-			for(let i = 0; i <ca.length; i++) {
-		
-				let c = ca[i];
-		
-				while (c.charAt(0) == ' ') {
-		
-					  c = c.substring(1);
-		
+					break; // Exit the loop immediately since we found our cookie
 				}
-
-				if (c.indexOf(name) == 0) {
-
-					const pnfpb_custom_prompt_currentDate = new Date();
-		
-					try {
-						// Get the raw cookie value string (the date)
-						let cookieValueString = c.substring(name.length, c.length);
-						
-						// CORRECT FIX: Parse the string into a valid Date object
-						let pnfpb_custom_prompt_cookieDate = new Date(cookieValueString);
-
-						// Verify both are valid dates before comparing
-						if (!isNaN(pnfpb_custom_prompt_cookieDate.getTime()) && 
-							pnfpb_custom_prompt_cookieDate.getTime() > pnfpb_custom_prompt_currentDate.getTime()) {
-							
-							PNFPB_custom_prompt_display = 'OFF';
-
-							if (pnfpb_ajax_object_push.pwainstallpromptenabled === '1' || $j('.pnfpb-pwa-dialog-container').length) {
-								$j('.pnfpb-pwa-dialog-container').hide();
-							}
-						}
-					} catch (e) {
-						console.error("Error parsing PWA prompt cookie date:", e);
-					}
-				}						
 			}
 
 			registration.pushManager.getSubscription().then(async function (subscription) {
@@ -2348,50 +2319,20 @@ if (pnfpb_ajax_object_push.pwaapponlyenable === '1') {
 				}
 
 			}
-
-			let name = 'PNFPB_custom_prompt' + "=";
-
-			let PNFPB_custom_prompt_display = 'ON';
-
+			let name = 'PNFPB_custom_prompt=';
+			let PNFPB_custom_prompt_display = 'ON'; // Default to showing the prompt
 			let decodedCookie = decodeURIComponent(document.cookie);
-		
 			let ca = decodedCookie.split(';');
+
+			for (let i = 0; i < ca.length; i++) {
+				let c = ca[i].trim(); // Cleaner way to remove leading spaces
+
+				// If the cookie exists, the user dismissed it less than 7 days ago
+				if (c.indexOf(name) === 0) {
+					PNFPB_custom_prompt_display = 'OFF'; // Hide the prompt
 		
-			for(let i = 0; i <ca.length; i++) {
-		
-				let c = ca[i];
-		
-				while (c.charAt(0) == ' ') {
-		
-					  c = c.substring(1);
-		
+					break; // Exit the loop immediately since we found our cookie
 				}
-		
-				if (c.indexOf(name) == 0) {
-
-					const pnfpb_custom_prompt_currentDate = new Date();
-		
-					try {
-						// Get the raw cookie value string (the date)
-						let cookieValueString = c.substring(name.length, c.length);
-						
-						// CORRECT FIX: Parse the string into a valid Date object
-						let pnfpb_custom_prompt_cookieDate = new Date(cookieValueString);
-
-						// Verify both are valid dates before comparing
-						if (!isNaN(pnfpb_custom_prompt_cookieDate.getTime()) && 
-							pnfpb_custom_prompt_cookieDate.getTime() > pnfpb_custom_prompt_currentDate.getTime()) {
-							
-							PNFPB_custom_prompt_display = 'OFF';
-
-							if (pnfpb_ajax_object_push.pwainstallpromptenabled === '1' || $j('.pnfpb-pwa-dialog-container').length) {
-								$j('.pnfpb-pwa-dialog-container').hide();
-							}
-						}
-					} catch (e) {
-						console.error("Error parsing PWA prompt cookie date:", e);
-					}
-				}						
 			}
 					
 

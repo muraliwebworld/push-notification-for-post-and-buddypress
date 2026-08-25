@@ -6,7 +6,7 @@ Donate link: https://www.muraliwebworld.com/support-to-push-notification-plugin-
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 3.18
+Stable tag: 3.20
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -234,8 +234,8 @@ Report security bugs through the Patchstack Vulnerability Disclosure Program. [R
 12. Special settings for NGINX based server
 
 == Changelog ==
-= 3.18 version =
-* Bug fix: PWA prompt
+= 3.20 version =
+* Bug fix: PWA custom prompt and Push notification custom prompt updates.
 
 == Upgrade Notice ==
 * Modernized admin plugin settings and compatible with WordPress 7.0.
