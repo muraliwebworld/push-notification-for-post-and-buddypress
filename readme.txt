@@ -4,7 +4,7 @@ Author URI: https://www.muraliwebworld.com
 Tags: push notification, buddypress, firebase, progressive web app, mobile app
 Donate link: https://www.muraliwebworld.com/support-to-push-notification-plugin-for-buddypress-and-for-post/
 Requires at least: 6.2
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 8.1
 Stable tag: 3.21
 License: GPLv2 or later
