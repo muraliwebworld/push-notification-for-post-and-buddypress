@@ -102,6 +102,13 @@ $pnfpb_top_tabs_data = array(
 		'slug'   => 'scheduler',
 		'active' => isset( $pnfpb_tab_as_active )       ? $pnfpb_tab_as_active       : '',
 	),
+	array(
+		'url'    => admin_url( 'admin.php?page=pnfpb_token_cleanup_settings' ),
+		'label'  => __( 'Token Cleanup', 'push-notification-for-post-and-buddypress' ),
+		'icon'   => 'dashicons-database',
+		'slug'   => 'tokencleanup',
+		'active' => isset( $pnfpb_tab_token_cleanup_active ) ? $pnfpb_tab_token_cleanup_active : '',
+	),
 );
 ?>
 <nav class="nav-tab-wrapper pnfpb-main-nav-bar"

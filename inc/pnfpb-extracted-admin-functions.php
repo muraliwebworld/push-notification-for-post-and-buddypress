@@ -237,6 +237,16 @@ if ( ! function_exists( 'PNFPB_setup_admin_menu' ) ) {
 			14
 		);
 		add_action( "load-{$hook_pnfpb_action_scheduler}", [ $plugin, $plugin->pre_name . 'action_scheduler_screen_option' ] );
+
+		add_submenu_page(
+			'pnfpb-push-notification-configuration-slug',
+			__( 'Token Cleanup', 'push-notification-for-post-and-buddypress' ),
+			'Token Cleanup',
+			'manage_options',
+			'pnfpb_token_cleanup_settings',
+			[ $plugin, $plugin->pre_name . 'icfcm_token_cleanup_settings' ],
+			15
+		);
 	}
 }
 
