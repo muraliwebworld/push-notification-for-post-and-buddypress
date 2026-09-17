@@ -2308,7 +2308,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             ?>
             <div class="notice notice-info is-dismissible pnfpb-ai-upgrade-notice">
                 <p><strong><?php echo esc_html__('PNFPB 3.21 version update', 'push-notification-for-post-and-buddypress'); ?></strong></p>
-                <p><?php echo esc_html__('Security hardening: privilege escalation vulnerability fixes, capability checks on all AJAX handlers, and nonce management improvements', 'push-notification-for-post-and-buddypress'); ?></p>
+                <p><?php echo esc_html__('Security fixes, capability checks on all AJAX handlers, and nonce management improvements', 'push-notification-for-post-and-buddypress'); ?></p>
             </div>
             <script type="text/javascript">
                 jQuery(function ($) {

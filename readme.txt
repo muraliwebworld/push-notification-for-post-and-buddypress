@@ -237,6 +237,7 @@ Report security bugs through the Patchstack Vulnerability Disclosure Program. [R
 = 3.21 version =
 * Security fix
 * Enhancement: Improved AJAX handler security patterns across the plugin.
+* compatible with WordPress 7.1 version.
 
 = 3.20 version =
 * Bug fix: PWA custom prompt and Push notification custom prompt updates.
