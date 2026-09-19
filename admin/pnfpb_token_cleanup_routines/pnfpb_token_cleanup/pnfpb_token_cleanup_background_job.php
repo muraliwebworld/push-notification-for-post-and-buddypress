@@ -135,6 +135,7 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 			} catch ( Throwable $exception ) {
 				$result['message'] = $exception->getMessage();
 				$result['errors']++;
+				PNFPB_Token_Validation_Service::event( $run_id, 'batch_error', 0, 'BATCH_PROCESSING_FAILED', array( 'error' => sanitize_text_field( $exception->getMessage() ) ) );
 				$wpdb->update( $tables['runs'], array( 'status' => 'failed', 'completed_at' => current_time( 'mysql' ), 'last_error' => sanitize_text_field( $exception->getMessage() ) ), array( 'id' => $run_id ), array( '%s', '%s', '%s' ), array( '%d' ) );
 			}
 
