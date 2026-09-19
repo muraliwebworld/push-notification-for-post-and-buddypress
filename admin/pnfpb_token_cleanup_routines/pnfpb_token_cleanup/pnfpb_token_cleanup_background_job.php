@@ -42,7 +42,9 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 		/** Remove Action Scheduler and WP-Cron cleanup events. */
 		public static function unschedule_cleanup_job() {
 			if ( function_exists( 'as_unschedule_all_actions' ) ) {
-				as_unschedule_all_actions( self::CLEANUP_HOOK, array(), self::GROUP );
+				// NULL removes actions regardless of their stored arguments. The
+				// cleanup action stores the batch size as an argument.
+				as_unschedule_all_actions( self::CLEANUP_HOOK, null, self::GROUP );
 			}
 			while ( $timestamp = wp_next_scheduled( self::CLEANUP_HOOK ) ) {
 				wp_unschedule_event( $timestamp, self::CLEANUP_HOOK );
@@ -77,13 +79,24 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 
 			global $wpdb;
 			$tables = PNFPB_Token_Validation_Service::tables();
-			$wpdb->insert( $tables['runs'], array( 'trigger_source' => sanitize_key( $source ), 'status' => 'running', 'started_at' => current_time( 'mysql' ), 'requested' => $batch_size ), array( '%s', '%s', '%s', '%d' ) );
+			$run_inserted = $wpdb->insert( $tables['runs'], array( 'trigger_source' => sanitize_key( $source ), 'status' => 'running', 'started_at' => current_time( 'mysql' ), 'requested' => $batch_size ), array( '%s', '%s', '%s', '%d' ) );
+			if ( false === $run_inserted ) {
+				self::release_lock();
+				$result['message'] = __( 'Cleanup run log could not be created.', 'push-notification-for-post-and-buddypress' );
+				return $result;
+			}
 			$run_id           = absint( $wpdb->insert_id );
 			$result['run_id'] = $run_id;
 
 			try {
 				$cursor = absint( get_option( 'pnfpb_token_cleanup_cursor', 0 ) );
 				$tokens = PNFPB_Token_Validation_Service::get_candidate_tokens( $batch_size, $cursor );
+				// A cursor can outlive deleted/re-imported token rows. Restart at
+				// the beginning when it points past the current live table.
+				if ( empty( $tokens ) && $cursor > 0 ) {
+					$cursor = 0;
+					$tokens = PNFPB_Token_Validation_Service::get_candidate_tokens( $batch_size, 0 );
+				}
 				$result['candidates'] = count( $tokens );
 
 				foreach ( $tokens as $record ) {
@@ -109,8 +122,9 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 
 				update_option( 'pnfpb_token_cleanup_cursor', $result['next_cursor'] );
 				$result['status'] = empty( $tokens ) ? 'no_tokens' : 'completed';
+				PNFPB_Token_Validation_Service::event( $run_id, 'batch_completed', 0, '', array( 'status' => $result['status'], 'candidates' => $result['candidates'], 'processed' => $result['tokens_processed'], 'valid' => $result['tokens_valid'], 'moved_to_trash' => $result['moved_to_trash'], 'retryable' => $result['retryable'], 'errors' => $result['errors'] ) );
 				$wpdb->update( $tables['runs'], array( 'status' => $result['status'], 'completed_at' => current_time( 'mysql' ), 'processed' => $result['tokens_processed'], 'valid_count' => $result['tokens_valid'], 'moved_count' => $result['moved_to_trash'], 'retryable_count' => $result['retryable'], 'error_count' => $result['errors'], 'next_cursor' => $result['next_cursor'] ), array( 'id' => $run_id ), array( '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d' ), array( '%d' ) );
-			} catch ( Exception $exception ) {
+			} catch ( Throwable $exception ) {
 				$result['message'] = $exception->getMessage();
 				$result['errors']++;
 				$wpdb->update( $tables['runs'], array( 'status' => 'failed', 'completed_at' => current_time( 'mysql' ), 'last_error' => sanitize_text_field( $exception->getMessage() ) ), array( 'id' => $run_id ), array( '%s', '%s', '%s' ), array( '%d' ) );
@@ -172,11 +186,9 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 		/** Check whether the cleanup action is scheduled. */
 		public static function verify_job_scheduled( $batch_size = 0 ) {
 			if ( function_exists( 'as_has_scheduled_action' ) ) {
-				if ( ! $batch_size ) {
-					$batch_size = get_option( 'pnfpb_token_cleanup_batch_limit', get_option( 'pnfpb_cleanup_batch_size', 100 ) );
-				}
-				$args = array( absint( $batch_size ) );
-				return (bool) as_has_scheduled_action( self::CLEANUP_HOOK, $args, self::GROUP );
+				// Do not require an exact argument match. Existing installations
+				// may have an action created with the previous argument contract.
+				return (bool) as_has_scheduled_action( self::CLEANUP_HOOK, null, self::GROUP );
 			}
 			return (bool) wp_next_scheduled( self::CLEANUP_HOOK );
 		}

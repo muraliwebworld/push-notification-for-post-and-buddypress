@@ -158,7 +158,15 @@ if ( ! class_exists( 'PNFPB_Token_Validation_Service' ) ) {
 			$live_count  = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $tables['live'] ) );
 			$trash_count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $tables['trash'] ) );
 
-			return array( 'live' => absint( $live_count ), 'trash' => absint( $trash_count ) );
+			$live_count = absint( $live_count );
+
+			return array(
+				'live'  => $live_count,
+				'trash' => absint( $trash_count ),
+				// Compatibility values for older dashboard markup. Validation
+				// state is stored in run results, not in the live table.
+				'total' => $live_count,
+			);
 		}
 	}
 }

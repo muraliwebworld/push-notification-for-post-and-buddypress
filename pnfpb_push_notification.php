@@ -7233,7 +7233,9 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 $verified = PNFPB_Token_Cleanup_Background_Job::verify_job_scheduled( $batch_size );
                 error_log( 'PNFPB Token Cleanup: Job verification result: ' . ( $verified ? 'scheduled' : 'NOT scheduled' ) );
 
-                if ( ! $scheduled || ! $verified ) {
+                // Action Scheduler can return false when an equivalent action
+                // already exists. A verified existing action is still valid.
+                if ( ! $verified ) {
                     wp_send_json_error(
                         array(
                             'message' => __( 'Settings were saved, but the cleanup job could not be scheduled. Verify that Action Scheduler is available.', 'push-notification-for-post-and-buddypress' ),

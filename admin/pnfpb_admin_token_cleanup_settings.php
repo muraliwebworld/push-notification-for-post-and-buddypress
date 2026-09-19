@@ -84,7 +84,7 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 						<?php esc_html_e( 'Unverified Tokens', 'push-notification-for-post-and-buddypress' ); ?>
 					</div>
 					<div style="font-size: 28px; font-weight: bold; color: #ffb900;">
-						<?php echo isset( $stats['unverified'] ) ? absint( $stats['unverified'] ) : 0; ?>
+						<?php echo isset( $status['last_run']['retryable_count'] ) ? absint( $status['last_run']['retryable_count'] ) : 0; ?>
 					</div>
 				</div>
 				<div style="font-size: 48px; color: #ffb900; opacity: 0.2;">
@@ -178,6 +178,7 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 
 			<div style="margin-top: 20px;">
 				<?php submit_button( __( 'Save Schedule Settings', 'push-notification-for-post-and-buddypress' ), 'primary', 'pnfpb_save_schedule_settings' ); ?>
+				<div id="pnfpb-cleanup-settings-result" role="status" aria-live="polite" style="display:none; margin-top:10px;"></div>
 			</div>
 		</div>
 
@@ -389,6 +390,25 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 		color: #c62828;
 	}
 
+	#pnfpb-cleanup-settings-result.success,
+	#pnfpb-cleanup-settings-result.error {
+		padding: 10px;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+	}
+
+	#pnfpb-cleanup-settings-result.success {
+		background: #e8f5e9;
+		border-color: #4caf50;
+		color: #2e7d32;
+	}
+
+	#pnfpb-cleanup-settings-result.error {
+		background: #ffebee;
+		border-color: #f44336;
+		color: #c62828;
+	}
+
 	.pnfpb-manual-cleanup-button {
 		display: inline-flex;
 		align-items: center;
@@ -456,7 +476,8 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 			}, function(response) {
 				if (response.success) {
 					const data = response.data;
-					let html = '<strong><?php esc_html_e( 'Cleanup Complete!', 'push-notification-for-post-and-buddypress' ); ?></strong><br>';
+					let html = '<strong><?php esc_html_e( 'Cleanup result:', 'push-notification-for-post-and-buddypress' ); ?></strong> ' + escapeHtml(data.status || '') + '<br>';
+					html += '<?php esc_html_e( 'Candidates:', 'push-notification-for-post-and-buddypress' ); ?> ' + (data.candidates || 0) + '<br>';
 					html += '<?php esc_html_e( 'Validated:', 'push-notification-for-post-and-buddypress' ); ?> ' + (data.tokens_validated || 0) + '<br>';
 					html += '<?php esc_html_e( 'Valid:', 'push-notification-for-post-and-buddypress' ); ?> ' + (data.tokens_valid || 0) + '<br>';
 					html += '<?php esc_html_e( 'Invalid:', 'push-notification-for-post-and-buddypress' ); ?> ' + (data.tokens_invalid || 0);
@@ -556,9 +577,11 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 
 			const $form = $(this);
 			const $submit = $form.find('input[type="submit"]');
+			const $settingsResult = $('#pnfpb-cleanup-settings-result');
 			const originalText = $submit.val();
 
 			$submit.prop('disabled', true).val('<?php esc_attr_e( 'Saving...', 'push-notification-for-post-and-buddypress' ); ?>');
+			$settingsResult.hide().removeClass('success error').empty();
 
 			$.post(ajaxurl, {
 				action: 'pnfpb_update_cleanup_settings',
@@ -567,13 +590,15 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 				batch_size: $('#pnfpb_cleanup_batch_size').val()
 			}, function(response) {
 				if (response.success) {
-					alert('<?php esc_attr_e( 'Settings saved successfully!', 'push-notification-for-post-and-buddypress' ); ?>');
-					location.reload();
+					$settingsResult.text(response.data && response.data.message ? response.data.message : '<?php esc_attr_e( 'Settings saved successfully!', 'push-notification-for-post-and-buddypress' ); ?>').addClass('success').show();
 				} else {
-					alert('<?php esc_attr_e( 'Error saving settings:', 'push-notification-for-post-and-buddypress' ); ?> ' + (response.data?.message || '<?php esc_attr_e( 'Unknown error', 'push-notification-for-post-and-buddypress' ); ?>'));
+					$settingsResult.text(response.data && response.data.message ? response.data.message : '<?php esc_attr_e( 'Unknown error', 'push-notification-for-post-and-buddypress' ); ?>').addClass('error').show();
 				}
-			}).fail(function() {
-				alert('<?php esc_attr_e( 'Request failed', 'push-notification-for-post-and-buddypress' ); ?>');
+			}).fail(function(xhr) {
+				const message = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message
+					? xhr.responseJSON.data.message
+					: '<?php esc_attr_e( 'Request failed', 'push-notification-for-post-and-buddypress' ); ?>';
+				$settingsResult.text(message).addClass('error').show();
 			}).always(function() {
 				$submit.prop('disabled', false).val(originalText);
 			});
