@@ -157,15 +157,30 @@ if ( ! class_exists( 'PNFPB_Token_Validation_Service' ) ) {
 			$tables = self::tables();
 			$live_count  = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $tables['live'] ) );
 			$trash_count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $tables['trash'] ) );
+			$last_run    = $wpdb->get_row(
+				$wpdb->prepare(
+					"SELECT valid_count, moved_count, retryable_count
+					 FROM %i
+					 WHERE processed > 0
+					 ORDER BY id DESC
+					 LIMIT 1",
+					$tables['runs']
+				),
+				ARRAY_A
+			);
 
 			$live_count = absint( $live_count );
+			$trash_count = absint( $trash_count );
 
 			return array(
-				'live'  => $live_count,
-				'trash' => absint( $trash_count ),
+				'valid'     => $last_run ? absint( $last_run['valid_count'] ) : 0,
+				'invalid'   => $trash_count,
+				'unverified' => $last_run ? absint( $last_run['retryable_count'] ) : 0,
+				'total'     => $live_count,
+				'live'      => $live_count,
+				'trash'     => $trash_count,
 				// Compatibility values for older dashboard markup. Validation
 				// state is stored in run results, not in the live table.
-				'total' => $live_count,
 			);
 		}
 	}
