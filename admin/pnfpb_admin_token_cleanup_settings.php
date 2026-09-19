@@ -29,11 +29,11 @@ if ( class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 }
 
 if ( class_exists( 'PNFPB_Token_Validation_Service' ) ) {
-	$stats = PNFPB_Token_Validation_Service::get_validation_statistics();
+	$stats = PNFPB_Token_Validation_Service::counts();
 }
 
-$schedule = get_option( 'pnfpb_cleanup_schedule', 'daily' );
-$batch_size = get_option( 'pnfpb_cleanup_batch_size', 100 );
+$schedule = get_option( 'pnfpb_token_cleanup_frequency', get_option( 'pnfpb_cleanup_schedule', 'manual' ) );
+$batch_size = get_option( 'pnfpb_token_cleanup_batch_limit', get_option( 'pnfpb_cleanup_batch_size', 100 ) );
 $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 ?>
 
@@ -110,6 +110,16 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 			</div>
 		</div>
 
+		<!-- Trash Tokens Card -->
+		<div class="pnfpb-status-card" style="background: #f7f0fc; border-left: 4px solid #7e57c2; padding: 15px; border-radius: 4px;">
+			<div style="font-size: 12px; color: #666; text-transform: uppercase; margin-bottom: 5px;">
+				<?php esc_html_e( 'Tokens in Trash', 'push-notification-for-post-and-buddypress' ); ?>
+			</div>
+			<div style="font-size: 28px; font-weight: bold; color: #7e57c2;">
+				<?php echo isset( $stats['trash'] ) ? absint( $stats['trash'] ) : 0; ?>
+			</div>
+		</div>
+
 	</div>
 
 	<!-- Info Box -->
@@ -174,6 +184,11 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 	</form>
 
 	<div style="margin-top: 30px;">
+		<div class="pnfpb-settings-section" style="background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 20px;">
+			<h3 class="pnfpb-settings-section__title"><span class="dashicons dashicons-trash pnfpb-settings-section__icon"></span><?php esc_html_e( 'Token Trash', 'push-notification-for-post-and-buddypress' ); ?></h3>
+			<p><?php esc_html_e( 'Invalid tokens are moved here instead of being immediately destroyed. Use the token list for restore and permanent deletion actions.', 'push-notification-for-post-and-buddypress' ); ?></p>
+			<a class="button button-secondary" href="<?php echo esc_url( admin_url( 'admin.php?page=pnfpb_icfm_device_tokens_list' ) ); ?>#pnfpb-token-trash"><?php esc_html_e( 'Review token trash', 'push-notification-for-post-and-buddypress' ); ?></a>
+		</div>
 
 		<!-- Quick Actions Section -->
 		<div class="pnfpb-settings-section" style="background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 20px;">
@@ -399,6 +414,16 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 
 		const ajaxurl = '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>';
 		const nonce = '<?php echo esc_attr( $nonce ); ?>';
+
+		$(document).on('click', '.pnfpb-trash-action', function() {
+			const button = $(this);
+			const operation = button.data('operation');
+			if (operation === 'delete' && !window.confirm('<?php echo esc_js( __( 'Permanently delete this token? This cannot be undone.', 'push-notification-for-post-and-buddypress' ) ); ?>')) return;
+			button.prop('disabled', true);
+			$.post(ajaxurl, { action: 'pnfpb_token_cleanup_trash_action', nonce: nonce, trash_id: button.data('id'), operation: operation })
+				.done(function(response) { window.alert(response.data && response.data.message ? response.data.message : '<?php echo esc_js( __( 'Token action completed.', 'push-notification-for-post-and-buddypress' ) ); ?>'); window.location.reload(); })
+				.fail(function(xhr) { window.alert(xhr.responseJSON && xhr.responseJSON.data ? xhr.responseJSON.data.message : '<?php echo esc_js( __( 'Token action failed.', 'push-notification-for-post-and-buddypress' ) ); ?>'); button.prop('disabled', false); });
+		});
 
 		// Manual cleanup button click handler
 		$('#pnfpb-manual-cleanup-btn').on('click', function() {

@@ -104,6 +104,19 @@ if (!class_exists("PNFPB_ICFM_Device_tokens_List")) {
             return $wpdb->get_var($sql);
         }
 
+        public static function get_trash_tokens( $per_page = 20, $page_number = 1 ) {
+            global $wpdb;
+            $table = $wpdb->prefix . 'pnfpb_ic_subscribed_deviceids_web_trash';
+            $offset = max( 0, ( absint( $page_number ) - 1 ) * absint( $per_page ) );
+            return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i ORDER BY removed_at DESC LIMIT %d OFFSET %d", $table, absint( $per_page ), $offset ), ARRAY_A );
+        }
+
+        public static function trash_count() {
+            global $wpdb;
+            $table = $wpdb->prefix . 'pnfpb_ic_subscribed_deviceids_web_trash';
+            return absint( $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" ) );
+        }
+
         /** Text displayed when no device token data is available */
         public function no_items()
         {
@@ -358,6 +371,21 @@ if (!class_exists("PNFPB_ICFM_Device_tokens_List")) {
 					]);
 				}
 			}
+        }
+
+        public function render_token_trash() {
+            if ( ! current_user_can( 'manage_options' ) ) { return; }
+            $items = self::get_trash_tokens( 20, 1 );
+            echo '<div id="pnfpb-token-trash" class="pnfpb-token-trash"><h2>' . esc_html__( 'Token Trash', 'push-notification-for-post-and-buddypress' ) . '</h2>';
+            echo '<p>' . esc_html__( 'Invalid tokens are retained here until restored or permanently deleted.', 'push-notification-for-post-and-buddypress' ) . '</p>';
+            echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Token', 'push-notification-for-post-and-buddypress' ) . '</th><th>' . esc_html__( 'User', 'push-notification-for-post-and-buddypress' ) . '</th><th>' . esc_html__( 'Reason', 'push-notification-for-post-and-buddypress' ) . '</th><th>' . esc_html__( 'Removed', 'push-notification-for-post-and-buddypress' ) . '</th><th>' . esc_html__( 'Actions', 'push-notification-for-post-and-buddypress' ) . '</th></tr></thead><tbody>';
+            foreach ( $items as $item ) {
+                $token = (string) $item['device_id'];
+                $masked = strlen( $token ) > 12 ? substr( $token, 0, 6 ) . '…' . substr( $token, -6 ) : '••••••••';
+                echo '<tr><td><code>' . esc_html( $masked ) . '</code></td><td>' . absint( $item['userid'] ) . '</td><td>' . esc_html( $item['removal_reason'] ) . '</td><td>' . esc_html( $item['removed_at'] ) . '</td><td><button type="button" class="button pnfpb-trash-action" data-id="' . absint( $item['trash_id'] ) . '" data-operation="restore">' . esc_html__( 'Restore', 'push-notification-for-post-and-buddypress' ) . '</button> <button type="button" class="button-link-delete pnfpb-trash-action" data-id="' . absint( $item['trash_id'] ) . '" data-operation="delete">' . esc_html__( 'Permanently delete', 'push-notification-for-post-and-buddypress' ) . '</button></td></tr>';
+            }
+            if ( empty( $items ) ) { echo '<tr><td colspan="5">' . esc_html__( 'Trash is empty.', 'push-notification-for-post-and-buddypress' ) . '</td></tr>'; }
+            echo '</tbody></table><script>(function($){$(document).on("click",".pnfpb-trash-action",function(){var b=$(this),o=b.data("operation");if(o==="delete"&&!window.confirm(' . wp_json_encode( __( 'Permanently delete this token? This cannot be undone.', 'push-notification-for-post-and-buddypress' ) ) . ')){return;}b.prop("disabled",true);$.post(' . wp_json_encode( admin_url( 'admin-ajax.php' ) ) . ',{action:"pnfpb_token_cleanup_trash_action",nonce:' . wp_json_encode( wp_create_nonce( 'pnfpb_cleanup_nonce' ) ) . ',trash_id:b.data("id"),operation:o}).done(function(){window.location.reload();}).fail(function(){window.alert(' . wp_json_encode( __( 'Token action failed.', 'push-notification-for-post-and-buddypress' ) ) . ');b.prop("disabled",false);});});})(jQuery);</script></div>';
         }
 
         public function pnfpb_url_scheme_start()

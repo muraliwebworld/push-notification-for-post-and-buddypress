@@ -1859,6 +1859,24 @@ td.pnfpb_ic_push_settings_table_column {
 	box-shadow: 0 -3px 10px rgba(77,124,15,0.18);
 }
 
+/* Token Cleanup — Dark Slate */
+.pnfpb-main-nav-bar > a.pnfpb-main-tab--tokencleanup                       { border-top-color: #2D3748; }
+.pnfpb-main-nav-bar > a.pnfpb-main-tab--tokencleanup .pnfpb-main-tab__icon { background: #2D3748; }
+.pnfpb-main-nav-bar > a.pnfpb-main-tab--tokencleanup:hover                  { color: #1A202C; border-top-color: #2D3748; }
+.pnfpb-main-nav-bar > a.pnfpb-main-tab--tokencleanup.nav-tab-active {
+	color: #1A202C;
+	border-color: #2D3748;
+	border-bottom: none;
+	background: #EDF2F7;
+	box-shadow: 0 -3px 10px rgba(45,55,72,0.18);
+}
+
+/* Dark background styling for database icon */
+.pnfpb-main-tab__icon--dark-bg {
+	background: #2D3748 !important;
+	color: white;
+}
+
 /* ---- Responsive ---- */
 @media screen and (max-width: 960px) {
 	.pnfpb-main-nav-bar > a.pnfpb-main-tab {

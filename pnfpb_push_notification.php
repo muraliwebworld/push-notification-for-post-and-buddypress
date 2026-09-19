@@ -326,11 +326,11 @@ include_once plugin_dir_path(__FILE__) .
 
 // Phase 1 & 2: Token Cleanup System
 include_once plugin_dir_path(__FILE__) .
-	"public/pnfpb_send_notification_routines/pnfpb_database/pnfpb_token_cleanup_migrations.php";
+	"admin/pnfpb_token_cleanup_routines/pnfpb_database/pnfpb_token_cleanup_migrations.php";
 include_once plugin_dir_path(__FILE__) .
-	"public/pnfpb_send_notification_routines/pnfpb_token_validation/pnfpb_token_validation_service.php";
+	"admin/pnfpb_token_cleanup_routines/pnfpb_token_validation/pnfpb_token_validation_service.php";
 include_once plugin_dir_path(__FILE__) .
-	"public/pnfpb_send_notification_routines/pnfpb_token_cleanup/pnfpb_token_cleanup_background_job.php";
+	"admin/pnfpb_token_cleanup_routines/pnfpb_token_cleanup/pnfpb_token_cleanup_background_job.php";
 
 // Phase 3: Token Cleanup AJAX Handlers
 if ( is_admin() ) {
@@ -439,6 +439,13 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 "plugins_loaded",
                 [$this, $this->pre_name . "init_requirements"],
                 -10
+            );
+
+            // Initialize token cleanup schema on plugin load (immediately after init_requirements)
+            add_action(
+                "plugins_loaded",
+                [$this, $this->pre_name . "initialize_token_cleanup_schema"],
+                -5
             );
 
             // Add a link to the plugin's settings and/or network admin settings in the plugins list table.
@@ -629,6 +636,14 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             add_action("wp_ajax_pnfpb_reset_token_cleanup", [
                 $this,
                 $this->pre_name . "reset_token_cleanup_callback",
+            ]);
+            add_action("wp_ajax_pnfpb_update_cleanup_settings", [
+                $this,
+                $this->pre_name . "update_cleanup_settings_callback",
+            ]);
+            add_action("wp_ajax_pnfpb_token_cleanup_trash_action", [
+                $this,
+                $this->pre_name . "token_cleanup_trash_action_callback",
             ]);
 
             // Token Cleanup Background Job Action Hook
@@ -2279,6 +2294,22 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 
             // Unschedule Token Cleanup Job
             PNFPB_Token_Cleanup_Background_Job::unschedule_cleanup_job();
+        }
+
+        /**
+         * Initialize token cleanup schema on plugin load
+         * Runs on plugins_loaded hook (priority -5) to ensure tables/columns exist before any usage
+         * Runs AFTER init_requirements (priority -10) so core framework is ready
+         *
+         * @since 3.22
+         */
+        public function PNFPB_initialize_token_cleanup_schema() {
+            // Load migration class if it exists
+            if ( class_exists( 'PNFPB_Token_Cleanup_Migrations' ) ) {
+                // Run migrations once - very fast check since uses SHOW COLUMNS
+                // Idempotent: adds columns/indexes only if missing
+                PNFPB_Token_Cleanup_Migrations::run_migrations();
+            }
         }
 
         /**
@@ -6973,16 +7004,15 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
          */
         public function PNFPB_initialize_token_cleanup_system()
         {
-            // Run database migrations
             if ( class_exists( 'PNFPB_Token_Cleanup_Migrations' ) ) {
                 PNFPB_Token_Cleanup_Migrations::run_migrations();
             }
 
-            // Schedule cleanup job if not already scheduled
-            if ( class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
-                $schedule = get_option( 'pnfpb_cleanup_schedule', 'daily' );
-                $batch_size = get_option( 'pnfpb_cleanup_batch_size', 100 );
-                
+            // Repair the recurring schedule on plugin load when a schedule has
+            // previously been saved. Manual mode is represented by "manual".
+            $schedule = get_option( 'pnfpb_token_cleanup_frequency', get_option( 'pnfpb_cleanup_schedule', 'manual' ) );
+            $batch_size = get_option( 'pnfpb_token_cleanup_batch_limit', get_option( 'pnfpb_cleanup_batch_size', 100 ) );
+            if ( class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) && 'manual' !== $schedule && ! PNFPB_Token_Cleanup_Background_Job::verify_job_scheduled() ) {
                 PNFPB_Token_Cleanup_Background_Job::schedule_cleanup_job( $schedule, $batch_size );
             }
         }
@@ -7001,7 +7031,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             }
 
             // Execute the cleanup batch
-            $result = PNFPB_Token_Cleanup_Background_Job::execute_cleanup_batch( $batch_size );
+            $result = PNFPB_Token_Cleanup_Background_Job::execute_cleanup_batch( $batch_size, 'scheduled' );
 
             // Log execution
             do_action( 'pnfpb_cleanup_batch_executed', $result );
@@ -7014,9 +7044,16 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
          */
         public function PNFPB_manual_token_cleanup_callback()
         {
-            check_ajax_referer( 'pnfpb_cleanup_nonce', 'nonce' );
+            error_log( 'PNFPB Token Cleanup: Manual cleanup callback invoked' );
+            
+            // Verify nonce - use -1 to return false instead of dying
+            if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( $_POST['nonce'] ), 'pnfpb_cleanup_nonce' ) ) {
+                error_log( 'PNFPB Token Cleanup: Nonce verification failed in manual cleanup' );
+                wp_send_json_error( array( 'message' => __( 'Security check failed', 'push-notification-for-post-and-buddypress' ) ), 403 );
+            }
 
             if ( ! current_user_can( 'manage_options' ) ) {
+                error_log( 'PNFPB Token Cleanup: User cannot manage options in manual cleanup' );
                 wp_send_json_error(
                     array( 'message' => __( 'Unauthorized', 'push-notification-for-post-and-buddypress' ) ),
                     403
@@ -7024,13 +7061,18 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             }
 
             if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
+                error_log( 'PNFPB Token Cleanup: Background job class not found' );
                 wp_send_json_error( array( 'message' => 'Cleanup system not available' ) );
             }
 
             $batch_size = isset( $_POST['batch_size'] ) ? absint( $_POST['batch_size'] ) : 100;
 
+            error_log( 'PNFPB Token Cleanup: Executing cleanup batch with batch_size=' . $batch_size );
+            
             $result = PNFPB_Token_Cleanup_Background_Job::execute_cleanup_batch( $batch_size );
 
+            error_log( 'PNFPB Token Cleanup: Cleanup batch result: ' . wp_json_encode( $result ) );
+            
             wp_send_json_success( $result );
         }
 
@@ -7041,7 +7083,10 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
          */
         public function PNFPB_get_cleanup_status_callback()
         {
-            check_ajax_referer( 'pnfpb_cleanup_nonce', 'nonce' );
+            // Verify nonce
+            if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( $_POST['nonce'] ), 'pnfpb_cleanup_nonce' ) ) {
+                wp_send_json_error( array( 'message' => __( 'Security check failed', 'push-notification-for-post-and-buddypress' ) ), 403 );
+            }
 
             if ( ! current_user_can( 'manage_options' ) ) {
                 wp_send_json_error(
@@ -7055,7 +7100,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             }
 
             $status = PNFPB_Token_Cleanup_Background_Job::get_cleanup_status();
-            $stats = PNFPB_Token_Validation_Service::get_validation_statistics();
+            $stats = PNFPB_Token_Validation_Service::counts();
 
             $response = array_merge( $status, array( 'stats' => $stats ) );
 
@@ -7069,7 +7114,10 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
          */
         public function PNFPB_get_cleanup_logs_callback()
         {
-            check_ajax_referer( 'pnfpb_cleanup_nonce', 'nonce' );
+            // Verify nonce
+            if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( $_POST['nonce'] ), 'pnfpb_cleanup_nonce' ) ) {
+                wp_send_json_error( array( 'message' => __( 'Security check failed', 'push-notification-for-post-and-buddypress' ) ), 403 );
+            }
 
             if ( ! current_user_can( 'manage_options' ) ) {
                 wp_send_json_error(
@@ -7083,7 +7131,9 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             }
 
             $limit = isset( $_POST['limit'] ) ? absint( $_POST['limit'] ) : 50;
-            $logs = PNFPB_Token_Cleanup_Background_Job::get_recent_logs( $limit );
+            global $wpdb;
+            $events_table = $wpdb->prefix . 'pnfpb_token_cleanup_events';
+            $logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i ORDER BY created_at DESC LIMIT %d", $events_table, min( 500, max( 1, $limit ) ) ), ARRAY_A );
 
             wp_send_json_success( array( 'logs' => $logs ) );
         }
@@ -7095,7 +7145,10 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
          */
         public function PNFPB_reset_token_cleanup_callback()
         {
-            check_ajax_referer( 'pnfpb_cleanup_nonce', 'nonce' );
+            // Verify nonce
+            if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( $_POST['nonce'] ), 'pnfpb_cleanup_nonce' ) ) {
+                wp_send_json_error( array( 'message' => __( 'Security check failed', 'push-notification-for-post-and-buddypress' ) ), 403 );
+            }
 
             if ( ! current_user_can( 'manage_options' ) ) {
                 wp_send_json_error(
@@ -7108,16 +7161,98 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 wp_send_json_error( array( 'message' => 'Cleanup system not available' ) );
             }
 
-            // Clear all validation history and reset tokens
-            PNFPB_Token_Validation_Service::clear_validation_history();
-
-            // Clear logs older than 0 days (clears all)
-            PNFPB_Token_Cleanup_Background_Job::clear_old_logs( 0 );
-
-            // Reset status
-            PNFPB_Token_Cleanup_Background_Job::update_cleanup_status( array() );
+            delete_option( 'pnfpb_token_cleanup_cursor' );
+            global $wpdb;
+            $events_table = $wpdb->prefix . 'pnfpb_token_cleanup_events';
+            $wpdb->query( "DELETE FROM {$events_table}" );
 
             wp_send_json_success( array( 'message' => 'Cleanup system reset successfully' ) );
+        }
+
+        /**
+         * AJAX handler to update cleanup settings
+         *
+         * @since 3.22
+         */
+        public function PNFPB_update_cleanup_settings_callback()
+        {
+            // Verify nonce
+            if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( $_POST['nonce'] ), 'pnfpb_cleanup_nonce' ) ) {
+                error_log( 'PNFPB Token Cleanup: Nonce verification failed' );
+                wp_send_json_error( array( 'message' => __( 'Security check failed', 'push-notification-for-post-and-buddypress' ) ), 403 );
+            }
+
+            if ( ! current_user_can( 'manage_options' ) ) {
+                error_log( 'PNFPB Token Cleanup: User cannot manage options' );
+                wp_send_json_error(
+                    array( 'message' => __( 'Unauthorized', 'push-notification-for-post-and-buddypress' ) ),
+                    403
+                );
+            }
+
+            // Validate and save schedule
+            $allowed_schedules = array( 'hourly', 'twicedaily', 'daily', 'weekly' );
+            $schedule = isset( $_POST['schedule'] ) ? sanitize_text_field( $_POST['schedule'] ) : 'daily';
+
+            if ( ! in_array( $schedule, $allowed_schedules, true ) ) {
+                error_log( 'PNFPB Token Cleanup: Invalid schedule value: ' . $schedule );
+                wp_send_json_error( array( 'message' => __( 'Invalid schedule value', 'push-notification-for-post-and-buddypress' ) ) );
+            }
+
+            // Validate and save batch size
+            $batch_size = isset( $_POST['batch_size'] ) ? absint( $_POST['batch_size'] ) : 100;
+
+            if ( $batch_size < 1 || $batch_size > 500 ) {
+                error_log( 'PNFPB Token Cleanup: Invalid batch size: ' . $batch_size );
+                wp_send_json_error( array( 'message' => __( 'Batch size must be between 1 and 500', 'push-notification-for-post-and-buddypress' ) ) );
+            }
+
+            // Save settings to options
+            update_option( 'pnfpb_token_cleanup_frequency', $schedule );
+            update_option( 'pnfpb_token_cleanup_batch_limit', $batch_size );
+            // Keep legacy display options synchronized during the transition.
+            update_option( 'pnfpb_cleanup_schedule', $schedule );
+            update_option( 'pnfpb_cleanup_batch_size', $batch_size );
+
+            // Schedule the recurring cleanup job
+            if ( class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
+                // First unschedule any existing job
+                PNFPB_Token_Cleanup_Background_Job::unschedule_cleanup_job();
+                
+                // Schedule new job with updated settings
+                $scheduled = PNFPB_Token_Cleanup_Background_Job::schedule_cleanup_job( $schedule, $batch_size );
+                
+                error_log( 'PNFPB Token Cleanup: Scheduling job - schedule=' . $schedule . ', batch_size=' . $batch_size . ', result=' . ( $scheduled ? 'success' : 'failed' ) );
+
+                // Verify the job was actually scheduled
+                $verified = PNFPB_Token_Cleanup_Background_Job::verify_job_scheduled();
+                error_log( 'PNFPB Token Cleanup: Job verification result: ' . ( $verified ? 'scheduled' : 'NOT scheduled' ) );
+
+                // Debug: Check all actions in database
+                error_log( 'PNFPB Token Cleanup: Debug - Checking Action Scheduler database...' );
+                PNFPB_Token_Cleanup_Background_Job::debug_get_all_actions();
+            } else {
+                error_log( 'PNFPB Token Cleanup: Background job class not found' );
+            }
+
+            wp_send_json_success( array(
+                'message' => __( 'Settings saved successfully', 'push-notification-for-post-and-buddypress' ),
+                'schedule' => $schedule,
+                'batch_size' => $batch_size
+            ) );
+        }
+
+        /** Restore or permanently delete one trashed token. */
+        public function PNFPB_token_cleanup_trash_action_callback() {
+            if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'pnfpb_cleanup_nonce' ) || ! current_user_can( 'manage_options' ) ) {
+                wp_send_json_error( array( 'message' => __( 'Security check failed', 'push-notification-for-post-and-buddypress' ) ), 403 );
+            }
+            $trash_id = isset( $_POST['trash_id'] ) ? absint( $_POST['trash_id'] ) : 0;
+            $operation = isset( $_POST['operation'] ) ? sanitize_key( $_POST['operation'] ) : '';
+            $result = 'restore' === $operation ? PNFPB_Token_Validation_Service::restore_from_trash( $trash_id ) : ( 'delete' === $operation ? PNFPB_Token_Validation_Service::permanently_delete_trash( $trash_id ) : false );
+            if ( is_wp_error( $result ) ) { wp_send_json_error( array( 'message' => $result->get_error_message() ), 409 ); }
+            if ( ! $result ) { wp_send_json_error( array( 'message' => __( 'Token action failed', 'push-notification-for-post-and-buddypress' ) ), 500 ); }
+            wp_send_json_success( array( 'message' => __( 'Token action completed', 'push-notification-for-post-and-buddypress' ) ) );
         }
 
     }

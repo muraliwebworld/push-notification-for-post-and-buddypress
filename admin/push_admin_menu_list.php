@@ -125,7 +125,7 @@ $pnfpb_top_tabs_data = array(
 	<a href="<?php echo esc_url( $pnfpb_tab['url'] ); ?>"
 	   class="<?php echo esc_attr( $pnfpb_tab_classes ); ?>"
 	   <?php echo $pnfpb_is_active ? 'aria-current="page"' : ''; ?>>
-		<span class="pnfpb-main-tab__icon" aria-hidden="true">
+		<span class="pnfpb-main-tab__icon<?php echo $pnfpb_tab['slug'] === 'tokencleanup' ? ' pnfpb-main-tab__icon--dark-bg' : ''; ?>" aria-hidden="true">
 			<span class="dashicons <?php echo esc_attr( $pnfpb_tab['icon'] ); ?>"></span>
 		</span>
 		<span class="pnfpb-main-tab__label">

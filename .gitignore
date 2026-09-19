@@ -29,3 +29,12 @@ ACCORDION*
 
 # WordPress local config
 wp-config.php
+critical*.md
+deployment*.md
+filename*.md
+final*.md
+path*.md
+production*.md
+security*.md
+reco*.md
+token*.md

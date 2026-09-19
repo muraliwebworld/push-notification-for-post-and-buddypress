@@ -155,6 +155,7 @@ if (get_option('pnfpb_index_status_of_device_token_table') === false || (get_opt
 			</div>
 			<br class="clear">
 		</div>
+		<?php $this->devicetokens_obj->render_token_trash(); ?>
 		<div class="pnfpb_row">
 			<div class="pnfpb_column_400">
 				<p>
