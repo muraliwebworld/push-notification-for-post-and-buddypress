@@ -102,21 +102,29 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 				foreach ( $tokens as $record ) {
 					$result['tokens_processed']++;
 					$result['next_cursor'] = absint( $record['id'] );
-					$validation            = self::validate_token( $record['device_id'] );
+					try {
+						$validation = self::validate_token( $record['device_id'] );
 
-					if ( 'valid' === $validation['state'] ) {
-						$result['tokens_validated']++;
-						$result['tokens_valid']++;
-					} elseif ( 'invalid' === $validation['state'] ) {
-						$moved = PNFPB_Token_Validation_Service::move_to_trash( $record, $validation['reason'], $source . '_cleanup', $run_id );
-						if ( is_wp_error( $moved ) ) {
-							$result['errors']++;
+						if ( 'valid' === $validation['state'] ) {
+							$result['tokens_validated']++;
+							$result['tokens_valid']++;
+						} elseif ( 'invalid' === $validation['state'] ) {
+							$moved = PNFPB_Token_Validation_Service::move_to_trash( $record, $validation['reason'], $source . '_cleanup', $run_id );
+							if ( is_wp_error( $moved ) ) {
+								$result['errors']++;
+								PNFPB_Token_Validation_Service::event( $run_id, 'token_error', 0, 'TRASH_MOVE_FAILED', array( 'token_id' => absint( $record['id'] ), 'error' => $moved->get_error_code() ) );
+							} else {
+								$result['moved_to_trash']++;
+								$result['tokens_invalid']++;
+							}
 						} else {
-							$result['moved_to_trash']++;
-							$result['tokens_invalid']++;
+							$result['retryable']++;
 						}
-					} else {
-						$result['retryable']++;
+					} catch ( Throwable $token_exception ) {
+						// An individual invalid-token/trash failure must not abort the
+						// remaining candidates in the batch.
+						$result['errors']++;
+						PNFPB_Token_Validation_Service::event( $run_id, 'token_error', 0, 'TOKEN_PROCESSING_FAILED', array( 'token_id' => absint( $record['id'] ), 'error' => sanitize_text_field( $token_exception->getMessage() ) ) );
 					}
 				}
 
