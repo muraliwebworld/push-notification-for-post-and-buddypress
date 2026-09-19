@@ -170,9 +170,13 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 		}
 
 		/** Check whether the cleanup action is scheduled. */
-		public static function verify_job_scheduled() {
+		public static function verify_job_scheduled( $batch_size = 0 ) {
 			if ( function_exists( 'as_has_scheduled_action' ) ) {
-				return (bool) as_has_scheduled_action( self::CLEANUP_HOOK, array(), self::GROUP );
+				if ( ! $batch_size ) {
+					$batch_size = get_option( 'pnfpb_token_cleanup_batch_limit', get_option( 'pnfpb_cleanup_batch_size', 100 ) );
+				}
+				$args = array( absint( $batch_size ) );
+				return (bool) as_has_scheduled_action( self::CLEANUP_HOOK, $args, self::GROUP );
 			}
 			return (bool) wp_next_scheduled( self::CLEANUP_HOOK );
 		}

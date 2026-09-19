@@ -207,8 +207,8 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 					<p style="font-size: 13px; color: #666; margin-bottom: 10px;">
 						<?php esc_html_e( 'Trigger an immediate cleanup batch to verify tokens against Firebase.', 'push-notification-for-post-and-buddypress' ); ?>
 					</p>
-					<button type="button" id="pnfpb-manual-cleanup-btn" class="button button-primary" style="width: 100%;">
-						<span class="dashicons dashicons-controls-play" style="vertical-align: middle; margin-right: 5px;"></span>
+					<button type="button" id="pnfpb-manual-cleanup-btn" class="button button-primary pnfpb-manual-cleanup-button" style="width: 100%;">
+						<span class="dashicons dashicons-controls-play" aria-hidden="true"></span>
 						<?php esc_html_e( 'Run Cleanup Now', 'push-notification-for-post-and-buddypress' ); ?>
 					</button>
 					<div id="pnfpb-cleanup-result" style="margin-top: 10px; font-size: 13px; display: none;"></div>
@@ -389,6 +389,21 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 		color: #c62828;
 	}
 
+	.pnfpb-manual-cleanup-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 5px;
+	}
+
+	.pnfpb-manual-cleanup-button .dashicons {
+		line-height: 1;
+		width: 18px;
+		height: 18px;
+		font-size: 18px;
+		vertical-align: middle;
+	}
+
 	.pnfpb-loader {
 		display: inline-block;
 		width: 16px;
@@ -450,8 +465,11 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 				} else {
 					$result.html('<strong><?php esc_html_e( 'Error:', 'push-notification-for-post-and-buddypress' ); ?></strong> ' + (response.data?.message || '<?php esc_html_e( 'Unknown error occurred', 'push-notification-for-post-and-buddypress' ); ?>')).addClass('error').removeClass('success').show();
 				}
-			}).fail(function() {
-				$result.html('<strong><?php esc_html_e( 'Error:', 'push-notification-for-post-and-buddypress' ); ?></strong> <?php esc_html_e( 'Request failed', 'push-notification-for-post-and-buddypress' ); ?>').addClass('error').removeClass('success').show();
+			}).fail(function(xhr) {
+				const message = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message
+					? xhr.responseJSON.data.message
+					: '<?php esc_html_e( 'Request failed', 'push-notification-for-post-and-buddypress' ); ?>';
+				$result.html('<strong><?php esc_html_e( 'Error:', 'push-notification-for-post-and-buddypress' ); ?></strong> ' + escapeHtml(message)).addClass('error').removeClass('success').show();
 			}).always(function() {
 				$btn.prop('disabled', false).html(originalText);
 			});
