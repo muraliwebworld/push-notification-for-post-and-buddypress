@@ -148,7 +148,21 @@ if ( ! class_exists( 'PNFPB_Token_Validation_Service' ) ) {
 		/** Record a sanitized audit event. */
 		public static function event( $run_id, $type, $trash_id = 0, $reason = '', $details = array() ) {
 			global $wpdb;
-			return false !== $wpdb->insert( self::tables()['events'], array( 'run_id' => absint( $run_id ), 'event_type' => sanitize_key( $type ), 'trash_id' => absint( $trash_id ), 'reason' => sanitize_text_field( $reason ), 'details' => wp_json_encode( $details ), 'created_at' => current_time( 'mysql' ) ), array( '%d', '%s', '%d', '%s', '%s', '%s' ) );
+
+			$inserted = $wpdb->insert(
+				self::tables()['events'],
+				array(
+					'run_id'     => absint( $run_id ),
+					'event_type' => sanitize_key( $type ),
+					'trash_id'   => absint( $trash_id ),
+					'reason'     => sanitize_text_field( $reason ),
+					'details'    => wp_json_encode( $details ),
+					'created_at' => current_time( 'mysql' ),
+				),
+				array( '%d', '%s', '%d', '%s', '%s', '%s' )
+			);
+
+			return false !== $inserted;
 		}
 
 		/** Return live and trash counts. */

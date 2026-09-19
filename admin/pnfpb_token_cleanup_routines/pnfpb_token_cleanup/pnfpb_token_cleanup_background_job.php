@@ -108,6 +108,7 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 						if ( 'valid' === $validation['state'] ) {
 							$result['tokens_validated']++;
 							$result['tokens_valid']++;
+							continue;
 						} elseif ( 'invalid' === $validation['state'] ) {
 							$moved = PNFPB_Token_Validation_Service::move_to_trash( $record, $validation['reason'], $source . '_cleanup', $run_id );
 							if ( is_wp_error( $moved ) ) {
@@ -117,8 +118,12 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 								$result['moved_to_trash']++;
 								$result['tokens_invalid']++;
 							}
+							// Explicitly continue after an invalid token. This prevents
+							// later logic from accidentally terminating the batch.
+							continue;
 						} else {
 							$result['retryable']++;
+							continue;
 						}
 					} catch ( Throwable $token_exception ) {
 						// An individual invalid-token/trash failure must not abort the
