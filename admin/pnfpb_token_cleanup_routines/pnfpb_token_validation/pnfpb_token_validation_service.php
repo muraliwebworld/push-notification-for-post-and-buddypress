@@ -109,7 +109,9 @@ if ( ! class_exists( 'PNFPB_Token_Validation_Service' ) ) {
 			}
 			$trash_id = absint( $wpdb->insert_id );
 			$wpdb->query( 'COMMIT' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			self::event( $run_id, 'moved_to_trash', $trash_id, $reason, array( 'source' => $source ) );
+			// Audit logging is deliberately non-fatal; the token has already
+			// been moved successfully at this point.
+			self::pnfpb_cleanup_event( $run_id, 'moved_to_trash', $trash_id, $reason, array( 'source' => $source ) );
 			return $trash_id;
 		}
 
@@ -146,23 +148,48 @@ if ( ! class_exists( 'PNFPB_Token_Validation_Service' ) ) {
 		}
 
 		/** Record a sanitized audit event. */
-		public static function event( $run_id, $type, $trash_id = 0, $reason = '', $details = array() ) {
+		public static function pnfpb_cleanup_event( $run_id, $type, $trash_id = 0, $reason = '', $details = array() ) {
 			global $wpdb;
 
-			$inserted = $wpdb->insert(
-				self::tables()['events'],
-				array(
-					'run_id'     => absint( $run_id ),
-					'event_type' => sanitize_key( $type ),
-					'trash_id'   => absint( $trash_id ),
-					'reason'     => sanitize_text_field( $reason ),
-					'details'    => wp_json_encode( $details ),
-					'created_at' => current_time( 'mysql' ),
-				),
-				array( '%d', '%s', '%d', '%s', '%s', '%s' )
-			);
+			// 1. Defensively verify $wpdb is ready and tables exist
+			$tables = self::tables();
+			if ( ! isset( $tables['events'] ) ) {
+				error_log( 'PNFPB Token Cleanup: Events table configuration is missing.' );
+				return false;
+			}
 
-			return false !== $inserted;
+			$events_table = $tables['events'];
+
+			try {
+				// 2. Clear any lingering database errors before running our query
+				$wpdb->last_error = '';
+
+				$inserted = $wpdb->insert(
+					$events_table,
+					array(
+						'run_id'     => absint( $run_id ),
+						'event_type' => sanitize_key( $type ),
+						'trash_id'   => absint( $trash_id ),
+						'reason'     => sanitize_text_field( $reason ),
+						'details'    => wp_json_encode( $details ),
+						'created_at' => current_time( 'mysql' ),
+					),
+					array( '%d', '%s', '%d', '%s', '%s', '%s' )
+				);
+
+				// 3. Robustly check for $wpdb failures or if it explicitly evaluated to false
+				if ( false === $inserted || ! empty( $wpdb->last_error ) ) {
+					error_log( 'PNFPB Token Cleanup: Event insert failed. DB Error: ' . sanitize_text_field( $wpdb->last_error ) );
+					return false;
+				}
+
+				error_log( 'PNFPB Token Cleanup: Event insert success for Run ID ' . absint( $run_id ) );
+				return true;
+
+			} catch ( Throwable $exception ) {
+				error_log( 'PNFPB Token Cleanup: Event logging exception: ' . sanitize_text_field( $exception->getMessage() ) );
+				return false;
+			}
 		}
 
 		/** Return live and trash counts. */

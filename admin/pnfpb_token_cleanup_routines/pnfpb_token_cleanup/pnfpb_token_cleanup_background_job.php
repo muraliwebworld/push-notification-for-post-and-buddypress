@@ -99,6 +99,8 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 				}
 				$result['candidates'] = count( $tokens );
 
+				$invalid_records_to_trash = array();
+
 				foreach ( $tokens as $record ) {
 					$result['tokens_processed']++;
 					$result['next_cursor'] = absint( $record['id'] );
@@ -110,37 +112,50 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 							$result['tokens_valid']++;
 							continue;
 						} elseif ( 'invalid' === $validation['state'] ) {
-							$moved = PNFPB_Token_Validation_Service::move_to_trash( $record, $validation['reason'], $source . '_cleanup', $run_id );
-							if ( is_wp_error( $moved ) ) {
-								$result['errors']++;
-								PNFPB_Token_Validation_Service::event( $run_id, 'token_error', 0, 'TRASH_MOVE_FAILED', array( 'token_id' => absint( $record['id'] ), 'error' => $moved->get_error_code() ) );
-							} else {
-								$result['moved_to_trash']++;
-								$result['tokens_invalid']++;
-							}
-							// Explicitly continue after an invalid token. This prevents
-							// later logic from accidentally terminating the batch.
+							// Queue for processing AFTER the loop to prevent iteration memory drops
+							$invalid_records_to_trash[] = array(
+								'record' => $record,
+								'reason' => $validation['reason']
+							);
 							continue;
 						} else {
 							$result['retryable']++;
 							continue;
 						}
 					} catch ( Throwable $token_exception ) {
-						// An individual invalid-token/trash failure must not abort the
-						// remaining candidates in the batch.
 						$result['errors']++;
-						PNFPB_Token_Validation_Service::event( $run_id, 'token_error', 0, 'TOKEN_PROCESSING_FAILED', array( 'token_id' => absint( $record['id'] ), 'error' => sanitize_text_field( $token_exception->getMessage() ) ) );
+						PNFPB_Token_Validation_Service::pnfpb_cleanup_event( $run_id, 'token_error', 0, 'TOKEN_PROCESSING_FAILED', array( 'token_id' => absint( $record['id'] ), 'error' => sanitize_text_field( $token_exception->getMessage() ) ) );
 					}
 				}
 
-				update_option( 'pnfpb_token_cleanup_cursor', $result['next_cursor'] );
+				// Process invalid tokens safely outside the active loop context
+				foreach ( $invalid_records_to_trash as $trash_item ) {
+					$record = $trash_item['record'];
+					$reason = $trash_item['reason'];
+					$moved = PNFPB_Token_Validation_Service::move_to_trash( $record, $reason, $source . '_cleanup', $run_id );
+					if ( is_wp_error( $moved ) ) {
+						$result['errors']++;
+						PNFPB_Token_Validation_Service::pnfpb_cleanup_event( $run_id, 'token_error', 0, 'TRASH_MOVE_FAILED', array( 'token_id' => absint( $record['id'] ), 'error' => $moved->get_error_code() ) );
+					} else {
+						$result['moved_to_trash']++;
+						$result['tokens_invalid']++;
+					}
+				}
+
+				if ( $result['moved_to_trash'] > 0 ) {
+					update_option( 'pnfpb_token_cleanup_cursor', 0 );
+					$result['next_cursor'] = 0;
+				} else {
+					update_option( 'pnfpb_token_cleanup_cursor', $result['next_cursor'] );
+				}
+				
 				$result['status'] = empty( $tokens ) ? 'no_tokens' : 'completed';
-				PNFPB_Token_Validation_Service::event( $run_id, 'batch_completed', 0, '', array( 'status' => $result['status'], 'candidates' => $result['candidates'], 'processed' => $result['tokens_processed'], 'valid' => $result['tokens_valid'], 'moved_to_trash' => $result['moved_to_trash'], 'retryable' => $result['retryable'], 'errors' => $result['errors'] ) );
+				PNFPB_Token_Validation_Service::pnfpb_cleanup_event( $run_id, 'batch_completed', 0, '', array( 'status' => $result['status'], 'candidates' => $result['candidates'], 'processed' => $result['tokens_processed'], 'valid' => $result['tokens_valid'], 'moved_to_trash' => $result['moved_to_trash'], 'retryable' => $result['retryable'], 'errors' => $result['errors'] ) );
 				$wpdb->update( $tables['runs'], array( 'status' => $result['status'], 'completed_at' => current_time( 'mysql' ), 'processed' => $result['tokens_processed'], 'valid_count' => $result['tokens_valid'], 'moved_count' => $result['moved_to_trash'], 'retryable_count' => $result['retryable'], 'error_count' => $result['errors'], 'next_cursor' => $result['next_cursor'] ), array( 'id' => $run_id ), array( '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d' ), array( '%d' ) );
 			} catch ( Throwable $exception ) {
 				$result['message'] = $exception->getMessage();
 				$result['errors']++;
-				PNFPB_Token_Validation_Service::event( $run_id, 'batch_error', 0, 'BATCH_PROCESSING_FAILED', array( 'error' => sanitize_text_field( $exception->getMessage() ) ) );
+				PNFPB_Token_Validation_Service::pnfpb_cleanup_event( $run_id, 'batch_error', 0, 'BATCH_PROCESSING_FAILED', array( 'error' => sanitize_text_field( $exception->getMessage() ) ) );
 				$wpdb->update( $tables['runs'], array( 'status' => 'failed', 'completed_at' => current_time( 'mysql' ), 'last_error' => sanitize_text_field( $exception->getMessage() ) ), array( 'id' => $run_id ), array( '%s', '%s', '%s' ), array( '%d' ) );
 			}
 

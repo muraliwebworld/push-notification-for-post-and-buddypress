@@ -128,7 +128,7 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 		<div>
 			<strong><?php esc_html_e( 'About Token Cleanup', 'push-notification-for-post-and-buddypress' ); ?></strong>
 			<p>
-				<?php esc_html_e( 'The token cleanup system automatically verifies Firebase Cloud Messaging (FCM) tokens to identify and remove stale, invalid, or expired tokens from your database. This improves delivery rates and reduces unnecessary data storage.', 'push-notification-for-post-and-buddypress' ); ?>
+				<?php esc_html_e( 'Before executing token cleanup, take backup of database. The token cleanup system automatically verifies Firebase Cloud Messaging (FCM) tokens to identify and remove stale, invalid, or expired tokens from your database. This improves delivery rates and reduces unnecessary data storage.', 'push-notification-for-post-and-buddypress' ); ?>
 			</p>
 		</div>
 	</div>
@@ -168,9 +168,9 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 						<?php esc_html_e( 'Batch Size', 'push-notification-for-post-and-buddypress' ); ?>
 					</div>
 					<div class="pnfpb-field-card__control">
-						<input type="number" id="pnfpb_cleanup_batch_size" name="pnfpb_cleanup_batch_size" value="<?php echo absint( $batch_size ); ?>" min="1" max="500" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" />
+						<input type="number" id="pnfpb_cleanup_batch_size" name="pnfpb_cleanup_batch_size" value="<?php echo absint( $batch_size ); ?>" min="1" max="100" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" />
 						<small style="display: block; margin-top: 8px; color: #666;">
-							<?php esc_html_e( 'Number of tokens to verify per batch (1-500).', 'push-notification-for-post-and-buddypress' ); ?>
+							<?php esc_html_e( 'Number of tokens to verify per batch (1-100). Set batch size 50 to 100 to reduce server load for shared hosting', 'push-notification-for-post-and-buddypress' ); ?>
 						</small>
 					</div>
 				</div>
@@ -224,25 +224,10 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 						<?php esc_html_e( 'View recent cleanup activities and logs.', 'push-notification-for-post-and-buddypress' ); ?>
 					</p>
 					<button type="button" id="pnfpb-view-logs-btn" class="button button-secondary" style="width: 100%;">
-						<span class="dashicons dashicons-text-page" style="vertical-align: middle; margin-right: 5px;"></span>
+						<span class="dashicons dashicons-text-page" style="vertical-align: top !important; margin-right: 5px;"></span>
 						<?php esc_html_e( 'View Logs', 'push-notification-for-post-and-buddypress' ); ?>
 					</button>
 				</div>
-
-				<!-- Reset System Button -->
-				<div style="padding: 15px; background: #fef5e7; border-radius: 4px; border: 1px solid #ffe699;">
-					<h4 style="margin-top: 0; color: #cc7700;">
-						<?php esc_html_e( 'Reset System', 'push-notification-for-post-and-buddypress' ); ?>
-					</h4>
-					<p style="font-size: 13px; color: #666; margin-bottom: 10px;">
-						<?php esc_html_e( 'Reset all tokens and clear logs. Use with caution.', 'push-notification-for-post-and-buddypress' ); ?>
-					</p>
-					<button type="button" id="pnfpb-reset-system-btn" class="button" style="width: 100%; background-color: #cc7700; color: white; border-color: #cc7700;">
-						<span class="dashicons dashicons-trash" style="vertical-align: middle; margin-right: 5px;"></span>
-						<?php esc_html_e( 'Reset All', 'push-notification-for-post-and-buddypress' ); ?>
-					</button>
-				</div>
-
 			</div>
 		</div>
 
@@ -266,7 +251,7 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 		<!-- Cleanup Logs Table Section (Initially hidden) -->
 		<div id="pnfpb-logs-section" style="display: none; background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 20px; margin-top: 20px;">
 			<h3 class="pnfpb-settings-section__title" style="margin-top: 0;">
-				<span class="dashicons dashicons-text-page pnfpb-settings-section__icon"></span>
+				<span class="dashicons dashicons-text-page pnfpb-settings-section__icon" style="vertical-align: middle; margin-right: 5px;"></span>
 				<?php esc_html_e( 'Recent Cleanup Logs', 'push-notification-for-post-and-buddypress' ); ?>
 			</h3>
 			<div id="pnfpb-logs-table-container">

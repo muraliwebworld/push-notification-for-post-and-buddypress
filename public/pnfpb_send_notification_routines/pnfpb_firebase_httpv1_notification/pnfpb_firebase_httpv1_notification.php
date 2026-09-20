@@ -602,57 +602,31 @@ if (!class_exists("PNFPB_firebase_httpv1_notification_class")) {
 								"access_token_auth" => "true",
 							];
 
-							$topicpath = "/topics/pnfpb_ondemand_selectedusers_".$senderid;
+							for ($i = 0; $i < count($target_device_ids); $i++) {
+								$notification = [
+									"token" => $target_device_ids[$i],
+									"notification" => $message,
+									"data" => $pushdataarray,
+									"webpush" => $webpushoptions,
+									"android" => $androidoptions,
+									"apns" => $iosoptions,
+								];
 
-							$topicname = "pnfpb_ondemand_selectedusers_".$senderid;				
+								$fields = [
+									"message" => $notification,
+								];
 
-							$pnfpb_topic_requests = [
-								// Request 1
-								[
-									"url" => $urladd,
+								$body = wp_json_encode($fields);
+
+								array_push($pnfpb_send_notifications, [
+									"url" => $url,
 									"headers" => $headers,
-									"data" => wp_json_encode([
-										"to" => $topicpath,
-										"registration_tokens" => $target_device_ids,
-									]),
+									"data" => $body,
 									"type" => Requests::POST,
-								],
-							];
+								]);
+							}							
 
 							$pnfpb_topic_subscriptions_request = Requests::request_multiple(
-								$pnfpb_topic_requests, array("blocking" => false)
-							);
-
-							$headers = [
-								"Authorization" => "Bearer " . $pnfpb_fbauth_token,
-								"Content-Type" => "application/json",
-							];
-
-							$notification = [
-								"topic" => $topicname,
-								"notification" => $message,
-								"data" => $pushdataarray,
-								"webpush" => $webpushoptions,
-								"android" => $androidoptions,
-								"apns" => $iosoptions,
-							];
-
-							$fields = [
-								"message" => $notification,
-							];
-
-							/** Send notification to users subscribed to all notifications, BuddyPress group activities */
-
-							$body = wp_json_encode($fields);
-
-							array_push($pnfpb_send_notifications, [
-								"url" => $url,
-								"headers" => $headers,
-								"data" => $body,
-								"type" => Requests::POST,
-							]);
-
-							$pnfpb_send_notifications_result = Requests::request_multiple(
 								$pnfpb_send_notifications, array("blocking" => false)
 							);
 
