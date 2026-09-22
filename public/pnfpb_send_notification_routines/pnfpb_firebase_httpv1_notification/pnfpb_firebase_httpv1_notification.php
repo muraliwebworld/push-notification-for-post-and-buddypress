@@ -629,31 +629,6 @@ if (!class_exists("PNFPB_firebase_httpv1_notification_class")) {
 							$pnfpb_topic_subscriptions_request = Requests::request_multiple(
 								$pnfpb_send_notifications, array("blocking" => false)
 							);
-
-							$headers = [
-								"Authorization" => "Bearer " . $pnfpb_fbauth_token,
-								"Content-Type" => "application/json",
-								"access_token_auth" => "true",
-							];
-
-							$urlremove = "https://iid.googleapis.com/iid/v1:batchRemove";
-
-							$pnfpb_topic_requests = [
-								// Request 1
-								[
-									"url" => $urlremove,
-									"headers" => $headers,
-									"data" => wp_json_encode([
-										"to" => $topicpath,
-										"registration_tokens" => $target_device_ids,
-									]),
-									"type" => Requests::POST,
-								],
-							];
-
-							$pnfpb_topic_subscriptions_request = Requests::request_multiple(
-								$pnfpb_topic_requests, array("blocking" => false)
-							);			
 						}
 
 					} else {

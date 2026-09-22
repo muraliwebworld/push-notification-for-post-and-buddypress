@@ -213,6 +213,48 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<p class="pnfpb-field-card__desc"><?php esc_html_e( 'Number of days before re-showing the prompt after a user clicks Cancel.', 'push-notification-for-post-and-buddypress' ); ?></p>
 			</div>
 
+			<!-- Popup Display Delay Options -->
+			<div class="pnfpb-field-card" style="grid-column:1/-1;">
+				<div class="pnfpb-field-card__label">
+					<span class="dashicons dashicons-clock"></span>
+					<?php esc_html_e( 'Show Popup After', 'push-notification-for-post-and-buddypress' ); ?>
+				</div>
+				<div class="pnfpb-field-card__control">
+					<div style="display: flex; flex-direction: column; gap: 12px;">
+						<!-- Option 1: After N seconds -->
+						<label style="display: flex; align-items: center; gap: 8px;">
+							<input type="radio" name="pnfpb_ic_fcm_custom_prompt_delay_type" 
+								   id="pnfpb_ic_fcm_custom_prompt_delay_type_seconds"
+								   value="seconds" 
+								   <?php checked( 'seconds', get_option( 'pnfpb_ic_fcm_custom_prompt_delay_type' ) ); ?> />
+							<span><?php esc_html_e( 'Show popup after', 'push-notification-for-post-and-buddypress' ); ?></span>
+							<input type="number" min="1" class="pnfpb_ic_push_settings_table_value_column_input_field"
+								   id="pnfpb_ic_fcm_custom_prompt_delay_seconds"
+								   name="pnfpb_ic_fcm_custom_prompt_delay_seconds"
+								   value="<?php $v = get_option( 'pnfpb_ic_fcm_custom_prompt_delay_seconds' ); echo esc_attr( $v ? $v : '10' ); ?>"
+								   style="width: 80px;" />
+							<span><?php esc_html_e( 'seconds', 'push-notification-for-post-and-buddypress' ); ?></span>
+						</label>
+
+						<!-- Option 2: After N% scroll -->
+						<label style="display: flex; align-items: center; gap: 8px;">
+							<input type="radio" name="pnfpb_ic_fcm_custom_prompt_delay_type" 
+								   id="pnfpb_ic_fcm_custom_prompt_delay_type_scroll"
+								   value="scroll" 
+								   <?php checked( 'scroll', get_option( 'pnfpb_ic_fcm_custom_prompt_delay_type' ) ); ?> />
+							<span><?php esc_html_e( 'Show popup after scrolling', 'push-notification-for-post-and-buddypress' ); ?></span>
+							<input type="number" min="1" max="100" class="pnfpb_ic_push_settings_table_value_column_input_field"
+								   id="pnfpb_ic_fcm_custom_prompt_delay_scroll_percent"
+								   name="pnfpb_ic_fcm_custom_prompt_delay_scroll_percent"
+								   value="<?php $v = get_option( 'pnfpb_ic_fcm_custom_prompt_delay_scroll_percent' ); echo esc_attr( $v ? $v : '50' ); ?>"
+								   style="width: 80px;" />
+							<span>%</span>
+						</label>
+					</div>
+				</div>
+				<p class="pnfpb-field-card__desc"><?php esc_html_e( 'Choose when to display the popup: after a time delay or when user scrolls down the page.', 'push-notification-for-post-and-buddypress' ); ?></p>
+			</div>
+
 			<!-- Header text line 1 -->
 			<div class="pnfpb-field-card" style="grid-column:1/-1;">
 				<div class="pnfpb-field-card__label">

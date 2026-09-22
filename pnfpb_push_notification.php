@@ -4228,6 +4228,42 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                         );
                     }
 
+                    $pnfpb_ic_fcm_custom_prompt_delay_type = "";
+
+                    if (
+                        get_option("pnfpb_ic_fcm_custom_prompt_delay_type") &&
+                        get_option("pnfpb_ic_fcm_custom_prompt_delay_type") !== false &&
+                        get_option("pnfpb_ic_fcm_custom_prompt_delay_type") !== ""
+                    ) {
+                        $pnfpb_ic_fcm_custom_prompt_delay_type = get_option(
+                            "pnfpb_ic_fcm_custom_prompt_delay_type"
+                        );
+                    }
+
+                    $pnfpb_ic_fcm_custom_prompt_delay_seconds = "";
+
+                    if (
+                        get_option("pnfpb_ic_fcm_custom_prompt_delay_seconds") &&
+                        get_option("pnfpb_ic_fcm_custom_prompt_delay_seconds") !== false &&
+                        get_option("pnfpb_ic_fcm_custom_prompt_delay_seconds") !== ""
+                    ) {
+                        $pnfpb_ic_fcm_custom_prompt_delay_seconds = get_option(
+                            "pnfpb_ic_fcm_custom_prompt_delay_seconds"
+                        );
+                    }
+
+                    $pnfpb_ic_fcm_custom_prompt_delay_scroll_percent = "";
+
+                    if (
+                        get_option("pnfpb_ic_fcm_custom_prompt_delay_scroll_percent") &&
+                        get_option("pnfpb_ic_fcm_custom_prompt_delay_scroll_percent") !== false &&
+                        get_option("pnfpb_ic_fcm_custom_prompt_delay_scroll_percent") !== ""
+                    ) {
+                        $pnfpb_ic_fcm_custom_prompt_delay_scroll_percent = get_option(
+                            "pnfpb_ic_fcm_custom_prompt_delay_scroll_percent"
+                        );
+                    }
+
                     $pnfpb_ic_fcm_custom_prompt_animation = "";
 
                     if (
@@ -4476,8 +4512,9 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 								"pnfpb_ic_fcm_prompt_on_off" => $pnfpb_ic_fcm_prompt_on_off,
 								"pnfpb_ic_fcm_prompt_style3" => $pnfpb_ic_fcm_prompt_style3,
 								"pnfpb_ic_fcm_custom_prompt_animation" => $pnfpb_ic_fcm_custom_prompt_animation,
-								"notify_loggedin" => $pnfpb_ic_fcm_loggedin_notify,
-								"pnfpb_custom_prompt_show_again_days" => $pnfpb_ic_fcm_custom_prompt_show_again_days,
+							"pnfpb_ic_fcm_custom_prompt_delay_type" => $pnfpb_ic_fcm_custom_prompt_delay_type,
+							"pnfpb_ic_fcm_custom_prompt_delay_seconds" => $pnfpb_ic_fcm_custom_prompt_delay_seconds,
+							"pnfpb_ic_fcm_custom_prompt_delay_scroll_percent" => $pnfpb_ic_fcm_custom_prompt_delay_scroll_percent,
 								"pnfpb_show_again_days" => $pnfpb_ic_fcm_pwa_show_again_days,
 								"pnfpb_hide_foreground_notification" => $pnfpb_hide_foreground_notification,
 								"pnfpb_show_custom_post_types" => $pnfpb_show_custom_post_types,
@@ -4578,6 +4615,9 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 									"pnfpb_ic_fcm_prompt_on_off" => $pnfpb_ic_fcm_prompt_on_off,
 									"pnfpb_ic_fcm_prompt_style3" => $pnfpb_ic_fcm_prompt_style3,
 									"pnfpb_ic_fcm_custom_prompt_animation" => $pnfpb_ic_fcm_custom_prompt_animation,
+									"pnfpb_ic_fcm_custom_prompt_delay_type" => $pnfpb_ic_fcm_custom_prompt_delay_type,
+									"pnfpb_ic_fcm_custom_prompt_delay_seconds" => $pnfpb_ic_fcm_custom_prompt_delay_seconds,
+									"pnfpb_ic_fcm_custom_prompt_delay_scroll_percent" => $pnfpb_ic_fcm_custom_prompt_delay_scroll_percent,
 									"notify_loggedin" => $pnfpb_ic_fcm_loggedin_notify,
 									"pnfpb_custom_prompt_show_again_days" => $pnfpb_ic_fcm_custom_prompt_show_again_days,
 									"pnfpb_show_again_days" => $pnfpb_ic_fcm_pwa_show_again_days,
@@ -4683,6 +4723,9 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 								"pnfpb_ic_fcm_prompt_on_off" => $pnfpb_ic_fcm_prompt_on_off,
 								"pnfpb_ic_fcm_prompt_style3" => $pnfpb_ic_fcm_prompt_style3,
 								"pnfpb_ic_fcm_custom_prompt_animation" => $pnfpb_ic_fcm_custom_prompt_animation,
+								"pnfpb_ic_fcm_custom_prompt_delay_type" => $pnfpb_ic_fcm_custom_prompt_delay_type,
+								"pnfpb_ic_fcm_custom_prompt_delay_seconds" => $pnfpb_ic_fcm_custom_prompt_delay_seconds,
+								"pnfpb_ic_fcm_custom_prompt_delay_scroll_percent" => $pnfpb_ic_fcm_custom_prompt_delay_scroll_percent,
 								"notify_loggedin" => $pnfpb_ic_fcm_loggedin_notify,
 								"pnfpb_custom_prompt_show_again_days" => $pnfpb_ic_fcm_custom_prompt_show_again_days,
 								"pnfpb_show_again_days" => $pnfpb_ic_fcm_pwa_show_again_days,
@@ -4784,6 +4827,9 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 								"pnfpb_ic_fcm_prompt_on_off" => $pnfpb_ic_fcm_prompt_on_off,
 								"pnfpb_ic_fcm_prompt_style3" => $pnfpb_ic_fcm_prompt_style3,
 								"pnfpb_ic_fcm_custom_prompt_animation" => $pnfpb_ic_fcm_custom_prompt_animation,
+								"pnfpb_ic_fcm_custom_prompt_delay_type" => $pnfpb_ic_fcm_custom_prompt_delay_type,
+								"pnfpb_ic_fcm_custom_prompt_delay_seconds" => $pnfpb_ic_fcm_custom_prompt_delay_seconds,
+								"pnfpb_ic_fcm_custom_prompt_delay_scroll_percent" => $pnfpb_ic_fcm_custom_prompt_delay_scroll_percent,
 								"notify_loggedin" => $pnfpb_ic_fcm_loggedin_notify,
 								"pnfpb_custom_prompt_show_again_days" => $pnfpb_ic_fcm_custom_prompt_show_again_days,
 								"pnfpb_show_again_days" => $pnfpb_ic_fcm_pwa_show_again_days,
