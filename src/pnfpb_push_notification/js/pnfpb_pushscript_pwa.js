@@ -131,7 +131,7 @@ var data = {
 	pushtype: 'icfirebasecred'
 };
 
-let deferredPrompt;
+let deferredPrompt = null;
 
 var PNFPBcustominstallprompt = '';
 
@@ -278,6 +278,11 @@ if ((pnfpb_isIos || safari_pnfpb) && pnfpb_ajax_object_push.pnfpb_ic_ios_pwa_pro
 
 }
 
+if (pnfpb_ajax_object_push.pwainstallpromptenabled === '1' || $j('.pnfpb-pwa-dialog-container').length) {
+
+	$j('.pnfpb-pwa-dialog-container').hide();
+}
+
 window.addEventListener('beforeinstallprompt', (e) => {
 
 	e.preventDefault();
@@ -301,17 +306,19 @@ window.addEventListener('beforeinstallprompt', (e) => {
 		$j( ".pnfpb_pwa_shortcode_box" ).parent(".widget_block").hide();
 
 	}
-	
+
 	if (pnfpb_ajax_object_push.pwainstallpromptenabled === '1' || $j('.pnfpb-pwa-dialog-container').length) {
 
 		$j('.pnfpb-pwa-dialog-container').hide();
-	}
-
+	}	
+	
 	let name = 'PNFPB_pwa_prompt' + "=";
 
 	let decodedCookie = decodeURIComponent(document.cookie);
 
 	let ca = decodedCookie.split(';');
+
+	let isPromptDismissed = false;
 
 	for(let i = 0; i <ca.length; i++) {
 
@@ -422,37 +429,39 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 	if (deferredPrompt && pnfpb_ajax_object_push.pwainstallpromptenabled === '1' && PNFPBcustominstallprompt == '') {
 		$j('.pnfpb-pwa-dialog-container').show();
-		$j('#pnfpb-pwa-dialog-subscribe').on( "click", async function() {
+		$j('#pnfpb-pwa-dialog-subscribe').on( "click", async function(e) {
+			e.preventDefault();
 			$j('.pnfpb-pwa-dialog-container').hide();
-				if (deferredPrompt) {
-					deferredPrompt.prompt();
-					deferredPrompt.userChoice.then((response) => {
-						if (response.outcome === 'accepted') {
-							console.log(__('User accepted PWA installation','push-notification-for-post-and-buddypress'));
-							//document.cookie = "PNFPB_pwa_prompt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-							$j(".pnfpb_pwa_shortcode_box").hide();
-							deferredPrompt = null;								
-						}
-						else {
-							if (response.outcome === 'dismissed') {
-								console.log(__('User did not accept PWA installation.No thanks, I am good!','push-notification-for-post-and-buddypress'));
-								const pnfpb_d = new Date();
-								let expires = "expires=";
-								if (pnfpb_d.getTime) {
-									const pnfpb_show_again_days = parseInt(pnfpb_ajax_object_push.pnfpb_show_again_days);
-								  	pnfpb_d.setTime(pnfpb_d.getTime() + (pnfpb_show_again_days*24*60*60*1000));
-								  	expires = "expires="+ pnfpb_d.toUTCString();
-								}
-								document.cookie = "PNFPB_pwa_prompt" + "=" + "expiretime" + ";" + expires + ";path=/";
-								deferredPrompt = null;
-								location.reload();
+			if (deferredPrompt) {
+				deferredPrompt.prompt();
+				deferredPrompt.userChoice.then((response) => {
+					if (response.outcome === 'accepted') {
+						console.log(__('User accepted PWA installation','push-notification-for-post-and-buddypress'));
+						//document.cookie = "PNFPB_pwa_prompt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+						$j(".pnfpb_pwa_shortcode_box").hide();
+						deferredPrompt = null;								
+					}
+					else {
+						if (response.outcome === 'dismissed') {
+							console.log(__('User did not accept PWA installation.No thanks, I am good!','push-notification-for-post-and-buddypress'));
+							const pnfpb_d = new Date();
+							let expires = "expires=";
+							if (pnfpb_d.getTime) {
+								const pnfpb_show_again_days = parseInt(pnfpb_ajax_object_push.pnfpb_show_again_days);
+								pnfpb_d.setTime(pnfpb_d.getTime() + (pnfpb_show_again_days*24*60*60*1000));
+								expires = "expires="+ pnfpb_d.toUTCString();
 							}
+							document.cookie = "PNFPB_pwa_prompt" + "=" + "expiretime" + ";" + expires + ";path=/";
+							deferredPrompt = null;
+							location.reload();
 						}
-					})
-				}
+					}
+				})
+			}
 		});
 
-		$j('#pnfpb-pwa-dialog-cancel').on( "click", function() {
+		$j('#pnfpb-pwa-dialog-cancel').on( "click", function(e) {
+			e.preventDefault();
 			$j('.pnfpb-pwa-dialog-container').hide();
 			const pnfpb_d = new Date();
 			let expires = "expires=";
@@ -1578,7 +1587,7 @@ if (pnfpb_ajax_object_push.pwaapponlyenable === '1') {
 				// If the cookie exists, the user dismissed it less than 7 days ago
 				if (c.indexOf(name) === 0) {
 					PNFPB_custom_prompt_display = 'OFF'; // Hide the prompt
-		
+
 					break; // Exit the loop immediately since we found our cookie
 				}
 			}
@@ -1587,18 +1596,20 @@ if (pnfpb_ajax_object_push.pwaapponlyenable === '1') {
 
 				if (!subscription && Notification.permission !== "denied" && Notification.permission !== "granted") {
 
-					if (pnfpb_ajax_object_push.pnfpb_ic_fcm_prompt_style === '1' && PNFPB_custom_prompt_display === 'ON') {
+					// Function to show the custom prompt dialog with proper delay handling
+					const pnfpb_show_dialog = function() {
+						if (pnfpb_ajax_object_push.pnfpb_ic_fcm_prompt_style === '1' && PNFPB_custom_prompt_display === 'ON') {
 
-						$j('.pnfpb-popup-customprompt-container').show();
+							$j('.pnfpb-popup-customprompt-container').show();
 
-						pnfpb_bell_icon_subscription_options_custom_prompt = '';
+							pnfpb_bell_icon_subscription_options_custom_prompt = '';
 
-						$j('.pnfpb_bell_icon_subscription_all_enable').off().on('click',function(event) {
+							$j('.pnfpb_bell_icon_subscription_all_enable').off().on('click',function(event) {
 
-							if ($j('.pnfpb_bell_icon_subscription_all_enable').is(":checked"))
-							{
+								if ($j('.pnfpb_bell_icon_subscription_all_enable').is(":checked"))
+								{
 	
-								pnfpb_bell_icon_subscribe_push_type_checkbox[0] = '1';
+									pnfpb_bell_icon_subscribe_push_type_checkbox[0] = '1';
 	
 								if (pnfpb_show_push_notify_types.length > 0) {
 	
@@ -1911,10 +1922,6 @@ if (pnfpb_ajax_object_push.pwaapponlyenable === '1') {
 						if (pnfpb_ajax_object_push.pnfpb_ic_fcm_prompt_style === '2' && PNFPB_custom_prompt_display === 'ON') {
 
 							$j('.pnfpb-popup-customprompt-vertical-container').show();
-
-							pnfpb_bell_icon_subscription_options_custom_prompt = '';
-
-
 							$j('.pnfpb_bell_icon_subscription_all_enable').off().on('click',function(event) {
 
 			
@@ -2243,6 +2250,34 @@ if (pnfpb_ajax_object_push.pwaapponlyenable === '1') {
 						}
 
 					}
+					}; // End of pnfpb_show_dialog function
+
+					// Handle popup delay based on configuration
+					if (pnfpb_ajax_object_push.pnfpb_ic_fcm_custom_prompt_delay_type === 'seconds') {
+						// Show popup after N seconds
+						const delayMs = parseInt(pnfpb_ajax_object_push.pnfpb_ic_fcm_custom_prompt_delay_seconds) * 1000;
+						setTimeout(pnfpb_show_dialog, delayMs);
+					} else if (pnfpb_ajax_object_push.pnfpb_ic_fcm_custom_prompt_delay_type === 'scroll') {
+						// Show popup after scrolling N% down the page
+						const scrollThreshold = parseInt(pnfpb_ajax_object_push.pnfpb_ic_fcm_custom_prompt_delay_scroll_percent);
+						let hasScrolled = false;
+
+						const pnfpb_handle_scroll = function() {
+							if (!hasScrolled) {
+								const scrollPercentage = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+								if (scrollPercentage >= scrollThreshold) {
+									hasScrolled = true;
+									window.removeEventListener('scroll', pnfpb_handle_scroll);
+									pnfpb_show_dialog();
+								}
+							}
+						};
+
+						window.addEventListener('scroll', pnfpb_handle_scroll);
+					} else {
+						// Show popup immediately if no delay is configured
+						pnfpb_show_dialog();
+					}
 
 				} else {
 
@@ -2319,6 +2354,7 @@ if (pnfpb_ajax_object_push.pwaapponlyenable === '1') {
 				}
 
 			}
+
 			let name = 'PNFPB_custom_prompt=';
 			let PNFPB_custom_prompt_display = 'ON'; // Default to showing the prompt
 			let decodedCookie = decodeURIComponent(document.cookie);
@@ -2335,10 +2371,12 @@ if (pnfpb_ajax_object_push.pwaapponlyenable === '1') {
 				}
 			}
 					
-
 			registration.pushManager.getSubscription().then(async function (subscription) {
 
 				if (!subscription && Notification.permission !== "denied" && Notification.permission !== "granted") {
+
+					// Function to show the custom prompt dialog with proper delay handling
+					const pnfpb_show_dialog_option2 = function() {				
 
 					if (pnfpb_ajax_object_push.pnfpb_ic_fcm_prompt_style === '1' && PNFPB_custom_prompt_display === 'ON') {
 
@@ -3014,8 +3052,36 @@ if (pnfpb_ajax_object_push.pwaapponlyenable === '1') {
 						}
 
 					}
+				};
 
+					// Handle popup delay based on configuration
+				if (pnfpb_ajax_object_push.pnfpb_ic_fcm_custom_prompt_delay_type === 'seconds') {
+					// Show popup after N seconds
+					const delayMs_option2 = parseInt(pnfpb_ajax_object_push.pnfpb_ic_fcm_custom_prompt_delay_seconds) * 1000;
+					setTimeout(pnfpb_show_dialog_option2, delayMs_option2);
+				} else if (pnfpb_ajax_object_push.pnfpb_ic_fcm_custom_prompt_delay_type === 'scroll') {
+					// Show popup after scrolling N% down the page
+					const scrollThreshold_option2 = parseInt(pnfpb_ajax_object_push.pnfpb_ic_fcm_custom_prompt_delay_scroll_percent);
+					let hasScrolled = false;
+
+					const pnfpb_handle_scroll_option2 = function() {
+						if (!hasScrolled) {
+							const scrollPercentage = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+							if (scrollPercentage >= scrollThreshold_option2) {
+								hasScrolled = true;
+								window.removeEventListener('scroll', pnfpb_handle_scroll_option2);
+								pnfpb_show_dialog_option2();
+							}
+						}
+					};
+
+					window.addEventListener('scroll', pnfpb_handle_scroll_option2);
+				} else {
+					// Show popup immediately if no delay is configured
+					pnfpb_show_dialog_option2();
 				}
+				
+			}
 			});		
 		} 
 
