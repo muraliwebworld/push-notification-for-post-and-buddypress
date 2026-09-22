@@ -2724,6 +2724,7 @@ td.pnfpb_ic_push_settings_table_column {
 .pnfpb-section-card--open .pnfpb-section-body {
 	overflow: visible;
 	opacity: 1;
+	max-height:max-content;
 }
 
 /**
