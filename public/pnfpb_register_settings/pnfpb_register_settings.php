@@ -88,6 +88,9 @@ if ( ! defined( 'ABSPATH' ) ) {
             register_setting("pnfpb_icfcm_group", "pnfpb_ic_fcm_prompt_style",$register_settings_args);
             register_setting("pnfpb_icfcm_group", "pnfpb_ic_fcm_prompt_on_off",$register_settings_args);
             register_setting("pnfpb_icfcm_group", "pnfpb_ic_fcm_prompt_style3",$register_settings_args);
+            register_setting("pnfpb_icfcm_group", "pnfpb_ic_fcm_custom_prompt_delay_type",$register_settings_args);
+            register_setting("pnfpb_icfcm_group", "pnfpb_ic_fcm_custom_prompt_delay_seconds",$register_settings_args);
+            register_setting("pnfpb_icfcm_group", "pnfpb_ic_fcm_custom_prompt_delay_scroll_percent",$register_settings_args);
             register_setting(
                 "pnfpb_icfcm_group",
                 "pnfpb_bell_icon_subscription_option_update_text",

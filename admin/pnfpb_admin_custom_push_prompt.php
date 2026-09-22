@@ -220,7 +220,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<?php esc_html_e( 'Show Popup After', 'push-notification-for-post-and-buddypress' ); ?>
 				</div>
 				<div class="pnfpb-field-card__control">
-					<div style="display: flex; flex-direction: column; gap: 12px;">
+					<div style="display: flex; flex-direction: row; gap: 24px; flex-wrap: wrap;">
 						<!-- Option 1: After N seconds -->
 						<label style="display: flex; align-items: center; gap: 8px;">
 							<input type="radio" name="pnfpb_ic_fcm_custom_prompt_delay_type" 
@@ -228,11 +228,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 								   value="seconds" 
 								   <?php checked( 'seconds', get_option( 'pnfpb_ic_fcm_custom_prompt_delay_type' ) ); ?> />
 							<span><?php esc_html_e( 'Show popup after', 'push-notification-for-post-and-buddypress' ); ?></span>
-							<input type="number" min="1" class="pnfpb_ic_push_settings_table_value_column_input_field"
+							<input type="number" min="0" max="999" class="pnfpb_ic_push_settings_table_value_column_input_field"
 								   id="pnfpb_ic_fcm_custom_prompt_delay_seconds"
 								   name="pnfpb_ic_fcm_custom_prompt_delay_seconds"
 								   value="<?php $v = get_option( 'pnfpb_ic_fcm_custom_prompt_delay_seconds' ); echo esc_attr( $v ? $v : '10' ); ?>"
-								   style="width: 80px;" />
+								   style="width: 60px;" />
 							<span><?php esc_html_e( 'seconds', 'push-notification-for-post-and-buddypress' ); ?></span>
 						</label>
 
@@ -243,11 +243,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 								   value="scroll" 
 								   <?php checked( 'scroll', get_option( 'pnfpb_ic_fcm_custom_prompt_delay_type' ) ); ?> />
 							<span><?php esc_html_e( 'Show popup after scrolling', 'push-notification-for-post-and-buddypress' ); ?></span>
-							<input type="number" min="1" max="100" class="pnfpb_ic_push_settings_table_value_column_input_field"
+							<input type="number" min="0" max="100" class="pnfpb_ic_push_settings_table_value_column_input_field"
 								   id="pnfpb_ic_fcm_custom_prompt_delay_scroll_percent"
 								   name="pnfpb_ic_fcm_custom_prompt_delay_scroll_percent"
 								   value="<?php $v = get_option( 'pnfpb_ic_fcm_custom_prompt_delay_scroll_percent' ); echo esc_attr( $v ? $v : '50' ); ?>"
-								   style="width: 80px;" />
+								   style="width: 60px;" />
 							<span>%</span>
 						</label>
 					</div>
