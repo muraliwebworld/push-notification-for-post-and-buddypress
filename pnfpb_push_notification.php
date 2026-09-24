@@ -2430,7 +2430,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 "pnfpb-admin-icpstyle-name",
                 plugin_dir_url(__FILE__) . "admin/css/pnfpb_admin_v3.css",
                 [],
-                "3.11.24"
+                "3.11.26"
             );
             wp_enqueue_style(
                 "pnfpb-admin-pwa-icpstyle-name",
@@ -3089,7 +3089,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                         "pnfpb-icajax-script-push",
                         plugins_url($filename, __FILE__),
                         [],
-                        "3.10.13",
+                        "3.10.18",
                         true
                     );
                     wp_localize_script(
@@ -3189,7 +3189,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                             "pnfpb-icajax-script-push",
                             plugins_url($filename, __FILE__),
                             ["jquery"],
-                            "3.10.13",
+                            "3.10.18",
                             true
                         );
                         $pnfpb_ic_fcm_prompt_style = "";
@@ -4433,7 +4433,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 							"pnfpb-icajax-script-push",
 							plugins_url($filename, __FILE__),
 							[],
-							"3.04.19",
+							"3.04.25",
 							true
 						);
 
@@ -4643,7 +4643,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 							"pnfpb-icajax-script-push",
 							plugins_url($filename, __FILE__),
 							[],
-							"3.10.13",
+							"3.10.19",
 							true
 						);
 
@@ -4894,7 +4894,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                             "pnfpb-icajax-script-push",
                             plugins_url($filename, __FILE__),
                             ["jquery"],
-                            "3.10.13",
+                            "3.10.19",
                             true
                         );
                         $pnfpb_ic_fcm_prompt_style = "";

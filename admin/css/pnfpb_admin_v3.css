@@ -2711,7 +2711,7 @@ td.pnfpb_ic_push_settings_table_column {
 	transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
 	            opacity 0.3s ease,
 	            overflow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-	overflow: hidden;
+	overflow: visible;
 	opacity: 1;
 }
 
@@ -2724,7 +2724,7 @@ td.pnfpb_ic_push_settings_table_column {
 .pnfpb-section-card--open .pnfpb-section-body {
 	overflow: visible;
 	opacity: 1;
-	max-height:max-content;
+	max-height:max-content !important;
 }
 
 /**

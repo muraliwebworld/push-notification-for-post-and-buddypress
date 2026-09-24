@@ -231,7 +231,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<input type="number" min="0" max="999" class="pnfpb_ic_push_settings_table_value_column_input_field"
 								   id="pnfpb_ic_fcm_custom_prompt_delay_seconds"
 								   name="pnfpb_ic_fcm_custom_prompt_delay_seconds"
-								   value="<?php $v = get_option( 'pnfpb_ic_fcm_custom_prompt_delay_seconds' ); echo esc_attr( $v ? $v : '10' ); ?>"
+								   value="<?php $v = get_option( 'pnfpb_ic_fcm_custom_prompt_delay_seconds' ); echo esc_attr( $v ? $v : '0' ); ?>"
 								   style="width: 60px;" />
 							<span><?php esc_html_e( 'seconds', 'push-notification-for-post-and-buddypress' ); ?></span>
 						</label>
@@ -246,7 +246,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<input type="number" min="0" max="100" class="pnfpb_ic_push_settings_table_value_column_input_field"
 								   id="pnfpb_ic_fcm_custom_prompt_delay_scroll_percent"
 								   name="pnfpb_ic_fcm_custom_prompt_delay_scroll_percent"
-								   value="<?php $v = get_option( 'pnfpb_ic_fcm_custom_prompt_delay_scroll_percent' ); echo esc_attr( $v ? $v : '50' ); ?>"
+								   value="<?php $v = get_option( 'pnfpb_ic_fcm_custom_prompt_delay_scroll_percent' ); echo esc_attr( $v ? $v : '0' ); ?>"
 								   style="width: 60px;" />
 							<span>%</span>
 						</label>
