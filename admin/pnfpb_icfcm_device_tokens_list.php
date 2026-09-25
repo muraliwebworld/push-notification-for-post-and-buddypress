@@ -75,7 +75,7 @@ if (!class_exists("PNFPB_ICFM_Device_tokens_List")) {
         }
 
         /**
-         * Delete a customer record.
+         * Move a device token to trash instead of permanently deleting.
          *
          * @param int $id device token ID
          */
@@ -83,11 +83,40 @@ if (!class_exists("PNFPB_ICFM_Device_tokens_List")) {
         {
             global $wpdb;
 
+            // Fetch the token details before deletion
+            $token = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT id, device_id, userid, subscription_option FROM {$wpdb->prefix}pnfpb_ic_subscribed_deviceids_web WHERE id = %d",
+                    $id
+                ),
+                ARRAY_A
+            );
+
+            if (!$token) {
+                return false;
+            }
+
+            // Insert into trash table
+            $wpdb->insert(
+                "{$wpdb->prefix}pnfpb_ic_subscribed_deviceids_web_trash",
+                [
+                    "device_id" => $token["device_id"],
+                    "userid" => $token["userid"],
+                    "subscription_option" => $token["subscription_option"],
+                    "removal_reason" => "Deleted by admin",
+                    "removed_at" => current_time("mysql"),
+                ],
+                ["%s", "%d", "%s", "%s", "%s"]
+            );
+
+            // Delete from main table
             $wpdb->delete(
                 "{$wpdb->prefix}pnfpb_ic_subscribed_deviceids_web",
                 ["id" => $id],
                 ["%d"]
             );
+
+            return true;
         }
 
         /**
@@ -798,7 +827,12 @@ if (!class_exists("PNFPB_ICFM_Device_Trash_Tokens_List")) {
          */
         public function prepare_items( $search = "" )
         {
-            if ( isset( $_REQUEST["_wpnonce"] ) && ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST["_wpnonce"] ) ), "pnfpb_icfcm_trash_tokens_list" ) ) {
+            // Check if this is an individual action with its own nonce (restore-trash, delete-trash)
+            $individual_actions = [ 'restore-trash', 'delete-trash' ];
+            $is_individual_action = isset( $_REQUEST['action'] ) && in_array( $_REQUEST['action'], $individual_actions, true );
+
+            // Only verify form nonce if not an individual action with its own nonce
+            if ( ! $is_individual_action && isset( $_REQUEST["_wpnonce"] ) && ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST["_wpnonce"] ) ), "pnfpb_icfcm_trash_tokens_list" ) ) {
                 die( "nonce failure" );
             }
 
