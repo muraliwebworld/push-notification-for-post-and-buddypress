@@ -113,7 +113,11 @@ if (get_option('pnfpb_index_status_of_device_token_table') === false || (get_opt
 
 <div class="pnfpb_column_1200">
 	<div class="wrap">
-		<?php $pnfpb_total_tokens = PNFPB_ICFM_Device_tokens_List::record_count(); ?>
+		<?php 
+		$pnfpb_total_tokens = PNFPB_ICFM_Device_tokens_List::record_count();
+		$pnfpb_trash_count = PNFPB_ICFM_Device_Trash_Tokens_List::get_trash_count();
+		$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'active';
+		?>
 		<div class="pnfpb-stats-cards" style="margin-bottom:12px;">
 			<div class="pnfpb-stat-card pnfpb-stat-card--tokens">
 				<div class="pnfpb-stat-card__icon"><span class="dashicons dashicons-admin-network"></span></div>
@@ -124,38 +128,88 @@ if (get_option('pnfpb_index_status_of_device_token_table') === false || (get_opt
 				</div>
 			</div>
 		</div>
-		<div class="pnfpb-info-box pnfpb-info-box--warning" style="margin-bottom:12px;">
-			<span class="pnfpb-info-box__icon dashicons dashicons-warning" style="color:#B45309;"></span>
-			<div>
-				<strong><?php esc_html_e( 'Do not delete tokens unnecessarily', 'push-notification-for-post-and-buddypress' ); ?></strong> &mdash;
-				<?php esc_html_e( 'Deleting a token will prevent that user from receiving push notifications on that device until they re-subscribe.', 'push-notification-for-post-and-buddypress' ); ?>
-			</div>
+
+		<!-- Tab Navigation -->
+		<div class="nav-tab-wrapper" style="margin-bottom:12px; border-bottom:1px solid #ccc;">
+			<a href="?page=pnfpb_icfm_device_tokens_list&tab=active" class="nav-tab <?php echo $current_tab === 'active' ? 'nav-tab-active' : ''; ?>">
+				<span class="dashicons dashicons-admin-network" style="margin-right:5px; vertical-align:text-bottom;"></span>
+				<?php esc_html_e( 'Active Tokens', 'push-notification-for-post-and-buddypress' ); ?>
+				<span class="pnfpb-tab-badge" style="margin-left:8px; background:#0073aa; color:white; padding:2px 8px; border-radius:3px; font-size:12px; font-weight:bold;"><?php echo esc_html( number_format_i18n( (int) $pnfpb_total_tokens ) ); ?></span>
+			</a>
+			<a href="?page=pnfpb_icfm_device_tokens_list&tab=trash" class="nav-tab <?php echo $current_tab === 'trash' ? 'nav-tab-active' : ''; ?>">
+				<span class="dashicons dashicons-trash" style="margin-right:5px; vertical-align:text-bottom;"></span>
+				<?php esc_html_e( 'Trash', 'push-notification-for-post-and-buddypress' ); ?>
+				<?php if ( $pnfpb_trash_count > 0 ) : ?>
+					<span class="pnfpb-tab-badge" style="margin-left:8px; background:#dd3333; color:white; padding:2px 8px; border-radius:3px; font-size:12px; font-weight:bold;"><?php echo esc_html( number_format_i18n( (int) $pnfpb_trash_count ) ); ?></span>
+				<?php endif; ?>
+			</a>
 		</div>
-		<?php settings_fields("pnfpb_icfcm_token"); ?>
-		<?php do_settings_sections("pnfpb_icfcm_token"); ?>					
-		<div id="poststuff">
-			<div id="post-body" class="metabox-holder columns-2">
-				<div id="post-body-content">
-					<div class="meta-box-sortables ui-sortable">
-						<form method="post">
-							<?php
-							$this->devicetokens_obj->prepare_items();
-							$this->devicetokens_obj->pnfpb_url_scheme_start();
-							$this->devicetokens_obj->search_box(
-								"Search",
-								"pnfpb_device_token_search"
-							);
-							$this->devicetokens_obj->display();
-							wp_nonce_field( 'pnfpb_icfcm_device_tokens_list', '_wpnonce' );
-							$this->devicetokens_obj->pnfpb_url_scheme_stop();
-							?>
-						</form>
-					</div>
+
+		<?php if ( $current_tab === 'active' ) : ?>
+			<!-- Active Tokens Tab -->
+			<div class="pnfpb-info-box pnfpb-info-box--warning" style="margin-bottom:12px;">
+				<span class="pnfpb-info-box__icon dashicons dashicons-warning" style="color:#B45309;"></span>
+				<div>
+					<strong><?php esc_html_e( 'Do not delete tokens unnecessarily', 'push-notification-for-post-and-buddypress' ); ?></strong> &mdash;
+					<?php esc_html_e( 'Deleting a token will prevent that user from receiving push notifications on that device until they re-subscribe.', 'push-notification-for-post-and-buddypress' ); ?>
 				</div>
 			</div>
-			<br class="clear">
-		</div>
-		<?php $this->devicetokens_obj->render_token_trash(); ?>
+			<?php settings_fields("pnfpb_icfcm_token"); ?>
+			<?php do_settings_sections("pnfpb_icfcm_token"); ?>					
+			<div id="poststuff">
+				<div id="post-body" class="metabox-holder columns-2">
+					<div id="post-body-content">
+						<div class="meta-box-sortables ui-sortable">
+							<form method="post">
+								<?php
+								$this->devicetokens_obj->prepare_items();
+								$this->devicetokens_obj->pnfpb_url_scheme_start();
+								$this->devicetokens_obj->search_box(
+									"Search",
+									"pnfpb_device_token_search"
+								);
+								$this->devicetokens_obj->display();
+								wp_nonce_field( 'pnfpb_icfcm_device_tokens_list', '_wpnonce' );
+								$this->devicetokens_obj->pnfpb_url_scheme_stop();
+								?>
+							</form>
+						</div>
+					</div>
+				</div>
+				<br class="clear">
+			</div>
+		<?php else : ?>
+			<!-- Trash Tokens Tab -->
+			<div class="pnfpb-info-box pnfpb-info-box--info" style="margin-bottom:12px;">
+				<span class="pnfpb-info-box__icon dashicons dashicons-info" style="color:#1e73be;"></span>
+				<div>
+					<strong><?php esc_html_e( 'Token Trash', 'push-notification-for-post-and-buddypress' ); ?></strong><br>
+					<?php esc_html_e( 'Invalid tokens are retained here until restored or permanently deleted.', 'push-notification-for-post-and-buddypress' ); ?>
+				</div>
+			</div>
+			<div id="poststuff">
+				<div id="post-body" class="metabox-holder columns-2">
+					<div id="post-body-content">
+						<div class="meta-box-sortables ui-sortable">
+							<form method="post">
+								<?php
+								$trash_tokens_obj = new PNFPB_ICFM_Device_Trash_Tokens_List();
+								$trash_tokens_obj->prepare_items();
+								$trash_tokens_obj->search_box(
+									"Search",
+									"pnfpb_trash_token_search"
+								);
+								$trash_tokens_obj->display();
+								wp_nonce_field( 'pnfpb_icfcm_trash_tokens_list', '_wpnonce' );
+								?>
+							</form>
+						</div>
+					</div>
+				</div>
+				<br class="clear">
+			</div>
+		<?php endif; ?>
+		<?php if ( $current_tab === 'active' ) : ?>
 		<div class="pnfpb_row">
 			<div class="pnfpb_column_400">
 				<p>
@@ -257,7 +311,8 @@ if (get_option('pnfpb_index_status_of_device_token_table') === false || (get_opt
 ); ?> <br/>
 				</p>
 			</div>
-		</div>					
+		</div>
+		<?php endif; ?>					
 	</div>
 </div>
 <?php

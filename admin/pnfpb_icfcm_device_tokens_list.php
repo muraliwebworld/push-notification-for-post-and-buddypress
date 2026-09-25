@@ -471,4 +471,375 @@ if (!class_exists("PNFPB_ICFM_Device_tokens_List")) {
 } else {
     exit();
 }
+
+/**
+ * Trash Tokens List Table Class
+ */
+if (!class_exists("PNFPB_ICFM_Device_Trash_Tokens_List")) {
+    class PNFPB_ICFM_Device_Trash_Tokens_List extends WP_List_Table
+    {
+        private $table_data;
+
+        /** Class constructor */
+        public function __construct()
+        {
+            parent::__construct([
+                "singular" => __(
+                    "Trash Token",
+                    "push-notification-for-post-and-buddypress"
+                ),
+                "plural" => __(
+                    "Trash Tokens",
+                    "push-notification-for-post-and-buddypress"
+                ),
+                "ajax" => false,
+            ]);
+        }
+
+        /**
+         * Retrieve Trash tokens from database
+         *
+         * @param int $per_page
+         * @param int $page_number
+         * @param string $search
+         *
+         * @return mixed
+         */
+        public static function get_trash_tokens(
+            $per_page = 20,
+            $page_number = 1,
+            $search = ""
+        ) {
+            global $wpdb;
+            $table = $wpdb->prefix . 'pnfpb_ic_subscribed_deviceids_web_trash';
+            $offset = max( 0, ( absint( $page_number ) - 1 ) * absint( $per_page ) );
+            
+            $sql = "SELECT * FROM {$table}";
+            
+            if ( ! empty( $search ) && is_numeric( $search ) ) {
+                $sql .= " WHERE userid = " . absint( $search );
+            } elseif ( ! empty( $search ) ) {
+                $sql .= $wpdb->prepare( " WHERE device_id LIKE %s OR removal_reason LIKE %s", 
+                    '%' . $wpdb->esc_like( $search ) . '%',
+                    '%' . $wpdb->esc_like( $search ) . '%'
+                );
+            }
+            
+            if ( ! empty( $_REQUEST["orderby"] ) ) {
+                $sql .= " ORDER BY " . esc_sql( $_REQUEST["orderby"] );
+                $sql .= ! empty( $_REQUEST["order"] ) ? " " . esc_sql( $_REQUEST["order"] ) : " ASC";
+            } else {
+                $sql .= " ORDER BY removed_at DESC";
+            }
+            
+            if ( $per_page > 0 ) {
+                $sql .= " LIMIT " . absint( $per_page );
+                $sql .= " OFFSET " . absint( $offset );
+            }
+            
+            return $wpdb->get_results( $sql, ARRAY_A );
+        }
+
+        /**
+         * Get trash tokens count
+         *
+         * @param string $search
+         * @return int
+         */
+        public static function get_trash_count( $search = "" ) {
+            global $wpdb;
+            $table = $wpdb->prefix . 'pnfpb_ic_subscribed_deviceids_web_trash';
+            
+            $sql = "SELECT COUNT(*) FROM {$table}";
+            
+            if ( ! empty( $search ) && is_numeric( $search ) ) {
+                $sql .= " WHERE userid = " . absint( $search );
+            } elseif ( ! empty( $search ) ) {
+                $sql .= $wpdb->prepare( " WHERE device_id LIKE %s OR removal_reason LIKE %s", 
+                    '%' . $wpdb->esc_like( $search ) . '%',
+                    '%' . $wpdb->esc_like( $search ) . '%'
+                );
+            }
+            
+            return absint( $wpdb->get_var( $sql ) );
+        }
+
+        /**
+         * Delete or restore a trash token
+         *
+         * @param int $trash_id
+         * @param string $operation restore or delete
+         */
+        public static function process_trash_action( $trash_id, $operation = 'delete' ) {
+            global $wpdb;
+            $table = $wpdb->prefix . 'pnfpb_ic_subscribed_deviceids_web_trash';
+            
+            $trash_id = absint( $trash_id );
+            $item = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE trash_id = %d", $trash_id ), ARRAY_A );
+            
+            if ( ! $item ) {
+                return new WP_Error( 'not_found', __( 'Trash item not found', 'push-notification-for-post-and-buddypress' ) );
+            }
+            
+            if ( $operation === 'restore' ) {
+                // Restore to main tokens table
+                $wpdb->insert(
+                    "{$wpdb->prefix}pnfpb_ic_subscribed_deviceids_web",
+                    [
+                        'device_id' => $item['device_id'],
+                        'userid' => $item['userid'],
+                        'subscription_option' => isset( $item['subscription_option'] ) ? $item['subscription_option'] : '1000000000000',
+                    ],
+                    [ '%s', '%d', '%s' ]
+                );
+            }
+            
+            // Delete from trash
+            $wpdb->delete( $table, [ 'trash_id' => $trash_id ], [ '%d' ] );
+            
+            return true;
+        }
+
+        /** Text displayed when no trash data is available */
+        public function no_items()
+        {
+            esc_html_e(
+                "Trash is empty.",
+                "push-notification-for-post-and-buddypress"
+            );
+        }
+
+        /**
+         * Render a column when no column specific method exist.
+         *
+         * @param array $item
+         * @param string $column_name
+         *
+         * @return mixed
+         */
+        public function column_default( $item, $column_name )
+        {
+            switch ( $column_name ) {
+                case "trash_id":
+                case "device_id":
+                case "userid":
+                case "removal_reason":
+                case "removed_at":
+                    return $item[ $column_name ];
+                default:
+                    return print_r( $item, true );
+            }
+        }
+
+        /**
+         * Render the bulk edit checkbox
+         *
+         * @param array $item
+         *
+         * @return string
+         */
+        public function column_cb( $item )
+        {
+            return sprintf(
+                '<input type="checkbox" name="bulk-delete[]" value="%s" />',
+                $item["trash_id"]
+            );
+        }
+
+        /**
+         * Render device token column
+         *
+         * @param array $item
+         *
+         * @return string
+         */
+        public function column_device_id( $item )
+        {
+            $token = (string) $item['device_id'];
+            $masked = strlen( $token ) > 12 ? substr( $token, 0, 6 ) . '…' . substr( $token, -6 ) : '••••••••';
+            return '<code>' . esc_html( $masked ) . '</code>';
+        }
+
+        /**
+         * Render actions column
+         *
+         * @param array $item
+         *
+         * @return string
+         */
+        public function column_actions( $item )
+        {
+            $restore_nonce = wp_create_nonce( "pnfpb_restore_trash_token_" . $item['trash_id'] );
+            $delete_nonce = wp_create_nonce( "pnfpb_delete_trash_token_" . $item['trash_id'] );
+            
+            $actions = [
+                "restore" => sprintf(
+                    '<a href="?page=%s&tab=trash&action=%s&trash_id=%s&_wpnonce=%s">Restore</a>',
+                    esc_attr( $_REQUEST["page"] ),
+                    "restore-trash",
+                    absint( $item["trash_id"] ),
+                    $restore_nonce
+                ),
+                "delete" => sprintf(
+                    '<a href="?page=%s&tab=trash&action=%s&trash_id=%s&_wpnonce=%s" class="delete">Delete Permanently</a>',
+                    esc_attr( $_REQUEST["page"] ),
+                    "delete-trash",
+                    absint( $item["trash_id"] ),
+                    $delete_nonce
+                ),
+            ];
+
+            return $this->row_actions( $actions );
+        }
+
+        /**
+         * Associative array of columns
+         *
+         * @return array
+         */
+        public function get_columns()
+        {
+            $columns = [
+                "cb" => '<input type="checkbox" />',
+                "device_id" => __( "Device Token", "push-notification-for-post-and-buddypress" ),
+                "userid" => __( "User ID", "push-notification-for-post-and-buddypress" ),
+                "removal_reason" => __( "Removal Reason", "push-notification-for-post-and-buddypress" ),
+                "removed_at" => __( "Removed At", "push-notification-for-post-and-buddypress" ),
+                "actions" => __( "Actions", "push-notification-for-post-and-buddypress" ),
+            ];
+
+            return $columns;
+        }
+
+        /**
+         * Columns to make sortable
+         *
+         * @return array
+         */
+        public function get_sortable_columns()
+        {
+            $sortable_columns = [
+                "device_id" => [ "device_id", true ],
+                "userid" => [ "userid", true ],
+                "removed_at" => [ "removed_at", false ],
+            ];
+
+            return $sortable_columns;
+        }
+
+        /**
+         * Returns an associative array containing the bulk actions
+         *
+         * @return array
+         */
+        public function get_bulk_actions()
+        {
+            $actions = [
+                "bulk-restore" => __( "Restore", "push-notification-for-post-and-buddypress" ),
+                "bulk-delete" => __( "Delete Permanently", "push-notification-for-post-and-buddypress" ),
+            ];
+
+            return $actions;
+        }
+
+        /**
+         * Handles data query and filter, sorting, and pagination.
+         */
+        public function prepare_items( $search = "" )
+        {
+            if ( isset( $_REQUEST["_wpnonce"] ) && ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST["_wpnonce"] ) ), "pnfpb_icfcm_trash_tokens_list" ) ) {
+                die( "nonce failure" );
+            }
+
+            $this->_column_headers = $this->get_column_info();
+
+            /** Process bulk action */
+            $this->process_bulk_action();
+
+            $per_page = $this->get_items_per_page( "trash_records_per_page", 20 );
+            $current_page = $this->get_pagenum();
+
+            if ( isset( $_REQUEST["s"] ) ) {
+                $search = sanitize_text_field( wp_unslash( $_REQUEST["s"] ) );
+                $total_items = self::get_trash_count( $search );
+                $this->items = self::get_trash_tokens( $per_page, $current_page, $search );
+            } else {
+                $total_items = self::get_trash_count();
+                $this->items = self::get_trash_tokens( $per_page, $current_page, "" );
+            }
+
+            $this->set_pagination_args( [
+                "total_items" => $total_items,
+                "per_page" => $per_page,
+            ] );
+        }
+
+        /**
+         * Process trash bulk actions
+         */
+        public function process_bulk_action()
+        {
+            // Single item restore
+            if ( "restore-trash" === $this->current_action() ) {
+                $nonce = esc_attr( sanitize_text_field( wp_unslash( $_REQUEST["_wpnonce"] ) ) );
+                $expected_nonce = "pnfpb_restore_trash_token_" . sanitize_text_field( wp_unslash( $_REQUEST["trash_id"] ) );
+                
+                if ( ! wp_verify_nonce( $nonce, $expected_nonce ) ) {
+                    die( "nonce failure" );
+                }
+                
+                $trash_id = absint( sanitize_text_field( wp_unslash( $_REQUEST["trash_id"] ) ) );
+                self::process_trash_action( $trash_id, 'restore' );
+                wp_safe_remote_post( add_query_arg( [ 'page' => 'pnfpb_icfm_device_tokens_list', 'tab' => 'trash' ], admin_url( 'admin.php' ) ) );
+            }
+
+            // Single item delete
+            if ( "delete-trash" === $this->current_action() ) {
+                $nonce = esc_attr( sanitize_text_field( wp_unslash( $_REQUEST["_wpnonce"] ) ) );
+                $expected_nonce = "pnfpb_delete_trash_token_" . sanitize_text_field( wp_unslash( $_REQUEST["trash_id"] ) );
+                
+                if ( ! wp_verify_nonce( $nonce, $expected_nonce ) ) {
+                    die( "nonce failure" );
+                }
+                
+                $trash_id = absint( sanitize_text_field( wp_unslash( $_REQUEST["trash_id"] ) ) );
+                self::process_trash_action( $trash_id, 'delete' );
+            }
+
+            // Bulk restore
+            if ( ( isset( $_REQUEST["action"] ) && $_REQUEST["action"] === "bulk-restore" ) ||
+                 ( isset( $_REQUEST["action2"] ) && $_REQUEST["action2"] === "bulk-restore" ) ) {
+                
+                $nonce = esc_attr( sanitize_text_field( wp_unslash( $_REQUEST["_wpnonce"] ) ) );
+                if ( ! wp_verify_nonce( $nonce, "pnfpb_icfcm_trash_tokens_list" ) ) {
+                    die( "nonce failure" );
+                }
+
+                if ( isset( $_REQUEST["bulk-delete"] ) && is_array( $_REQUEST["bulk-delete"] ) ) {
+                    foreach ( $_REQUEST["bulk-delete"] as $trash_id ) {
+                        $trash_id = absint( $trash_id );
+                        self::process_trash_action( $trash_id, 'restore' );
+                    }
+                }
+            }
+
+            // Bulk delete
+            if ( ( isset( $_REQUEST["action"] ) && $_REQUEST["action"] === "bulk-delete" ) ||
+                 ( isset( $_REQUEST["action2"] ) && $_REQUEST["action2"] === "bulk-delete" ) ) {
+                
+                $nonce = esc_attr( sanitize_text_field( wp_unslash( $_REQUEST["_wpnonce"] ) ) );
+                if ( ! wp_verify_nonce( $nonce, "pnfpb_icfcm_trash_tokens_list" ) ) {
+                    die( "nonce failure" );
+                }
+
+                if ( isset( $_REQUEST["bulk-delete"] ) && is_array( $_REQUEST["bulk-delete"] ) ) {
+                    foreach ( $_REQUEST["bulk-delete"] as $trash_id ) {
+                        $trash_id = absint( $trash_id );
+                        self::process_trash_action( $trash_id, 'delete' );
+                    }
+                }
+            }
+        }
+    }
+}
 ?>
