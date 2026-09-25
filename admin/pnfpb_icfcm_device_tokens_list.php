@@ -619,16 +619,15 @@ if (!class_exists("PNFPB_ICFM_Device_Trash_Tokens_List")) {
          */
         public function column_default( $item, $column_name )
         {
-            switch ( $column_name ) {
-                case "trash_id":
-                case "device_id":
-                case "userid":
-                case "removal_reason":
-                case "removed_at":
-                    return $item[ $column_name ];
-                default:
-                    return print_r( $item, true );
+            if ( isset( $item[ $column_name ] ) ) {
+                $value = $item[ $column_name ];
+                // If it's an array, convert to string representation
+                if ( is_array( $value ) ) {
+                    return '<code>' . esc_html( json_encode( $value ) ) . '</code>';
+                }
+                return esc_html( $value );
             }
+            return '—';
         }
 
         /**
@@ -647,6 +646,18 @@ if (!class_exists("PNFPB_ICFM_Device_Trash_Tokens_List")) {
         }
 
         /**
+         * Render trash ID column
+         *
+         * @param array $item
+         *
+         * @return string
+         */
+        public function column_trash_id( $item )
+        {
+            return esc_html( $item['trash_id'] );
+        }
+
+        /**
          * Render device token column
          *
          * @param array $item
@@ -656,8 +667,46 @@ if (!class_exists("PNFPB_ICFM_Device_Trash_Tokens_List")) {
         public function column_device_id( $item )
         {
             $token = (string) $item['device_id'];
-            $masked = strlen( $token ) > 12 ? substr( $token, 0, 6 ) . '…' . substr( $token, -6 ) : '••••••••';
-            return '<code>' . esc_html( $masked ) . '</code>';
+            //$masked = strlen( $token ) > 12 ? substr( $token, 0, 6 ) . '…' . substr( $token, -6 ) : '••••••••';
+            return '<code>' . esc_html( $token ) . '</code>';
+        }
+
+        /**
+         * Render user ID column
+         *
+         * @param array $item
+         *
+         * @return string
+         */
+        public function column_userid( $item )
+        {
+            return esc_html( $item['userid'] );
+        }
+
+        /**
+         * Render removal reason column
+         *
+         * @param array $item
+         *
+         * @return string
+         */
+        public function column_removal_reason( $item )
+        {
+            $reason = isset( $item['removal_reason'] ) ? $item['removal_reason'] : '—';
+            return esc_html( $reason );
+        }
+
+        /**
+         * Render removed at column
+         *
+         * @param array $item
+         *
+         * @return string
+         */
+        public function column_removed_at( $item )
+        {
+            $date = isset( $item['removed_at'] ) ? $item['removed_at'] : '—';
+            return esc_html( $date );
         }
 
         /**
@@ -701,6 +750,7 @@ if (!class_exists("PNFPB_ICFM_Device_Trash_Tokens_List")) {
         {
             $columns = [
                 "cb" => '<input type="checkbox" />',
+                "trash_id" => __( "ID", "push-notification-for-post-and-buddypress" ),
                 "device_id" => __( "Device Token", "push-notification-for-post-and-buddypress" ),
                 "userid" => __( "User ID", "push-notification-for-post-and-buddypress" ),
                 "removal_reason" => __( "Removal Reason", "push-notification-for-post-and-buddypress" ),
@@ -719,6 +769,7 @@ if (!class_exists("PNFPB_ICFM_Device_Trash_Tokens_List")) {
         public function get_sortable_columns()
         {
             $sortable_columns = [
+                "trash_id" => [ "trash_id", false ],
                 "device_id" => [ "device_id", true ],
                 "userid" => [ "userid", true ],
                 "removed_at" => [ "removed_at", false ],
@@ -841,5 +892,7 @@ if (!class_exists("PNFPB_ICFM_Device_Trash_Tokens_List")) {
             }
         }
     }
+} else {
+    exit();
 }
 ?>

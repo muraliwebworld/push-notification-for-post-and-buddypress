@@ -343,6 +343,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
     {
         public $pre_name = "PNFPB_";
         public $devicetokens_obj;
+        public $trash_tokens_obj;
         public $pushnotifications_obj;
 		public $pushnotifications_delivered_obj;
 		public $pushnotification_browser_delivered_obj;
@@ -5827,19 +5828,43 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
         /**
          * Admin page to list and manage device tokens - Screen options
          * @since 1.19
+         * @modified 3.22 - Support both active and trash tokens tabs
          */
         public function PNFPB_screen_option()
         {
             $option = "per_page";
-            $args = [
-                "label" => "Device tokens",
-                "default" => 20,
-                "option" => "records_per_page",
-            ];
+            $current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'active';
+            
+            // Whitelist validation - only allow 'active' or 'trash'
+            if ( ! in_array( $current_tab, [ 'active', 'trash' ], true ) ) {
+                $current_tab = 'active';
+            }
 
-            add_screen_option($option, $args);
+            if ( $current_tab === 'trash' ) {
+                // Screen options for trash tokens tab
+                $args = [
+                    "label" => "Trash tokens",
+                    "default" => 20,
+                    "option" => "trash_records_per_page",
+                ];
 
-            $this->devicetokens_obj = new PNFPB_ICFM_Device_tokens_List();
+                add_screen_option( $option, $args );
+
+                // Include trash tokens list class
+                require_once plugin_dir_path( __FILE__ ) . 'admin/pnfpb_icfcm_device_tokens_list.php';
+                $this->trash_tokens_obj = new PNFPB_ICFM_Device_Trash_Tokens_List();
+            } else {
+                // Screen options for active tokens tab (default)
+                $args = [
+                    "label" => "Device tokens",
+                    "default" => 20,
+                    "option" => "records_per_page",
+                ];
+
+                add_screen_option( $option, $args );
+
+                $this->devicetokens_obj = new PNFPB_ICFM_Device_tokens_List();
+            }
         }
 
         /**
