@@ -69,7 +69,7 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 		/** Execute one bounded validation/move batch. */
 		public static function execute_cleanup_batch( $batch_size = 100, $source = 'manual' ) {
 			$configured_size = get_option( 'pnfpb_token_cleanup_batch_limit', get_option( 'pnfpb_cleanup_batch_size', 100 ) );
-			$batch_size      = min( 500, max( 1, absint( $batch_size ?: $configured_size ) ) );
+			$batch_size      = min( 100, max( 1, absint( $batch_size ?: $configured_size ) ) );
 			$result          = array( 'run_id' => 0, 'status' => 'failed', 'candidates' => 0, 'tokens_processed' => 0, 'tokens_validated' => 0, 'tokens_valid' => 0, 'moved_to_trash' => 0, 'tokens_invalid' => 0, 'retryable' => 0, 'errors' => 0, 'next_cursor' => 0, 'message' => '' );
 
 			if ( ! self::acquire_lock() ) {

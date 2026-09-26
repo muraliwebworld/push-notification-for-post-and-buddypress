@@ -40,82 +40,82 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 <div class="pnfpb_column_1200">
 
 	<!-- Status Cards -->
-	<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+	<div class="pnfpb-status-cards-grid">
 		
 		<!-- Valid Tokens Card -->
-		<div class="pnfpb-status-card" style="background: #f0f6fc; border-left: 4px solid #0073aa; padding: 15px; border-radius: 4px;">
-			<div style="display: flex; justify-content: space-between; align-items: center;">
+		<div class="pnfpb-status-card pnfpb-status-card--valid">
+			<div class="pnfpb-status-card__header">
 				<div>
-					<div style="font-size: 12px; color: #666; text-transform: uppercase; margin-bottom: 5px;">
+					<div class="pnfpb-status-card__label">
 						<?php esc_html_e( 'Valid Tokens', 'push-notification-for-post-and-buddypress' ); ?>
 					</div>
-					<div style="font-size: 28px; font-weight: bold; color: #0073aa;">
+					<div class="pnfpb-status-card__number">
 						<?php echo isset( $stats['valid'] ) ? absint( $stats['valid'] ) : 0; ?>
 					</div>
 				</div>
-				<div style="font-size: 48px; color: #0073aa; opacity: 0.2;">
+				<div class="pnfpb-status-card__icon">
 					<span class="dashicons dashicons-yes-alt"></span>
 				</div>
 			</div>
 		</div>
 
 		<!-- Invalid Tokens Card -->
-		<div class="pnfpb-status-card" style="background: #fcf0f1; border-left: 4px solid #cc1818; padding: 15px; border-radius: 4px;">
-			<div style="display: flex; justify-content: space-between; align-items: center;">
+		<div class="pnfpb-status-card pnfpb-status-card--invalid">
+			<div class="pnfpb-status-card__header">
 				<div>
-					<div style="font-size: 12px; color: #666; text-transform: uppercase; margin-bottom: 5px;">
+					<div class="pnfpb-status-card__label">
 						<?php esc_html_e( 'Invalid Tokens', 'push-notification-for-post-and-buddypress' ); ?>
 					</div>
-					<div style="font-size: 28px; font-weight: bold; color: #cc1818;">
+					<div class="pnfpb-status-card__number">
 						<?php echo isset( $stats['invalid'] ) ? absint( $stats['invalid'] ) : 0; ?>
 					</div>
 				</div>
-				<div style="font-size: 48px; color: #cc1818; opacity: 0.2;">
+				<div class="pnfpb-status-card__icon">
 					<span class="dashicons dashicons-dismiss"></span>
 				</div>
 			</div>
 		</div>
 
 		<!-- Unverified Tokens Card -->
-		<div class="pnfpb-status-card" style="background: #fef5e7; border-left: 4px solid #ffb900; padding: 15px; border-radius: 4px;">
-			<div style="display: flex; justify-content: space-between; align-items: center;">
+		<div class="pnfpb-status-card pnfpb-status-card--unverified">
+			<div class="pnfpb-status-card__header">
 				<div>
-					<div style="font-size: 12px; color: #666; text-transform: uppercase; margin-bottom: 5px;">
+					<div class="pnfpb-status-card__label">
 						<?php esc_html_e( 'Unverified Tokens', 'push-notification-for-post-and-buddypress' ); ?>
 					</div>
-					<div style="font-size: 28px; font-weight: bold; color: #ffb900;">
+					<div class="pnfpb-status-card__number">
 						<?php echo isset( $status['last_run']['retryable_count'] ) ? absint( $status['last_run']['retryable_count'] ) : 0; ?>
 					</div>
 				</div>
-				<div style="font-size: 48px; color: #ffb900; opacity: 0.2;">
+				<div class="pnfpb-status-card__icon">
 					<span class="dashicons dashicons-editor-help"></span>
 				</div>
 			</div>
 		</div>
 
 		<!-- Total Tokens Card -->
-		<div class="pnfpb-status-card" style="background: #f0f0f0; border-left: 4px solid #444; padding: 15px; border-radius: 4px;">
-			<div style="display: flex; justify-content: space-between; align-items: center;">
+		<div class="pnfpb-status-card pnfpb-status-card--total">
+			<div class="pnfpb-status-card__header">
 				<div>
-					<div style="font-size: 12px; color: #666; text-transform: uppercase; margin-bottom: 5px;">
+					<div class="pnfpb-status-card__label">
 						<?php esc_html_e( 'Total Tokens', 'push-notification-for-post-and-buddypress' ); ?>
 					</div>
-					<div style="font-size: 28px; font-weight: bold; color: #444;">
+					<div class="pnfpb-status-card__number">
 						<?php echo isset( $stats['total'] ) ? absint( $stats['total'] ) : 0; ?>
 					</div>
 				</div>
-				<div style="font-size: 48px; color: #444; opacity: 0.2;">
+				<div class="pnfpb-status-card__icon">
 					<span class="dashicons dashicons-database"></span>
 				</div>
 			</div>
 		</div>
 
 		<!-- Trash Tokens Card -->
-		<div class="pnfpb-status-card" style="background: #f7f0fc; border-left: 4px solid #7e57c2; padding: 15px; border-radius: 4px;">
-			<div style="font-size: 12px; color: #666; text-transform: uppercase; margin-bottom: 5px;">
+		<div class="pnfpb-status-card pnfpb-status-card--trash">
+			<div class="pnfpb-status-card__label">
 				<?php esc_html_e( 'Tokens in Trash', 'push-notification-for-post-and-buddypress' ); ?>
 			</div>
-			<div style="font-size: 28px; font-weight: bold; color: #7e57c2;">
+			<div class="pnfpb-status-card__number">
 				<?php echo isset( $stats['trash'] ) ? absint( $stats['trash'] ) : 0; ?>
 			</div>
 		</div>
@@ -123,7 +123,7 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 	</div>
 
 	<!-- Info Box -->
-	<div class="pnfpb-info-box pnfpb-info-box--blue" style="margin-bottom:20px;">
+	<div class="pnfpb-info-box pnfpb-info-box--blue pnfpb-info-box--margin-bottom">
 		<span class="dashicons dashicons-info pnfpb-info-box__icon"></span>
 		<div>
 			<strong><?php esc_html_e( 'About Token Cleanup', 'push-notification-for-post-and-buddypress' ); ?></strong>
@@ -134,7 +134,7 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 	</div>
 
 	<!-- Main Settings Form -->
-	<form id="pnfpb-cleanup-settings-form" method="post" style="background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 20px;">
+	<form id="pnfpb-cleanup-settings-form" method="post" class="pnfpb-cleanup-form">
 
 		<?php wp_nonce_field( 'pnfpb_cleanup_settings_nonce', 'pnfpb_cleanup_settings_nonce' ); ?>
 
@@ -151,13 +151,13 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 						<?php esc_html_e( 'Cleanup Frequency', 'push-notification-for-post-and-buddypress' ); ?>
 					</div>
 					<div class="pnfpb-field-card__control">
-						<select id="pnfpb_cleanup_schedule" name="pnfpb_cleanup_schedule" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-							<option value="hourly" <?php selected( $schedule, 'hourly' ); ?>><?php esc_html_e( 'Hourly', 'push-notification-for-post-and-buddypress' ); ?></option>
-							<option value="twicedaily" <?php selected( $schedule, 'twicedaily' ); ?>><?php esc_html_e( 'Twice Daily', 'push-notification-for-post-and-buddypress' ); ?></option>
-							<option value="daily" <?php selected( $schedule, 'daily' ); ?>><?php esc_html_e( 'Daily', 'push-notification-for-post-and-buddypress' ); ?></option>
-							<option value="weekly" <?php selected( $schedule, 'weekly' ); ?>><?php esc_html_e( 'Weekly', 'push-notification-for-post-and-buddypress' ); ?></option>
-						</select>
-						<small style="display: block; margin-top: 8px; color: #666;">
+					<select id="pnfpb_cleanup_schedule" name="pnfpb_cleanup_schedule" class="pnfpb-select-full">
+						<option value="hourly" <?php selected( $schedule, 'hourly' ); ?>><?php esc_html_e( 'Hourly', 'push-notification-for-post-and-buddypress' ); ?></option>
+						<option value="twicedaily" <?php selected( $schedule, 'twicedaily' ); ?>><?php esc_html_e( 'Twice Daily', 'push-notification-for-post-and-buddypress' ); ?></option>
+						<option value="daily" <?php selected( $schedule, 'daily' ); ?>><?php esc_html_e( 'Daily', 'push-notification-for-post-and-buddypress' ); ?></option>
+						<option value="weekly" <?php selected( $schedule, 'weekly' ); ?>><?php esc_html_e( 'Weekly', 'push-notification-for-post-and-buddypress' ); ?></option>
+					</select>
+					<small class="pnfpb-help-text">
 							<?php esc_html_e( 'How often the cleanup job should run.', 'push-notification-for-post-and-buddypress' ); ?>
 						</small>
 					</div>
@@ -168,80 +168,94 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 						<?php esc_html_e( 'Batch Size', 'push-notification-for-post-and-buddypress' ); ?>
 					</div>
 					<div class="pnfpb-field-card__control">
-						<input type="number" id="pnfpb_cleanup_batch_size" name="pnfpb_cleanup_batch_size" value="<?php echo absint( $batch_size ); ?>" min="1" max="100" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" />
-						<small style="display: block; margin-top: 8px; color: #666;">
+					<input type="number" id="pnfpb_cleanup_batch_size" name="pnfpb_cleanup_batch_size" value="<?php echo absint( $batch_size ); ?>" min="1" max="100" class="pnfpb-input-number-full" />
+					<small class="pnfpb-help-text">
 							<?php esc_html_e( 'Number of tokens to verify per batch (1-100). Set batch size 50 to 100 to reduce server load for shared hosting', 'push-notification-for-post-and-buddypress' ); ?>
 						</small>
 					</div>
 				</div>
 			</div>
 
-			<div style="margin-top: 20px;">
+			<div class="pnfpb-section-margin-top">
 				<?php submit_button( __( 'Save Schedule Settings', 'push-notification-for-post-and-buddypress' ), 'primary', 'pnfpb_save_schedule_settings' ); ?>
-				<div id="pnfpb-cleanup-settings-result" role="status" aria-live="polite" style="display:none; margin-top:10px;"></div>
+				<div id="pnfpb-cleanup-settings-result" role="status" aria-live="polite" class="pnfpb-cleanup-result-margin"></div>
 			</div>
 		</div>
 
 	</form>
 
-	<div style="margin-top: 30px;">
-		<div class="pnfpb-settings-section" style="background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 20px;">
+	<div class="pnfpb-section-margin-top-lg">
+		<div class="pnfpb-settings-section pnfpb-cleanup-form">
 			<h3 class="pnfpb-settings-section__title"><span class="dashicons dashicons-trash pnfpb-settings-section__icon"></span><?php esc_html_e( 'Token Trash', 'push-notification-for-post-and-buddypress' ); ?></h3>
 			<p><?php esc_html_e( 'Invalid tokens are moved here instead of being immediately destroyed. Use the token list for restore and permanent deletion actions.', 'push-notification-for-post-and-buddypress' ); ?></p>
 			<a class="button button-secondary" href="<?php echo esc_url( admin_url( 'admin.php?page=pnfpb_icfm_device_tokens_list' ) ); ?>#pnfpb-token-trash"><?php esc_html_e( 'Review token trash', 'push-notification-for-post-and-buddypress' ); ?></a>
 		</div>
 
 		<!-- Quick Actions Section -->
-		<div class="pnfpb-settings-section" style="background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 20px;">
+		<div class="pnfpb-settings-section pnfpb-cleanup-form">
 			<h3 class="pnfpb-settings-section__title">
 				<span class="dashicons dashicons-controls-play pnfpb-settings-section__icon"></span>
 				<?php esc_html_e( 'Quick Actions', 'push-notification-for-post-and-buddypress' ); ?>
 			</h3>
 
-			<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+			<div class="pnfpb-quick-actions-grid">
 
 				<!-- Manual Cleanup Button -->
-				<div style="padding: 15px; background: #f5f5f5; border-radius: 4px; border: 1px solid #ddd;">
-					<h4 style="margin-top: 0; color: #333;">
+				<div class="pnfpb-quick-action-card">
+					<h4>
 						<?php esc_html_e( 'Manual Cleanup', 'push-notification-for-post-and-buddypress' ); ?>
 					</h4>
-					<p style="font-size: 13px; color: #666; margin-bottom: 10px;">
+					<p>
 						<?php esc_html_e( 'Trigger an immediate cleanup batch to verify tokens against Firebase.', 'push-notification-for-post-and-buddypress' ); ?>
 					</p>
-					<button type="button" id="pnfpb-manual-cleanup-btn" class="button button-primary pnfpb-manual-cleanup-button" style="width: 100%;">
+					<button type="button" id="pnfpb-manual-cleanup-btn" class="button button-primary pnfpb-manual-cleanup-button pnfpb-action-button-full">
 						<span class="dashicons dashicons-controls-play" aria-hidden="true"></span>
 						<?php esc_html_e( 'Run Cleanup Now', 'push-notification-for-post-and-buddypress' ); ?>
 					</button>
-					<div id="pnfpb-cleanup-result" style="margin-top: 10px; font-size: 13px; display: none;"></div>
+					<div id="pnfpb-cleanup-result" class="pnfpb-cleanup-result-margin"></div>
 				</div>
 
 				<!-- View Logs Button -->
-				<div style="padding: 15px; background: #f5f5f5; border-radius: 4px; border: 1px solid #ddd;">
-					<h4 style="margin-top: 0; color: #333;">
+				<div class="pnfpb-quick-action-card">
+					<h4>
 						<?php esc_html_e( 'Cleanup Logs', 'push-notification-for-post-and-buddypress' ); ?>
 					</h4>
-					<p style="font-size: 13px; color: #666; margin-bottom: 10px;">
+					<p>
 						<?php esc_html_e( 'View recent cleanup activities and logs.', 'push-notification-for-post-and-buddypress' ); ?>
 					</p>
-					<button type="button" id="pnfpb-view-logs-btn" class="button button-secondary" style="width: 100%;">
-						<span class="dashicons dashicons-text-page" style="vertical-align: top !important; margin-right: 5px;"></span>
+					<button type="button" id="pnfpb-view-logs-btn" class="button button-secondary pnfpb-action-button-full">
+						<span class="dashicons dashicons-text-page"></span>
 						<?php esc_html_e( 'View Logs', 'push-notification-for-post-and-buddypress' ); ?>
 					</button>
 				</div>
+
+				<!-- Reset System Button -->
+				<div class="pnfpb-quick-action-card pnfpb-quick-action-card--warning">
+					<h4>
+						<?php esc_html_e( 'Reset Token cleanup count', 'push-notification-for-post-and-buddypress' ); ?>
+					</h4>
+					<p>
+						<?php esc_html_e( 'Reset token count and clear token cleanup logs.', 'push-notification-for-post-and-buddypress' ); ?>
+					</p>
+					<button type="button" id="pnfpb-reset-system-btn" class="button pnfpb-reset-button pnfpb-action-button-full">
+						<span class="dashicons dashicons-trash"></span>
+						<?php esc_html_e( 'Reset cleanup count', 'push-notification-for-post-and-buddypress' ); ?>
+					</button>
+				</div>				
 			</div>
 		</div>
 
 		<!-- Cleanup Logs Modal -->
-		<div id="pnfpb-cleanup-logs-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
-			<div style="background: white; border-radius: 8px; width: 90%; max-width: 800px; max-height: 600px; overflow: auto; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
-				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-					<h2 style="margin: 0;">
+		<div id="pnfpb-cleanup-logs-modal" class="pnfpb-cleanup-logs-modal">
+			<div class="pnfpb-cleanup-logs-modal__content">
+				<div class="pnfpb-cleanup-logs-modal__header">
+					<h2 class="pnfpb-cleanup-logs-modal__title">
 						<?php esc_html_e( 'Cleanup Logs', 'push-notification-for-post-and-buddypress' ); ?>
 					</h2>
-					<button type="button" id="pnfpb-logs-modal-close" class="button" style="background: none; border: none; font-size: 24px; cursor: pointer; padding: 0;">×</button>
+					<button type="button" id="pnfpb-logs-modal-close" class="button pnfpb-cleanup-logs-modal__close">×</button>
 				</div>
-				<div id="pnfpb-logs-content" style="max-height: 400px; overflow-y: auto;">
-					<p style="text-align: center; color: #999;">
+				<div id="pnfpb-logs-content" class="pnfpb-cleanup-logs-content">
+					<p class="pnfpb-logs-loading">
 						<?php esc_html_e( 'Loading logs...', 'push-notification-for-post-and-buddypress' ); ?>
 					</p>
 				</div>
@@ -249,12 +263,12 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 		</div>
 
 		<!-- Cleanup Logs Table Section (Initially hidden) -->
-		<div id="pnfpb-logs-section" style="display: none; background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 20px; margin-top: 20px;">
-			<h3 class="pnfpb-settings-section__title" style="margin-top: 0;">
-				<span class="dashicons dashicons-text-page pnfpb-settings-section__icon" style="vertical-align: middle; margin-right: 5px;"></span>
+		<div id="pnfpb-logs-section" class="pnfpb-logs-section">
+			<h3 class="pnfpb-settings-section__title pnfpb-logs-section__title">
+				<span class="dashicons dashicons-text-page pnfpb-settings-section__icon"></span>
 				<?php esc_html_e( 'Recent Cleanup Logs', 'push-notification-for-post-and-buddypress' ); ?>
 			</h3>
-			<div id="pnfpb-logs-table-container">
+			<div id="pnfpb-logs-table-container" class="pnfpb-logs-table-container">
 				<table class="widefat striped">
 					<thead>
 						<tr>
@@ -265,7 +279,7 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 					</thead>
 					<tbody id="pnfpb-logs-tbody">
 						<tr>
-							<td colspan="3" style="text-align: center; padding: 20px;">
+							<td colspan="3">
 								<?php esc_html_e( 'No logs available', 'push-notification-for-post-and-buddypress' ); ?>
 							</td>
 						</tr>
@@ -277,155 +291,6 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 	</div>
 
 </div>
-
-<!-- Inline Styles -->
-<style>
-	.pnfpb-info-box {
-		display: flex;
-		gap: 15px;
-		padding: 15px;
-		border-radius: 4px;
-		border-left: 4px solid #0073aa;
-	}
-
-	.pnfpb-info-box--blue {
-		background-color: #f0f6fc;
-		border-left-color: #0073aa;
-	}
-
-	.pnfpb-info-box__icon {
-		font-size: 24px;
-		color: #0073aa;
-		flex-shrink: 0;
-	}
-
-	.pnfpb-info-box strong {
-		display: block;
-		margin-bottom: 8px;
-		color: #0073aa;
-	}
-
-	.pnfpb-info-box p {
-		margin: 0;
-		color: #666;
-		font-size: 13px;
-		line-height: 1.6;
-	}
-
-	.pnfpb-settings-section {
-		margin-bottom: 30px;
-	}
-
-	.pnfpb-settings-section__title {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		margin-bottom: 20px;
-		font-size: 16px;
-		font-weight: 600;
-	}
-
-	.pnfpb-settings-section__icon {
-		font-size: 20px;
-		color: #0073aa;
-	}
-
-	.pnfpb-settings-grid {
-		display: grid;
-		gap: 20px;
-	}
-
-	.pnfpb-settings-grid--2col {
-		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-	}
-
-	.pnfpb-field-card {
-		background: #fafafa;
-		border: 1px solid #ddd;
-		border-radius: 4px;
-		padding: 15px;
-	}
-
-	.pnfpb-field-card__label {
-		font-weight: 600;
-		margin-bottom: 10px;
-		color: #333;
-		font-size: 14px;
-	}
-
-	.pnfpb-field-card__control {
-		margin-top: 8px;
-	}
-
-	#pnfpb-cleanup-result {
-		padding: 10px;
-		border-radius: 4px;
-		border: 1px solid #ddd;
-	}
-
-	#pnfpb-cleanup-result.success {
-		background-color: #e8f5e9;
-		border-color: #4caf50;
-		color: #2e7d32;
-	}
-
-	#pnfpb-cleanup-result.error {
-		background-color: #ffebee;
-		border-color: #f44336;
-		color: #c62828;
-	}
-
-	#pnfpb-cleanup-settings-result.success,
-	#pnfpb-cleanup-settings-result.error {
-		padding: 10px;
-		border: 1px solid #ddd;
-		border-radius: 4px;
-	}
-
-	#pnfpb-cleanup-settings-result.success {
-		background: #e8f5e9;
-		border-color: #4caf50;
-		color: #2e7d32;
-	}
-
-	#pnfpb-cleanup-settings-result.error {
-		background: #ffebee;
-		border-color: #f44336;
-		color: #c62828;
-	}
-
-	.pnfpb-manual-cleanup-button {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 5px;
-	}
-
-	.pnfpb-manual-cleanup-button .dashicons {
-		line-height: 1;
-		width: 18px;
-		height: 18px;
-		font-size: 18px;
-		vertical-align: middle;
-	}
-
-	.pnfpb-loader {
-		display: inline-block;
-		width: 16px;
-		height: 16px;
-		border: 2px solid #f3f3f3;
-		border-top: 2px solid #0073aa;
-		border-radius: 50%;
-		animation: pnfpb-spin 1s linear infinite;
-		margin-right: 8px;
-		vertical-align: middle;
-	}
-
-	@keyframes pnfpb-spin {
-		0% { transform: rotate(0deg); }
-		100% { transform: rotate(360deg); }
-	}
-</style>
 
 <!-- Inline JavaScript -->
 <script>
@@ -486,8 +351,8 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 			const $modal = $('#pnfpb-cleanup-logs-modal');
 			const $content = $('#pnfpb-logs-content');
 
-			$modal.css('display', 'flex');
-			$content.html('<p style="text-align: center;"><?php esc_html_e( 'Loading logs...', 'push-notification-for-post-and-buddypress' ); ?></p>');
+			$modal.addClass('is-open');
+			$content.html('<p class="pnfpb-logs-loading-message"><?php esc_html_e( 'Loading logs...', 'push-notification-for-post-and-buddypress' ); ?></p>');
 
 			$.post(ajaxurl, {
 				action: 'pnfpb_get_cleanup_logs',
@@ -495,38 +360,38 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 				limit: 50
 			}, function(response) {
 				if (response.success && response.data.logs && response.data.logs.length > 0) {
-					let html = '<table class="widefat striped" style="margin: 0;">';
+					let html = '<table class="widefat striped pnfpb-logs-table">';
 					html += '<thead><tr><th><?php esc_html_e( 'Timestamp', 'push-notification-for-post-and-buddypress' ); ?></th><th><?php esc_html_e( 'Event', 'push-notification-for-post-and-buddypress' ); ?></th><th><?php esc_html_e( 'Details', 'push-notification-for-post-and-buddypress' ); ?></th></tr></thead>';
 					html += '<tbody>';
 
 					$.each(response.data.logs, function(i, log) {
 						const timestamp = new Date(log.created_at).toLocaleString();
 						html += '<tr>';
-						html += '<td style="font-size: 12px;">' + escapeHtml(timestamp) + '</td>';
+						html += '<td class="pnfpb-logs-table-cell">' + escapeHtml(timestamp) + '</td>';
 						html += '<td>' + escapeHtml(log.event_type) + '</td>';
-						html += '<td style="font-size: 12px;">' + escapeHtml(JSON.stringify(log.event_data, null, 2)) + '</td>';
+						html += '<td class="pnfpb-logs-table-cell">' + escapeHtml(JSON.stringify(log.event_data, null, 2)) + '</td>';
 						html += '</tr>';
 					});
 
 					html += '</tbody></table>';
 					$content.html(html);
 				} else {
-					$content.html('<p style="text-align: center; color: #999;"><?php esc_html_e( 'No logs available', 'push-notification-for-post-and-buddypress' ); ?></p>');
+					$content.html('<p class="pnfpb-logs-no-logs-message"><?php esc_html_e( 'No logs available', 'push-notification-for-post-and-buddypress' ); ?></p>');
 				}
 			}).fail(function() {
-				$content.html('<p style="text-align: center; color: #cc1818;"><?php esc_html_e( 'Failed to load logs', 'push-notification-for-post-and-buddypress' ); ?></p>');
+				$content.html('<p class="pnfpb-logs-error-message"><?php esc_html_e( 'Failed to load logs', 'push-notification-for-post-and-buddypress' ); ?></p>');
 			});
 		});
 
 		// Close logs modal
 		$('#pnfpb-logs-modal-close').on('click', function() {
-			$('#pnfpb-cleanup-logs-modal').hide();
+			$('#pnfpb-cleanup-logs-modal').removeClass('is-open');
 		});
 
 		$(document).on('click', function(e) {
 			const $modal = $('#pnfpb-cleanup-logs-modal');
-			if ($modal.css('display') === 'flex' && e.target === $modal[0]) {
-				$modal.hide();
+			if ($modal.hasClass('is-open') && e.target === $modal[0]) {
+				$modal.removeClass('is-open');
 			}
 		});
 

@@ -2431,7 +2431,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 "pnfpb-admin-icpstyle-name",
                 plugin_dir_url(__FILE__) . "admin/css/pnfpb_admin_v3.css",
                 [],
-                "3.11.26"
+                "3.11.27"
             );
             wp_enqueue_style(
                 "pnfpb-admin-pwa-icpstyle-name",
@@ -7137,7 +7137,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             }
 
             $batch_size = isset( $_POST['batch_size'] ) ? absint( $_POST['batch_size'] ) : 100;
-            $batch_size = min( 500, max( 1, $batch_size ) );
+            $batch_size = min( 100, max( 1, $batch_size ) );
 
             error_log( 'PNFPB Token Cleanup: Executing cleanup batch with batch_size=' . $batch_size );
             
@@ -7241,6 +7241,10 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             global $wpdb;
             $events_table = $wpdb->prefix . 'pnfpb_token_cleanup_events';
             $wpdb->query( "DELETE FROM {$events_table}" );
+            $logs_table = $wpdb->prefix . 'pnfpb_token_cleanup_logs';
+            $wpdb->query( "DELETE FROM {$logs_table}" );
+            $runs_table = $wpdb->prefix . 'pnfpb_token_cleanup_runs';
+            $wpdb->query( "DELETE FROM {$runs_table}" );			
 
             wp_send_json_success( array( 'message' => 'Cleanup system reset successfully' ) );
         }

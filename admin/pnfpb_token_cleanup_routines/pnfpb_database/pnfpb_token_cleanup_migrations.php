@@ -87,6 +87,7 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Migrations' ) ) {
 			dbDelta( $runs_sql );
 			dbDelta( $events_sql );
 			update_option( 'pnfpb_token_cleanup_migration_version', self::$migration_version );
+			update_option( 'pnfpb_token_cleanup_batch_limit', 20 );
 
 			return self::tables_exist();
 		}
