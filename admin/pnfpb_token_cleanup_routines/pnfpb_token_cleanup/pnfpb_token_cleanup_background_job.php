@@ -79,17 +79,36 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 
 			global $wpdb;
 			$tables = PNFPB_Token_Validation_Service::tables();
-			$run_inserted = $wpdb->insert( $tables['runs'], array( 'trigger_source' => sanitize_key( $source ), 'status' => 'running', 'started_at' => current_time( 'mysql' ), 'requested' => $batch_size ), array( '%s', '%s', '%s', '%d' ) );
-			if ( false === $run_inserted ) {
-				self::release_lock();
-				$result['message'] = __( 'Cleanup run log could not be created.', 'push-notification-for-post-and-buddypress' );
-				return $result;
+			$cursor = absint( get_option( 'pnfpb_token_cleanup_cursor', 0 ) );
+			$is_continuation = ( $cursor > 0 ); // Determine if this is a continuation batch
+
+			// For continuation batches, reuse the previous run; for new batches, create a new run
+			if ( $is_continuation ) {
+				$run_id = absint( get_option( 'pnfpb_token_cleanup_run_id', 0 ) );
+				if ( ! $run_id ) {
+					// Fallback: if run_id option is not set, get the most recent run
+					$last_run = $wpdb->get_row( $wpdb->prepare( 'SELECT id FROM %i ORDER BY id DESC LIMIT 1', $tables['runs'] ), ARRAY_A );
+					$run_id = $last_run ? absint( $last_run['id'] ) : 0;
+				}
+				if ( ! $run_id ) {
+					self::release_lock();
+					$result['message'] = __( 'Could not find previous cleanup run to continue.', 'push-notification-for-post-and-buddypress' );
+					return $result;
+				}
+				$result['run_id'] = $run_id;
+			} else {
+				$run_inserted = $wpdb->insert( $tables['runs'], array( 'trigger_source' => sanitize_key( $source ), 'status' => 'running', 'started_at' => current_time( 'mysql' ), 'requested' => $batch_size ), array( '%s', '%s', '%s', '%d' ) );
+				if ( false === $run_inserted ) {
+					self::release_lock();
+					$result['message'] = __( 'Cleanup run log could not be created.', 'push-notification-for-post-and-buddypress' );
+					return $result;
+				}
+				$run_id           = absint( $wpdb->insert_id );
+				$result['run_id'] = $run_id;
+				update_option( 'pnfpb_token_cleanup_run_id', $run_id );
 			}
-			$run_id           = absint( $wpdb->insert_id );
-			$result['run_id'] = $run_id;
 
 			try {
-				$cursor = absint( get_option( 'pnfpb_token_cleanup_cursor', 0 ) );
 				$tokens = PNFPB_Token_Validation_Service::get_candidate_tokens( $batch_size, $cursor );
 				// A cursor can outlive deleted/re-imported token rows. Restart at
 				// the beginning when it points past the current live table.
@@ -144,6 +163,7 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 
 				if ( $result['moved_to_trash'] > 0 ) {
 					update_option( 'pnfpb_token_cleanup_cursor', 0 );
+					delete_option( 'pnfpb_token_cleanup_run_id' );
 					$result['next_cursor'] = 0;
 				} else {
 					update_option( 'pnfpb_token_cleanup_cursor', $result['next_cursor'] );
@@ -151,7 +171,27 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 				
 				$result['status'] = empty( $tokens ) ? 'no_tokens' : 'completed';
 				PNFPB_Token_Validation_Service::pnfpb_cleanup_event( $run_id, 'batch_completed', 0, '', array( 'status' => $result['status'], 'candidates' => $result['candidates'], 'processed' => $result['tokens_processed'], 'valid' => $result['tokens_valid'], 'moved_to_trash' => $result['moved_to_trash'], 'retryable' => $result['retryable'], 'errors' => $result['errors'] ) );
-				$wpdb->update( $tables['runs'], array( 'status' => $result['status'], 'completed_at' => current_time( 'mysql' ), 'processed' => $result['tokens_processed'], 'valid_count' => $result['tokens_valid'], 'moved_count' => $result['moved_to_trash'], 'retryable_count' => $result['retryable'], 'error_count' => $result['errors'], 'next_cursor' => $result['next_cursor'] ), array( 'id' => $run_id ), array( '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d' ), array( '%d' ) );
+				
+				// Accumulate counts if this is a continuation batch, otherwise set counts directly
+				if ( $is_continuation ) {
+					// Use raw SQL to add to existing counts for continuation batches
+					$wpdb->query( $wpdb->prepare(
+						"UPDATE %i SET status = %s, completed_at = %s, processed = processed + %d, valid_count = valid_count + %d, moved_count = moved_count + %d, retryable_count = retryable_count + %d, error_count = error_count + %d, next_cursor = %d WHERE id = %d",
+						$tables['runs'],
+						$result['status'],
+						current_time( 'mysql' ),
+						$result['tokens_processed'],
+						$result['tokens_valid'],
+						$result['moved_to_trash'],
+						$result['retryable'],
+						$result['errors'],
+						$result['next_cursor'],
+						$run_id
+					) );
+				} else {
+					// Set counts directly for first batch
+					$wpdb->update( $tables['runs'], array( 'status' => $result['status'], 'completed_at' => current_time( 'mysql' ), 'processed' => $result['tokens_processed'], 'valid_count' => $result['tokens_valid'], 'moved_count' => $result['moved_to_trash'], 'retryable_count' => $result['retryable'], 'error_count' => $result['errors'], 'next_cursor' => $result['next_cursor'] ), array( 'id' => $run_id ), array( '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d' ), array( '%d' ) );
+				}
 			} catch ( Throwable $exception ) {
 				$result['message'] = $exception->getMessage();
 				$result['errors']++;
