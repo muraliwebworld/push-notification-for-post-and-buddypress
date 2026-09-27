@@ -135,7 +135,14 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 					$result['tokens_processed']++;
 					$result['next_cursor'] = absint( $record['id'] );
 					try {
-						$validation = self::validate_token( $record['device_id'] );
+						// The third argument (true) returns everything BEFORE "!!"
+						$subscription_device_id = strstr($record['device_id'], '!!', true);
+
+						// If "!!" wasn't found, keep the original string
+						if ($subscription_device_id === false) {
+							$subscription_device_id = $record['device_id'];
+						}						
+						$validation = self::validate_token( $subscription_device_id );
 
 						if ( 'valid' === $validation['state'] ) {
 							$result['tokens_validated']++;
