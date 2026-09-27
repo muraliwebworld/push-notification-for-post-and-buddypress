@@ -434,6 +434,16 @@ delete_option('pnfpb_ic_fcm_new_post_image');
 
 delete_option("PNFBP_admin_notice");
 
+// Token cleanup options
+delete_option('pnfpb_token_cleanup_frequency');
+delete_option('pnfpb_token_cleanup_batch_limit');
+delete_option('pnfpb_cleanup_schedule');
+delete_option('pnfpb_cleanup_batch_size');
+delete_option('pnfpb_token_cleanup_cursor');
+delete_option('pnfpb_token_cleanup_run_id');
+delete_option('pnfpb_token_cleanup_lock');
+delete_option('pnfpb_token_cleanup_migration_version');
+
 $args = [
     "public" => true,
     "_builtin" => false,
@@ -462,6 +472,16 @@ $table_name = $wpdb->prefix . "pnfpb_ic_schedule_push_notifications";
 $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %i", $table_name));
 
 $table_name = $wpdb->prefix . "pnfpb_ic_total_statistics_notifications";
+$wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %i", $table_name));
+
+// Token cleanup tables
+$table_name = $wpdb->prefix . "pnfpb_ic_subscribed_deviceids_web_trash";
+$wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %i", $table_name));
+
+$table_name = $wpdb->prefix . "pnfpb_token_cleanup_runs";
+$wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %i", $table_name));
+
+$table_name = $wpdb->prefix . "pnfpb_token_cleanup_events";
 $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %i", $table_name));
 
 ?>
