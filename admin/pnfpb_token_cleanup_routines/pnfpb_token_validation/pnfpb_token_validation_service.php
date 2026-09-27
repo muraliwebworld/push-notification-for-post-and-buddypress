@@ -8,6 +8,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+// phpcs:ignoreFile WordPress.DB.DirectDatabaseQuery
 
 if ( ! class_exists( 'PNFPB_Token_Validation_Service' ) ) {
 	/** Provides token cleanup persistence operations. */
