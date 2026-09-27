@@ -43,7 +43,7 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 	<div class="pnfpb-status-cards-grid">
 		
 		<!-- Valid Tokens Card -->
-		<div class="pnfpb-status-card pnfpb-status-card--valid">
+		<a href="<?php echo esc_url( admin_url( 'admin.php?page=pnfpb_icfm_device_tokens_list' ) ); ?>" class="pnfpb-status-card pnfpb-status-card--valid pnfpb-status-card--link">
 			<div class="pnfpb-status-card__header">
 				<div>
 					<div class="pnfpb-status-card__label">
@@ -57,7 +57,7 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 					<span class="dashicons dashicons-yes-alt"></span>
 				</div>
 			</div>
-		</div>
+		</a>
 
 		<!-- Invalid Tokens Card -->
 		<div class="pnfpb-status-card pnfpb-status-card--invalid">
@@ -81,7 +81,7 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 			<div class="pnfpb-status-card__header">
 				<div>
 					<div class="pnfpb-status-card__label">
-						<?php esc_html_e( 'Unverified Tokens', 'push-notification-for-post-and-buddypress' ); ?>
+						<?php esc_html_e( 'Tokens failed during verify', 'push-notification-for-post-and-buddypress' ); ?>
 					</div>
 					<div class="pnfpb-status-card__number">
 						<?php echo isset( $status['last_run']['retryable_count'] ) ? absint( $status['last_run']['retryable_count'] ) : 0; ?>
@@ -94,7 +94,7 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 		</div>
 
 		<!-- Total Tokens Card -->
-		<div class="pnfpb-status-card pnfpb-status-card--total">
+		<a href="<?php echo esc_url( admin_url( 'admin.php?page=pnfpb_icfm_device_tokens_list' ) ); ?>" class="pnfpb-status-card pnfpb-status-card--total pnfpb-status-card--link">
 			<div class="pnfpb-status-card__header">
 				<div>
 					<div class="pnfpb-status-card__label">
@@ -108,17 +108,17 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 					<span class="dashicons dashicons-database"></span>
 				</div>
 			</div>
-		</div>
+		</a>
 
 		<!-- Trash Tokens Card -->
-		<div class="pnfpb-status-card pnfpb-status-card--trash">
+		<a href="<?php echo esc_url( admin_url( 'admin.php?page=pnfpb_icfm_device_tokens_list&tab=trash' ) ); ?>" class="pnfpb-status-card pnfpb-status-card--trash pnfpb-status-card--link">
 			<div class="pnfpb-status-card__label">
 				<?php esc_html_e( 'Tokens in Trash', 'push-notification-for-post-and-buddypress' ); ?>
 			</div>
 			<div class="pnfpb-status-card__number">
 				<?php echo isset( $stats['trash'] ) ? absint( $stats['trash'] ) : 0; ?>
 			</div>
-		</div>
+		</a>
 
 	</div>
 
@@ -152,6 +152,7 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 					</div>
 					<div class="pnfpb-field-card__control">
 					<select id="pnfpb_cleanup_schedule" name="pnfpb_cleanup_schedule" class="pnfpb-select-full">
+						<option value="one_time" <?php selected( $schedule, 'one_time' ); ?>><?php esc_html_e( 'One Time', 'push-notification-for-post-and-buddypress' ); ?></option>						
 						<option value="hourly" <?php selected( $schedule, 'hourly' ); ?>><?php esc_html_e( 'Hourly', 'push-notification-for-post-and-buddypress' ); ?></option>
 						<option value="twicedaily" <?php selected( $schedule, 'twicedaily' ); ?>><?php esc_html_e( 'Twice Daily', 'push-notification-for-post-and-buddypress' ); ?></option>
 						<option value="daily" <?php selected( $schedule, 'daily' ); ?>><?php esc_html_e( 'Daily', 'push-notification-for-post-and-buddypress' ); ?></option>
@@ -177,7 +178,10 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 			</div>
 
 			<div class="pnfpb-section-margin-top">
-				<?php submit_button( __( 'Save Schedule Settings', 'push-notification-for-post-and-buddypress' ), 'primary', 'pnfpb_save_schedule_settings' ); ?>
+				<div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+					<?php submit_button( __( 'Save Schedule Settings', 'push-notification-for-post-and-buddypress' ), 'primary', 'pnfpb_save_schedule_settings', false ); ?>
+					<?php submit_button( __( 'Save Batch Size Only', 'push-notification-for-post-and-buddypress' ), 'secondary', 'pnfpb_save_batch_size_only', false ); ?>
+				</div>
 				<div id="pnfpb-cleanup-settings-result" role="status" aria-live="polite" class="pnfpb-cleanup-result-margin"></div>
 			</div>
 		</div>
@@ -451,6 +455,38 @@ $nonce = wp_create_nonce( 'pnfpb_cleanup_nonce' );
 				$settingsResult.text(message).addClass('error').show();
 			}).always(function() {
 				$submit.prop('disabled', false).val(originalText);
+			});
+		});
+
+		// Save batch size and schedule immediate cleanup
+		$('#pnfpb-cleanup-settings-form').on('click', 'input[name="pnfpb_save_batch_size_only"]', function(e) {
+			e.preventDefault();
+
+			const $btn = $(this);
+			const $form = $btn.closest('form');
+			const $settingsResult = $('#pnfpb-cleanup-settings-result');
+			const originalText = $btn.val();
+
+			$btn.prop('disabled', true).val('<?php esc_attr_e( 'Saving...', 'push-notification-for-post-and-buddypress' ); ?>');
+			$settingsResult.hide().removeClass('success error').empty();
+
+			$.post(ajaxurl, {
+				action: 'pnfpb_save_batch_size_only',
+				nonce: nonce,
+				batch_size: $('#pnfpb_cleanup_batch_size').val()
+			}, function(response) {
+				if (response.success) {
+					$settingsResult.text(response.data && response.data.message ? response.data.message : '<?php esc_attr_e( 'Batch size saved successfully!', 'push-notification-for-post-and-buddypress' ); ?>').addClass('success').show();
+				} else {
+					$settingsResult.text(response.data && response.data.message ? response.data.message : '<?php esc_attr_e( 'Unknown error', 'push-notification-for-post-and-buddypress' ); ?>').addClass('error').show();
+				}
+			}).fail(function(xhr) {
+				const message = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message
+					? xhr.responseJSON.data.message
+					: '<?php esc_attr_e( 'Request failed', 'push-notification-for-post-and-buddypress' ); ?>';
+				$settingsResult.text(message).addClass('error').show();
+			}).always(function() {
+				$btn.prop('disabled', false).val(originalText);
 			});
 		});
 

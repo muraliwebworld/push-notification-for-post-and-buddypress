@@ -3299,6 +3299,24 @@ td.pnfpb_ic_push_settings_table_column {
 		vertical-align: middle;
 	}
 
+	.pnfpb-status-card--link {
+		display: block;
+		text-decoration: underline;
+		color: inherit;
+		cursor: pointer;
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+	}
+
+	.pnfpb-status-card--link:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	}
+
+	.pnfpb-status-card--link:focus {
+		outline: 2px solid #0073aa;
+		outline-offset: 2px;
+	}	
+
 	.pnfpb-loader {
 		display: inline-block;
 		width: 16px;

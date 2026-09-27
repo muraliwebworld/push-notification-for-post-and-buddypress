@@ -39,6 +39,16 @@ if ( ! class_exists( 'PNFPB_Token_Cleanup_Background_Job' ) ) {
 			return (bool) as_schedule_recurring_action( time() + MINUTE_IN_SECONDS, $interval, self::CLEANUP_HOOK, array( absint( $batch_size ) ), self::GROUP, true );
 		}
 
+		/** Schedule one-time (non-recurring) cleanup job. */
+		public static function schedule_cleanup_job_once( $batch_size = 100, $delay_seconds = 0 ) {
+			if ( ! function_exists( 'as_schedule_single_action' ) ) {
+				return false;
+			}
+
+			$timestamp = time() + absint( $delay_seconds );
+			return (bool) as_schedule_single_action( $timestamp, self::CLEANUP_HOOK, array( absint( $batch_size ) ), self::GROUP, true );
+		}
+
 		/** Remove Action Scheduler and WP-Cron cleanup events. */
 		public static function unschedule_cleanup_job() {
 			if ( function_exists( 'as_unschedule_all_actions' ) ) {

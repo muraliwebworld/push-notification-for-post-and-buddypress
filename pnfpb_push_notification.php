@@ -642,6 +642,10 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 $this,
                 $this->pre_name . "update_cleanup_settings_callback",
             ]);
+            add_action("wp_ajax_pnfpb_save_batch_size_only", [
+                $this,
+                $this->pre_name . "save_batch_size_only_callback",
+            ]);
             add_action("wp_ajax_pnfpb_token_cleanup_trash_action", [
                 $this,
                 $this->pre_name . "token_cleanup_trash_action_callback",
@@ -2431,7 +2435,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 "pnfpb-admin-icpstyle-name",
                 plugin_dir_url(__FILE__) . "admin/css/pnfpb_admin_v3.css",
                 [],
-                "3.11.27"
+                "3.11.28"
             );
             wp_enqueue_style(
                 "pnfpb-admin-pwa-icpstyle-name",
@@ -7271,7 +7275,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             }
 
             // Validate and save schedule
-            $allowed_schedules = array( 'hourly', 'twicedaily', 'daily', 'weekly' );
+            $allowed_schedules = array( 'hourly', 'twicedaily', 'daily', 'weekly', 'one_time' );
             $schedule = isset( $_POST['schedule'] ) ? sanitize_text_field( $_POST['schedule'] ) : 'daily';
 
             if ( ! in_array( $schedule, $allowed_schedules, true ) ) {
@@ -7300,9 +7304,15 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 PNFPB_Token_Cleanup_Background_Job::unschedule_cleanup_job();
                 
                 // Schedule new job with updated settings
-                $scheduled = PNFPB_Token_Cleanup_Background_Job::schedule_cleanup_job( $schedule, $batch_size );
-                
-                error_log( 'PNFPB Token Cleanup: Scheduling job - schedule=' . $schedule . ', batch_size=' . $batch_size . ', result=' . ( $scheduled ? 'success' : 'failed' ) );
+                if ( 'one_time' === $schedule ) {
+                    // For one-time schedule, use the one-time scheduler
+                    $scheduled = PNFPB_Token_Cleanup_Background_Job::schedule_cleanup_job_once( $batch_size, 0 );
+                    error_log( 'PNFPB Token Cleanup: Scheduling one-time job - batch_size=' . $batch_size . ', result=' . ( $scheduled ? 'success' : 'failed' ) );
+                } else {
+                    // For recurring schedules
+                    $scheduled = PNFPB_Token_Cleanup_Background_Job::schedule_cleanup_job( $schedule, $batch_size );
+                    error_log( 'PNFPB Token Cleanup: Scheduling recurring job - schedule=' . $schedule . ', batch_size=' . $batch_size . ', result=' . ( $scheduled ? 'success' : 'failed' ) );
+                }
 
                 // Verify the job was actually scheduled
                 $verified = PNFPB_Token_Cleanup_Background_Job::verify_job_scheduled( $batch_size );
@@ -7310,7 +7320,16 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 
                 // Action Scheduler can return false when an equivalent action
                 // already exists. A verified existing action is still valid.
-                if ( ! $verified ) {
+                if ( ! $verified && 'one_time' === $schedule ) {
+                    wp_send_json_error(
+                        array(
+                            'message' => __( 'Settings were saved, but the cleanup job could not be scheduled. Verify that Action Scheduler is available.', 'push-notification-for-post-and-buddypress' ),
+                            'scheduled' => (bool) $scheduled,
+                            'verified'  => (bool) $verified,
+                        ),
+                        500
+                    );
+                } elseif ( ! $verified && 'one_time' !== $schedule ) {
                     wp_send_json_error(
                         array(
                             'message' => __( 'Settings were saved, but the cleanup job could not be scheduled. Verify that Action Scheduler is available.', 'push-notification-for-post-and-buddypress' ),
@@ -7328,6 +7347,47 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             wp_send_json_success( array(
                 'message' => __( 'Settings saved successfully', 'push-notification-for-post-and-buddypress' ),
                 'schedule' => $schedule,
+                'batch_size' => $batch_size
+            ) );
+        }
+
+        /**
+         * AJAX handler to save batch size only (without scheduling)
+         *
+         * @since 3.22
+         */
+        public function PNFPB_save_batch_size_only_callback()
+        {
+            // Verify nonce
+            if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( $_POST['nonce'] ), 'pnfpb_cleanup_nonce' ) ) {
+                error_log( 'PNFPB Token Cleanup: Nonce verification failed for save_batch_size_only' );
+                wp_send_json_error( array( 'message' => __( 'Security check failed', 'push-notification-for-post-and-buddypress' ) ), 403 );
+            }
+
+            if ( ! current_user_can( 'manage_options' ) ) {
+                error_log( 'PNFPB Token Cleanup: User cannot manage options for save_batch_size_only' );
+                wp_send_json_error(
+                    array( 'message' => __( 'Unauthorized', 'push-notification-for-post-and-buddypress' ) ),
+                    403
+                );
+            }
+
+            // Validate and save batch size
+            $batch_size = isset( $_POST['batch_size'] ) ? absint( $_POST['batch_size'] ) : 100;
+
+            if ( $batch_size < 1 || $batch_size > 500 ) {
+                error_log( 'PNFPB Token Cleanup: Invalid batch size for save_batch_size_only: ' . $batch_size );
+                wp_send_json_error( array( 'message' => __( 'Batch size must be between 1 and 500', 'push-notification-for-post-and-buddypress' ) ) );
+            }
+
+            // Save batch size to options only - no scheduling
+            update_option( 'pnfpb_token_cleanup_batch_limit', $batch_size );
+            update_option( 'pnfpb_cleanup_batch_size', $batch_size );
+
+            error_log( 'PNFPB Token Cleanup: Batch size saved only - batch_size=' . $batch_size );
+
+            wp_send_json_success( array(
+                'message' => __( 'Batch size saved successfully!', 'push-notification-for-post-and-buddypress' ),
                 'batch_size' => $batch_size
             ) );
         }
