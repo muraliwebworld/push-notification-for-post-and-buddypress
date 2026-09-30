@@ -170,7 +170,7 @@ if (!function_exists("PNFPB_icfm_icpush_sw_template")) {
 		// Config
 		var OFFLINE_ARTICLE_PREFIX = 'pnfpb-offline--';
 		var SW = {
-  			cache_version: 'pnfpb_v3.11.1',
+  			cache_version: 'pnfpb_v3.22.1',
   			offline_assets: []
 		};
 
@@ -1238,7 +1238,7 @@ if (!function_exists("PNFPB_icfm_icpush_integrate_sw_template")) {
 		// Config
 		var OFFLINE_ARTICLE_PREFIX = 'pnfpb-offline--';
 		var pnfpb_SW = {
-  			cache_version: 'pnfpb_v3.11.1',
+  			cache_version: 'pnfpb_v3.22.1',
   			offline_assets: []
 		};
 

@@ -3,13 +3,13 @@
 Plugin Name: Push Notification for Post and BuddyPress
 Plugin URI: https://www.muraliwebworld.com/groups/wordpress-plugins-by-muralidharan-indiacitys-com-technologies/forum/topic/push-notification-for-post-and-buddypress/
 Description: Push notification for Post,custom post,BuddyPress,Woocommerce,Android/IOS mobile apps. Configure push notification settings in <a href="admin.php?page=pnfpb-icfcm-slug"><strong>settings page</strong></a>
-Version: 3.22
+Version: 3.23
 Author: Muralidharan Ramasamy
 Author URI: https://www.muraliwebworld.com
 Text Domain: push-notification-for-post-and-buddypress
 Requires at least: 6.2
 Requires PHP: 8.1
-Updated: 26 August 2026
+Updated: 29 September 2026
 */
 /**
  * License: GPLv2 or later
@@ -34,7 +34,7 @@ if (!defined("PNFPB_VERSION_CURRENT")) {
     define("PNFPB_VERSION_CURRENT", "1");
 }
 if (!defined("PNFPB_PLUGIN_VERSION")) {
-    define("PNFPB_PLUGIN_VERSION", "3.22");
+    define("PNFPB_PLUGIN_VERSION", "3.23");
 }
 if (!defined("PNFPB_URL")) {
     define("PNFPB_URL", plugin_dir_url(__FILE__));
@@ -2386,8 +2386,10 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             $ajax_url = admin_url('admin-ajax.php');
             ?>
             <div class="notice notice-info is-dismissible pnfpb-ai-upgrade-notice">
-                <p><strong><?php echo esc_html__('PNFPB 3.22 version update', 'push-notification-for-post-and-buddypress'); ?></strong></p>
-                <p><?php echo esc_html__('New admin option in token list tab to clean stale/invalid subscription tokens. Ondemand selected users notification logic updated to send notification directly to user subscription token instead of topic.', 'push-notification-for-post-and-buddypress'); ?></p>
+                <p><strong><?php echo esc_html__('PNFPB 3.23 version update', 'push-notification-for-post-and-buddypress'); ?></strong></p>
+                <p><?php echo esc_html__('Firebase Notification - New feature - Token cleanup tab in admin settings to clean stale/invalid subscription tokens.', 'push-notification-for-post-and-buddypress'); ?></p>
+                <p><?php echo esc_html__('New feature - to delay custom subscription prompt after specified number of seconds/after scrolling down to specified percentage of page.', 'push-notification-for-post-and-buddypress'); ?></p>
+                <p><?php echo esc_html__('Ondemand selected users notification updated to send notification directly to user subscription token instead of topic.', 'push-notification-for-post-and-buddypress'); ?></p>				
             </div>
             <script type="text/javascript">
                 jQuery(function ($) {
@@ -2435,7 +2437,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                 "pnfpb-admin-icpstyle-name",
                 plugin_dir_url(__FILE__) . "admin/css/pnfpb_admin_v3.css",
                 [],
-                "3.11.28"
+                "3.11.29"
             );
             wp_enqueue_style(
                 "pnfpb-admin-pwa-icpstyle-name",
@@ -3094,7 +3096,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                         "pnfpb-icajax-script-push",
                         plugins_url($filename, __FILE__),
                         [],
-                        "3.10.18",
+                        "3.10.19",
                         true
                     );
                     wp_localize_script(
@@ -3194,7 +3196,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
                             "pnfpb-icajax-script-push",
                             plugins_url($filename, __FILE__),
                             ["jquery"],
-                            "3.10.18",
+                            "3.10.19",
                             true
                         );
                         $pnfpb_ic_fcm_prompt_style = "";

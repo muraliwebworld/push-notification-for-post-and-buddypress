@@ -6,7 +6,7 @@ Donate link: https://www.muraliwebworld.com/support-to-push-notification-plugin-
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 3.22
+Stable tag: 3.23
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -234,14 +234,10 @@ Report security bugs through the Patchstack Vulnerability Disclosure Program. [R
 12. Special settings for NGINX based server
 
 == Changelog ==
-= 3.22 version =
-* New admin option in token list tab to clean stale/invalid subscription tokens. 
+= 3.23 version =
+* New feature - Token cleanup tab in admin settings to clean stale/invalid subscription tokens.
+* New feature - Delay custom notification subscription prompt after number of seconds or after scrolling down to certain percentage of page. New options are added in admin settings for custom prompt to define number of seconds or define percentage for scroll to delay appearence of custom notification subscription prompt
 * Ondemand selected users notification logic updated to send notification directly to user subscription token instead of topic.
 
-= 3.21 version =
-* Security fix
-* Enhancement: Improved AJAX handler security patterns across the plugin.
-* compatible with WordPress 7.1 version.
-
 == Upgrade Notice ==
-* New admin option in token list tab to clean stale/invalid subscription tokens.
+* New Token cleanup tab in admin settings to clean stale/invalid subscription tokens.
