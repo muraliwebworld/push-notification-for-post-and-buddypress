@@ -22,6 +22,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['nonce'])), 'pnfpbpushnonce' ) ) {
 	echo wp_json_encode(array('subscriptionstatus' => 'error', 'message' => 'Security validation failed'));
 } else {
+	// SECURITY FIX: Get current user ID for ownership validation
+	// Current user may be anonymous (0) for public notifications or logged-in user
+	$current_user_id = get_current_user_id();
 	require __DIR__ . '/../../vendor/autoload.php';
 
 
@@ -264,6 +267,27 @@ if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_uns
 		 * Register a WebToApp subscribed user
 		 *----------------------------------------------------------------------------------*/
 		case 'webtoapp_subscribed_users':
+			// SECURITY FIX: Prevent arbitrary user ID injection
+			// - If anonymous (current_user_id = 0): User should not specify userid in POST
+			//   Use userid from POST only if it's 0 (anonymous), otherwise default to 0
+			// - If authenticated: User can only subscribe for own userid or 0 (public)
+			// - Admins: Can still manage any user's devices
+			
+			if ( $current_user_id === 0 && $bpwebtoappid > 0 ) {
+				// Anonymous user trying to register for specific user - BLOCKED
+				echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Unauthorized: Anonymous users can only subscribe for public notifications' ) );
+				break;
+			} elseif ( $current_user_id > 0 && $bpwebtoappid > 0 && $bpwebtoappid !== $current_user_id && ! current_user_can( 'manage_options' ) ) {
+				// Authenticated user trying to register for different user - BLOCKED (unless admin)
+				echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Unauthorized: Cannot register devices for other users' ) );
+				break;
+			}
+			
+			// If user didn't specify a userid and they're authenticated, use their own ID
+			if ( $bpwebtoappid === 0 && $current_user_id > 0 ) {
+				$bpwebtoappid = $current_user_id;
+			}
+			
 			$results = $wpdb->get_results( $wpdb->prepare(
 				'SELECT * FROM %i WHERE userid = %d AND device_id LIKE %s',
 				array( $table, $bpwebtoappid, '%' . $wpdb->esc_like( $bpwebtoapp_deviceid ) . '%' )
@@ -295,6 +319,23 @@ if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_uns
 				if ( $progressier_externalid === null || ( $progressier_externalid !== null && ! is_numeric( $progressier_externalid ) ) || $progressier_externalid === '' ) {
 					$progressier_externalid = 0;
 				}
+				
+				// SECURITY FIX: Prevent arbitrary user ID injection
+				if ( $current_user_id === 0 && $progressier_externalid > 0 ) {
+					// Anonymous user trying to register for specific user - BLOCKED
+					echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Unauthorized: Anonymous users can only subscribe for public notifications' ) );
+					break;
+				} elseif ( $current_user_id > 0 && $progressier_externalid > 0 && $progressier_externalid !== $current_user_id && ! current_user_can( 'manage_options' ) ) {
+					// Authenticated user trying to register for different user - BLOCKED (unless admin)
+					echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Unauthorized: Cannot register devices for other users' ) );
+					break;
+				}
+				
+				// If user didn't specify a userid and they're authenticated, use their own ID
+				if ( $progressier_externalid === 0 && $current_user_id > 0 ) {
+					$progressier_externalid = $current_user_id;
+				}
+				
 				$results = $wpdb->get_results( $wpdb->prepare(
 					'SELECT * FROM %i WHERE userid = %d AND device_id LIKE %s',
 					array( $table, $progressier_externalid, '%' . $wpdb->esc_like( 'progressier' ) . '%' )
@@ -333,6 +374,23 @@ if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_uns
 				if ( $onesignal_externalid === null || ( $onesignal_externalid !== null && ! is_numeric( $onesignal_externalid ) ) || $onesignal_externalid === '' ) {
 					$onesignal_externalid = 0;
 				}
+				
+				// SECURITY FIX: Prevent arbitrary user ID injection
+				if ( $current_user_id === 0 && $onesignal_externalid > 0 ) {
+					// Anonymous user trying to register for specific user - BLOCKED
+					echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Unauthorized: Anonymous users can only subscribe for public notifications' ) );
+					break;
+				} elseif ( $current_user_id > 0 && $onesignal_externalid > 0 && $onesignal_externalid !== $current_user_id && ! current_user_can( 'manage_options' ) ) {
+					// Authenticated user trying to register for different user - BLOCKED (unless admin)
+					echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Unauthorized: Cannot register devices for other users' ) );
+					break;
+				}
+				
+				// If user didn't specify a userid and they're authenticated, use their own ID
+				if ( $onesignal_externalid === 0 && $current_user_id > 0 ) {
+					$onesignal_externalid = $current_user_id;
+				}
+				
 				$results = $wpdb->get_results( $wpdb->prepare(
 					'SELECT * FROM %i WHERE userid = %d AND device_id LIKE %s',
 					array( $table, $onesignal_externalid, '%' . $wpdb->esc_like( 'onesignal' ) . '%' )

@@ -323,6 +323,8 @@ include_once plugin_dir_path(__FILE__) .
 	"inc/pnfpb-admin-callbacks.php";
 include_once plugin_dir_path(__FILE__) .
     "inc/pnfpb-buddypress-notification-handlers.php";
+include_once plugin_dir_path(__FILE__) .
+	"inc/pnfpb-security-helpers.php";
 
 // Phase 1 & 2: Token Cleanup System
 include_once plugin_dir_path(__FILE__) .
