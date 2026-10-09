@@ -25,6 +25,11 @@ if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_uns
 	// SECURITY FIX: Get current user ID for ownership validation
 	// Current user may be anonymous (0) for public notifications or logged-in user
 	$current_user_id = 0;
+	$pushtype = 'normal';
+	if (isset($_POST['pushtype'])) {
+		$pushtype = sanitize_text_field(wp_unslash($_POST['pushtype']));
+		$pushtype = esc_html($pushtype);
+	}	
 	if (!is_user_logged_in() && ($pushtype === 'webtoapp_subscribed_users' || $pushtype === 'progressier_subscribed_users')) {
 		echo wp_json_encode(array('subscriptionstatus' => 'error', 'message' => 'Login required to subscribe to notification'));
 	} else {
@@ -57,39 +62,12 @@ if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_uns
 		if ($bpsubscribeoptions === '' || $bpsubscribeoptions === '10000') {
 			$bpsubscribeoptions = '10000000000';
 		}
-		$bponesignalid = 0;
-		if (isset($_POST['onesignal_get_subscriptionoptions_id'])) {
-			$bponesignalid = sanitize_text_field(wp_unslash($_POST['onesignal_get_subscriptionoptions_id']));
-			$bponesignalid = esc_html($bponesignalid);
-			if ($bponesignalid === '1pnfpbadm') {
-				$bponesignalid = 1;
-			}
-			if ($bponesignalid === null || ($bponesignalid !== null && !is_numeric($bponesignalid)) || $bponesignalid === '') {
-				$bponesignalid = 0;
-			}
-		}
+
 		if (isset($_POST['progressier_subscriptionoptions']) && sanitize_text_field(wp_unslash($_POST['progressier_subscriptionoptions']))) {
 			$bpsubscribeoptions = sanitize_text_field(wp_unslash($_POST['progressier_subscriptionoptions']));
 			$bpsubscribeoptions = esc_html($bpsubscribeoptions);
 			if ($bpsubscribeoptions === '' || $bpsubscribeoptions === '10000') {
 				$bpsubscribeoptions = '10000000000';
-			}
-		}
-		$bpprogressierid = 0;
-		if (isset($_POST['progressier_get_subscriptionoptions_id']) && is_numeric(sanitize_text_field(wp_unslash($_POST['progressier_get_subscriptionoptions_id'])))) {
-			$bpprogressierid = sanitize_text_field(wp_unslash($_POST['progressier_get_subscriptionoptions_id']));
-			$bpprogressierid = esc_html($bpprogressierid);
-			if ($bpprogressierid === null || ($bpprogressierid !== null && !is_numeric($bpprogressierid)) || $bpprogressierid === '') {
-				$bpprogressierid = 0;
-			}
-		}
-
-		$bpwebtoappid = 0;
-		if (isset($_POST['webtoapp_userid']) && is_numeric(sanitize_text_field(wp_unslash($_POST['webtoapp_userid'])))) {
-			$bpwebtoappid = sanitize_text_field(wp_unslash($_POST['webtoapp_userid']));
-			$bpwebtoappid = esc_html($bpwebtoappid);
-			if ($bpwebtoappid === null || ($bpwebtoappid !== null && !is_numeric($bpwebtoappid)) || $bpwebtoappid === '') {
-				$bpwebtoappid = 0;
 			}
 		}
 
@@ -108,14 +86,10 @@ if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_uns
 
 		/** securing data from Firebase who subscribed push notification  **/
 		$bpdeviceid = esc_html($bpdeviceid);
-		$pushtype = 'normal';
+
 		global $wpdb;
 		$table = $wpdb->prefix . 'pnfpb_ic_subscribed_deviceids_web';
 		$dbname = $wpdb->dbname;
-		if (isset($_POST['pushtype'])) {
-			$pushtype = sanitize_text_field(wp_unslash($_POST['pushtype']));
-			$pushtype = esc_html($pushtype);
-		}
 		
 		$delivered_notification_title = '';
 		$delivered_notification_content = '';
@@ -280,67 +254,50 @@ if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_uns
 				// - If authenticated: User can only subscribe for own userid or 0 (public)
 				// - Admins: Can still manage any user's devices
 				
-				if ( $current_user_id === 0 && $bpwebtoappid > 0 ) {
-					// Anonymous user trying to register for specific user - BLOCKED
-					echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Unauthorized: Anonymous users can only subscribe for public notifications' ) );
-					break;
-				} elseif ( $current_user_id > 0 && $bpwebtoappid > 0 && $bpwebtoappid !== $current_user_id && ! current_user_can( 'manage_options' ) ) {
-					// Authenticated user trying to register for different user - BLOCKED (unless admin)
-					echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Unauthorized: Cannot register devices for other users' ) );
-					break;
-				}
-				
-				// If user didn't specify a userid and they're authenticated, use their own ID
-				if ( $bpwebtoappid === 0 && $current_user_id > 0 ) {
-					$bpwebtoappid = $current_user_id;
-				}
-				
-				$results = $wpdb->get_results( $wpdb->prepare(
-					'SELECT * FROM %i WHERE userid = %d AND device_id LIKE %s',
-					array( $table, $bpwebtoappid, '%' . $wpdb->esc_like( $bpwebtoapp_deviceid ) . '%' )
-				) );
-				if ( count( $results ) <= 0 ) {
-					$data         = array( 'userid' => $bpwebtoappid, 'device_id' => $bpwebtoapp_deviceid, 'subscription_option' => '100000000000', 'ip_address' => $pnfpb_ipaddress );
-					$insertstatus = $wpdb->insert( $table, $data );
-					if ( ! $insertstatus ) {
-						echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => $insertstatus ) );
+				if (get_option("pnfpb_webtoapp_push") === "1") {
+					$bpwebtoappid = 0;
+					if ( is_user_logged_in() ) {
+						$bpwebtoappid = get_current_user_id();
+					}
+					
+					$results = $wpdb->get_results( $wpdb->prepare(
+						'SELECT * FROM %i WHERE userid = %d AND device_id LIKE %s',
+						array( $table, $bpwebtoappid, '%' . $wpdb->esc_like( $bpwebtoapp_deviceid ) . '%' )
+					) );
+					if ( count( $results ) <= 0 ) {
+						$data         = array( 'userid' => $bpwebtoappid, 'device_id' => $bpwebtoapp_deviceid, 'subscription_option' => '100000000000', 'ip_address' => $pnfpb_ipaddress );
+						$insertstatus = $wpdb->insert( $table, $data );
+						if ( ! $insertstatus ) {
+							echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => $insertstatus ) );
+						} else {
+							echo wp_json_encode( array( 'subscriptionstatus' => 'subscribed', 'message' => $bpwebtoapp_deviceid ) );
+						}
 					} else {
-						echo wp_json_encode( array( 'subscriptionstatus' => 'subscribed', 'message' => $bpwebtoapp_deviceid ) );
+						foreach ( $results as $result ) {
+							if ( $result->subscription_option === null || $result->subscription_option === '' ) {
+								$deviceid_update_status = $wpdb->query( $wpdb->prepare( 'UPDATE %i SET subscription_option = %s WHERE userid = %d', array( $table, $bpsubscribeoptions, $bpwebtoappid ) ) );
+							}
+						}
+						echo wp_json_encode( array( 'subscriptionstatus' => 'subscribed', 'message' => $result->device_id ) );
 					}
 				} else {
-					foreach ( $results as $result ) {
-						if ( $result->subscription_option === null || $result->subscription_option === '' ) {
-							$deviceid_update_status = $wpdb->query( $wpdb->prepare( 'UPDATE %i SET subscription_option = %s WHERE userid = %d', array( $table, $bpsubscribeoptions, $bpwebtoappid ) ) );
-						}
-					}
-					echo wp_json_encode( array( 'subscriptionstatus' => 'subscribed', 'message' => $result->device_id ) );
+					echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Webtoapp push notification not enabled' ) );
 				}
 				break;
 			/*----------------------------------------------------------------------------------
 			* Register a Progressier subscribed user
 			*----------------------------------------------------------------------------------*/
 			case 'progressier_subscribed_users':
-				if ( isset( $_POST['progressier_external_id'] ) ) {
-					$progressier_externalid = sanitize_text_field( wp_unslash($_POST['progressier_external_id'] ));
-					$progressier_externalid = esc_html( $progressier_externalid );
-					if ( $progressier_externalid === null || ( $progressier_externalid !== null && ! is_numeric( $progressier_externalid ) ) || $progressier_externalid === '' ) {
-						$progressier_externalid = 0;
-					}
-					
-					// SECURITY FIX: Prevent arbitrary user ID injection
-					if ( $current_user_id === 0 && $progressier_externalid > 0 ) {
-						// Anonymous user trying to register for specific user - BLOCKED
-						echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Unauthorized: Anonymous users can only subscribe for public notifications' ) );
-						break;
-					} elseif ( $current_user_id > 0 && $progressier_externalid > 0 && $progressier_externalid !== $current_user_id && ! current_user_can( 'manage_options' ) ) {
-						// Authenticated user trying to register for different user - BLOCKED (unless admin)
-						echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Unauthorized: Cannot register devices for other users' ) );
-						break;
-					}
-					
-					// If user didn't specify a userid and they're authenticated, use their own ID
-					if ( $progressier_externalid === 0 && $current_user_id > 0 ) {
-						$progressier_externalid = $current_user_id;
+				// SECURITY FIX: Prevent arbitrary user ID injection
+				// - If anonymous (current_user_id = 0): User should not specify userid in POST
+				//   Use userid from POST only if it's 0 (anonymous), otherwise default to 0
+				// - If authenticated: User can only subscribe for own userid or 0 (public)
+				// - Admins: Can still manage any user's devices				
+				
+				if (get_option("pnfpb_progressier_push") === "1" ) {
+					$progressier_externalid = 0;
+					if ( is_user_logged_in() ) {
+						$progressier_externalid = get_current_user_id();
 					}
 					
 					$results = $wpdb->get_results( $wpdb->prepare(
@@ -365,37 +322,25 @@ if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_uns
 						}
 						echo wp_json_encode( array( 'subscriptionstatus' => 'subscribed', 'message' => $result->device_id ) );
 					}
+				} else {
+					echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Progressier push notification not enabled' ) );
 				}
-				break;
+			break;
 
 			/*----------------------------------------------------------------------------------
 			* Register a OneSignal subscribed user
 			*----------------------------------------------------------------------------------*/
 			case 'onesignal_subscribed_users':
-				if ( isset( $_POST['onesignal_externalid'] ) ) {
-					$onesignal_externalid = sanitize_text_field(wp_unslash( $_POST['onesignal_externalid'] ));
-					$onesignal_externalid = esc_html( $onesignal_externalid );
-					if ( $onesignal_externalid === '1pnfpbadm' ) {
-						$onesignal_externalid = 1;
-					}
-					if ( $onesignal_externalid === null || ( $onesignal_externalid !== null && ! is_numeric( $onesignal_externalid ) ) || $onesignal_externalid === '' ) {
-						$onesignal_externalid = 0;
-					}
-					
-					// SECURITY FIX: Prevent arbitrary user ID injection
-					if ( $current_user_id === 0 && $onesignal_externalid > 0 ) {
-						// Anonymous user trying to register for specific user - BLOCKED
-						echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Unauthorized: Anonymous users can only subscribe for public notifications' ) );
-						break;
-					} elseif ( $current_user_id > 0 && $onesignal_externalid > 0 && $onesignal_externalid !== $current_user_id && ! current_user_can( 'manage_options' ) ) {
-						// Authenticated user trying to register for different user - BLOCKED (unless admin)
-						echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Unauthorized: Cannot register devices for other users' ) );
-						break;
-					}
-					
-					// If user didn't specify a userid and they're authenticated, use their own ID
-					if ( $onesignal_externalid === 0 && $current_user_id > 0 ) {
-						$onesignal_externalid = $current_user_id;
+								// SECURITY FIX: Prevent arbitrary user ID injection
+				// - If anonymous (current_user_id = 0): User should not specify userid in POST
+				//   Use userid from POST only if it's 0 (anonymous), otherwise default to 0
+				// - If authenticated: User can only subscribe for own userid or 0 (public)
+				// - Admins: Can still manage any user's devices
+				
+				if (get_option("pnfpb_onesignal_push") === "1") {
+					$onesignal_externalid = 0;
+					if ( is_user_logged_in() ) {
+						$onesignal_externalid = get_current_user_id();
 					}
 					
 					$results = $wpdb->get_results( $wpdb->prepare(
@@ -417,25 +362,35 @@ if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_uns
 							}
 						}
 					}
+				} else {
+					echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Onesignal push notification not enabled' ) );
 				}
-				break;
+			break;
 
 			/*----------------------------------------------------------------------------------
 			* Get OneSignal frontend subscription options
 			*----------------------------------------------------------------------------------*/
 			case 'onesignal_get_frontend_subscriptions':
-				$data = '';
-				if ( $bponesignalid !== 0 ) {
-					$results = $wpdb->get_results( $wpdb->prepare(
-						'SELECT * FROM %i WHERE userid = %d AND device_id LIKE %s',
-						array( $table, $bponesignalid, '%' . $wpdb->esc_like( 'onesignal' ) . '%' )
-					) );
-					foreach ( $results as $result ) {
-						$data = array( 'subscriptionstatus' => 'subscribed', 'subscriptionoptions' => $result->subscription_option );
+				if (get_option("pnfpb_onesignal_push") === "1") {
+					$data = '';
+					$bponesignalid = 0;
+					if ( is_user_logged_in() ) {
+						$bponesignalid = get_current_user_id();
+					}				
+					if ( $bponesignalid !== 0 ) {
+						$results = $wpdb->get_results( $wpdb->prepare(
+							'SELECT * FROM %i WHERE userid = %d AND device_id LIKE %s',
+							array( $table, $bponesignalid, '%' . $wpdb->esc_like( 'onesignal' ) . '%' )
+						) );
+						foreach ( $results as $result ) {
+							$data = array( 'subscriptionstatus' => 'subscribed', 'subscriptionoptions' => $result->subscription_option );
+						}
+						echo wp_json_encode( $data );
+					} else {
+						echo wp_json_encode( array( 'subscriptionstatus' => 'notsubscribed', 'subscriptionoptions' => '' ) );
 					}
-					echo wp_json_encode( $data );
 				} else {
-					echo wp_json_encode( array( 'subscriptionstatus' => 'notsubscribed', 'subscriptionoptions' => '' ) );
+					echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Onesignal push notification not enabled' ) );
 				}
 				break;
 
@@ -443,28 +398,40 @@ if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_uns
 			* Update OneSignal frontend subscription options
 			*----------------------------------------------------------------------------------*/
 			case 'onesignal_frontend_subscriptions':
-				if ( $bpuserid !== 0 ) {
-					$deviceid_update_status = $wpdb->query( $wpdb->prepare( 'UPDATE %i SET subscription_option = %s WHERE userid = %d', array( $table, $bpsubscribeoptions, $bpuserid ) ) );
+				if (get_option("pnfpb_onesignal_push") === "1") {
+					if ( $bpuserid !== 0 ) {
+						$deviceid_update_status = $wpdb->query( $wpdb->prepare( 'UPDATE %i SET subscription_option = %s WHERE userid = %d', array( $table, $bpsubscribeoptions, $bpuserid ) ) );
+					}
+					echo wp_json_encode( array( 'subscriptionstatus' => 'subscribed', 'subscriptionoptions' => $bpsubscribeoptions ) );
+				} else {
+					echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Onesignal push notification not enabled' ) );
 				}
-				echo wp_json_encode( array( 'subscriptionstatus' => 'subscribed', 'subscriptionoptions' => $bpsubscribeoptions ) );
 				break;
 
 			/*----------------------------------------------------------------------------------
 			* Get Progressier frontend subscription options
 			*----------------------------------------------------------------------------------*/
 			case 'progressier_get_frontend_subscriptions':
-				$data = '';
-				if ( $bpprogressierid !== 0 ) {
-					$results = $wpdb->get_results( $wpdb->prepare(
-						'SELECT * FROM %i WHERE userid = %d AND device_id LIKE %s',
-						array( $table, $bpprogressierid, '%' . $wpdb->esc_like( 'progressier' ) . '%' )
-					) );
-					foreach ( $results as $result ) {
-						$data = array( 'subscriptionstatus' => 'subscribed', 'subscriptionoptions' => $result->subscription_option );
+				if (get_option("pnfpb_progressier_push") === "1" ) {
+					$data = '';
+					$bpprogressierid = 0;
+					if ( is_user_logged_in() ) {
+						$bpprogressierid = get_current_user_id();
+					}				
+					if ( $bpprogressierid !== 0 ) {
+						$results = $wpdb->get_results( $wpdb->prepare(
+							'SELECT * FROM %i WHERE userid = %d AND device_id LIKE %s',
+							array( $table, $bpprogressierid, '%' . $wpdb->esc_like( 'progressier' ) . '%' )
+						) );
+						foreach ( $results as $result ) {
+							$data = array( 'subscriptionstatus' => 'subscribed', 'subscriptionoptions' => $result->subscription_option );
+						}
+						echo wp_json_encode( $data );
+					} else {
+						echo wp_json_encode( array( 'subscriptionstatus' => 'notsubscribed', 'subscriptionoptions' => '' ) );
 					}
-					echo wp_json_encode( $data );
 				} else {
-					echo wp_json_encode( array( 'subscriptionstatus' => 'notsubscribed', 'subscriptionoptions' => '' ) );
+					echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Progressier push notification not enabled' ) );
 				}
 				break;
 
@@ -472,10 +439,14 @@ if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_uns
 			* Update Progressier frontend subscription options
 			*----------------------------------------------------------------------------------*/
 			case 'progressier_frontend_subscriptions':
-				if ( $bpuserid !== 0 ) {
-					$deviceid_update_status = $wpdb->query( $wpdb->prepare( 'UPDATE %i SET subscription_option = %s WHERE userid = %d', array( $table, $bpsubscribeoptions, $bpuserid ) ) );
+				if (get_option("pnfpb_progressier_push") === "1" ) {
+					if ( $bpuserid !== 0 ) {
+						$deviceid_update_status = $wpdb->query( $wpdb->prepare( 'UPDATE %i SET subscription_option = %s WHERE userid = %d', array( $table, $bpsubscribeoptions, $bpuserid ) ) );
+					}
+					echo wp_json_encode( array( 'subscriptionstatus' => 'subscribed', 'subscriptionoptions' => $bpsubscribeoptions ) );
+				} else {
+					echo wp_json_encode( array( 'subscriptionstatus' => 'error', 'message' => 'Progressier push notification not enabled' ) );
 				}
-				echo wp_json_encode( array( 'subscriptionstatus' => 'subscribed', 'subscriptionoptions' => $bpsubscribeoptions ) );
 				break;
 
 			/*----------------------------------------------------------------------------------

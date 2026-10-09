@@ -3,7 +3,7 @@
 Plugin Name: Push Notification for Post and BuddyPress
 Plugin URI: https://www.muraliwebworld.com/groups/wordpress-plugins-by-muralidharan-indiacitys-com-technologies/forum/topic/push-notification-for-post-and-buddypress/
 Description: Push notification for Post,custom post,BuddyPress,Woocommerce,Android/IOS mobile apps. Configure push notification settings in <a href="admin.php?page=pnfpb-icfcm-slug"><strong>settings page</strong></a>
-Version: 3.23
+Version: 3.24
 Author: Muralidharan Ramasamy
 Author URI: https://www.muraliwebworld.com
 Text Domain: push-notification-for-post-and-buddypress
@@ -34,7 +34,7 @@ if (!defined("PNFPB_VERSION_CURRENT")) {
     define("PNFPB_VERSION_CURRENT", "1");
 }
 if (!defined("PNFPB_PLUGIN_VERSION")) {
-    define("PNFPB_PLUGIN_VERSION", "3.23");
+    define("PNFPB_PLUGIN_VERSION", "3.24");
 }
 if (!defined("PNFPB_URL")) {
     define("PNFPB_URL", plugin_dir_url(__FILE__));
@@ -323,8 +323,6 @@ include_once plugin_dir_path(__FILE__) .
 	"inc/pnfpb-admin-callbacks.php";
 include_once plugin_dir_path(__FILE__) .
     "inc/pnfpb-buddypress-notification-handlers.php";
-include_once plugin_dir_path(__FILE__) .
-	"inc/pnfpb-security-helpers.php";
 
 // Phase 1 & 2: Token Cleanup System
 include_once plugin_dir_path(__FILE__) .
@@ -2388,10 +2386,8 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             $ajax_url = admin_url('admin-ajax.php');
             ?>
             <div class="notice notice-info is-dismissible pnfpb-ai-upgrade-notice">
-                <p><strong><?php echo esc_html__('PNFPB 3.23 version update', 'push-notification-for-post-and-buddypress'); ?></strong></p>
-                <p><?php echo esc_html__('Firebase Notification - New feature - Token cleanup tab in admin settings to clean stale/invalid subscription tokens.', 'push-notification-for-post-and-buddypress'); ?></p>
-                <p><?php echo esc_html__('New feature - to delay custom subscription prompt after specified number of seconds/after scrolling down to specified percentage of page.', 'push-notification-for-post-and-buddypress'); ?></p>
-                <p><?php echo esc_html__('Ondemand selected users notification updated to send notification directly to user subscription token instead of topic.', 'push-notification-for-post-and-buddypress'); ?></p>				
+                <p><strong><?php echo esc_html__('PNFPB 3.24 version update', 'push-notification-for-post-and-buddypress'); ?></strong></p>
+                <p><?php echo esc_html__('Security fix', 'push-notification-for-post-and-buddypress'); ?></p>
             </div>
             <script type="text/javascript">
                 jQuery(function ($) {
