@@ -362,9 +362,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 			 (get_option("pnfpb_ic_fcm_loggedin_notify") &&
 			  get_option("pnfpb_ic_fcm_loggedin_notify") !== "1"))
 		) {
-			echo '<button type="button" id="pnfpb-push-subscribe-icon" class="pnfpb-push-subscribe-icon"><img src="' .
+			echo '<button type="button" id="pnfpb-push-subscribe-icon" class="pnfpb-push-subscribe-icon" aria-label="subscribe"><img src="' .
 				esc_url($pnfpb_popup_subscribe_icon) .
-				'" width="32px" height="32px"/></button>';
+				'" width="32px" height="32px" alt="subscribe"/></button>';
 
 			$pnfpb_ic_fcm_popup_header_text = esc_html(
 				__(
