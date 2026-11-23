@@ -34,7 +34,7 @@ if (!defined("PNFPB_VERSION_CURRENT")) {
     define("PNFPB_VERSION_CURRENT", "1");
 }
 if (!defined("PNFPB_PLUGIN_VERSION")) {
-    define("PNFPB_PLUGIN_VERSION", "3.24");
+    define("PNFPB_PLUGIN_VERSION", "3.25");
 }
 if (!defined("PNFPB_URL")) {
     define("PNFPB_URL", plugin_dir_url(__FILE__));
