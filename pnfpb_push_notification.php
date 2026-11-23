@@ -3,13 +3,13 @@
 Plugin Name: Push Notification for Post and BuddyPress
 Plugin URI: https://www.muraliwebworld.com/groups/wordpress-plugins-by-muralidharan-indiacitys-com-technologies/forum/topic/push-notification-for-post-and-buddypress/
 Description: Push notification for Post,custom post,BuddyPress,Woocommerce,Android/IOS mobile apps. Configure push notification settings in <a href="admin.php?page=pnfpb-icfcm-slug"><strong>settings page</strong></a>
-Version: 3.24
+Version: 3.25
 Author: Muralidharan Ramasamy
 Author URI: https://www.muraliwebworld.com
 Text Domain: push-notification-for-post-and-buddypress
 Requires at least: 6.2
 Requires PHP: 8.1
-Updated: 29 September 2026
+Updated: 23 November 2026
 */
 /**
  * License: GPLv2 or later
@@ -1141,6 +1141,8 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
         public function PNFPB_init_requirements()
         {
 			global $wpdb;
+
+			$this->PNFPB_ensure_app_secret_code();
 			
     		$installed_ver = get_option( 'pnfpb_db_version' );
 
@@ -1268,6 +1270,16 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
 		
         }
 
+        /**
+         * Ensure mobile app integration secret code exists without overwriting an existing key.
+         */
+        private function PNFPB_ensure_app_secret_code()
+        {
+            if ( empty( get_option( 'PNFPB_icfcm_integrate_app_secret_code' ) ) ) {
+                update_option( 'PNFPB_icfcm_integrate_app_secret_code', bin2hex( random_bytes( 16 ) ) );
+            }
+        }
+
        	/**
         * Create table (if not exists) to store subscribed device ids for push notification
         *
@@ -1285,10 +1297,12 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             		switch_to_blog( $blog_id );
             		$this->PNFPB_create_tables_for_pushnotification();
             		$this->PNFPB_initialize_token_cleanup_system();
+            		$this->PNFPB_ensure_app_secret_code();
             		restore_current_blog();
         		}
     		} else {
         		$this->PNFPB_create_tables_for_pushnotification();
+        		$this->PNFPB_ensure_app_secret_code();
     		}			
 
             // Initialize token cleanup system (multisite-aware)
@@ -2386,7 +2400,7 @@ if (!class_exists("PNFPB_ICFM_Push_Notification_Post_BuddyPress")) {
             $ajax_url = admin_url('admin-ajax.php');
             ?>
             <div class="notice notice-info is-dismissible pnfpb-ai-upgrade-notice">
-                <p><strong><?php echo esc_html__('PNFPB 3.24 version update', 'push-notification-for-post-and-buddypress'); ?></strong></p>
+                <p><strong><?php echo esc_html__('PNFPB 3.25 version update', 'push-notification-for-post-and-buddypress'); ?></strong></p>
                 <p><?php echo esc_html__('Security fix', 'push-notification-for-post-and-buddypress'); ?></p>
             </div>
             <script type="text/javascript">

@@ -6,7 +6,7 @@ Donate link: https://www.muraliwebworld.com/support-to-push-notification-plugin-
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 3.24
+Stable tag: 3.25
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -234,6 +234,8 @@ Report security bugs through the Patchstack Vulnerability Disclosure Program. [R
 12. Special settings for NGINX based server
 
 == Changelog ==
+= 3.25 version =
+* Security fix
 = 3.24 version =
 * Security fix
 = 3.23 version =

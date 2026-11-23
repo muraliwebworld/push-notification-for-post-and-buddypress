@@ -44,29 +44,55 @@ if (!class_exists("PNFPB_ICFM_Device_tokens_List")) {
         ) {
             global $wpdb;
 
-            if (!empty($search) && is_numeric($search)) {
-                $sql = "SELECT * FROM {$wpdb->prefix}pnfpb_ic_subscribed_deviceids_web WHERE userid = {$search} OR device_id LIKE '%{$search}%' OR subscription_option LIKE '%{$search}%'";
-            } else {
-                if (!empty($search) && !is_numeric($search)) {
-                    $sql = "SELECT * FROM {$wpdb->prefix}pnfpb_ic_subscribed_deviceids_web WHERE device_id LIKE '%{$search}%' OR subscription_option LIKE '%{$search}%'";
-                } else {
-                    $sql = "SELECT * FROM {$wpdb->prefix}pnfpb_ic_subscribed_deviceids_web";
+            $table = $wpdb->prefix . 'pnfpb_ic_subscribed_deviceids_web';
+
+            $allowed_orderby = [ 'id', 'device_id', 'userid', 'subscription_option' ];
+            $orderby = 'id';
+            if ( ! empty( $_REQUEST['orderby'] ) ) {
+                $requested_orderby = sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) );
+                if ( in_array( $requested_orderby, $allowed_orderby, true ) ) {
+                    $orderby = $requested_orderby;
                 }
             }
 
-            if (!empty($_REQUEST["orderby"])) {
-                $sql .= " ORDER BY " . esc_sql($_REQUEST["orderby"]);
-                $sql .= !empty($_REQUEST["order"])
-                    ? " " . esc_sql($_REQUEST["order"])
-                    : " ASC";
-            } else {
-                $sql .= " ORDER BY id";
-                $sql .= " DESC";				
-			}
+            $order = ! empty( $_REQUEST['orderby'] ) ? 'ASC' : 'DESC';
+            if ( ! empty( $_REQUEST['order'] ) ) {
+                $requested_order = strtoupper( sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) );
+                if ( in_array( $requested_order, [ 'ASC', 'DESC' ], true ) ) {
+                    $order = $requested_order;
+                }
+            }
 
-            if ($per_page > 0) {
-                $sql .= " LIMIT $per_page";
-                $sql .= " OFFSET " . ($page_number - 1) * $per_page;
+            $limit_sql = '';
+            $per_page = absint( $per_page );
+            $page_number = max( 1, absint( $page_number ) );
+            if ( $per_page > 0 ) {
+                $offset = ( $page_number - 1 ) * $per_page;
+                $limit_sql = $wpdb->prepare( ' LIMIT %d OFFSET %d', $per_page, $offset );
+            }
+
+            if ( ! empty( $search ) && is_numeric( $search ) ) {
+                $like = '%' . $wpdb->esc_like( $search ) . '%';
+                $sql = $wpdb->prepare(
+                    "SELECT * FROM %i WHERE userid = %d OR device_id LIKE %s OR subscription_option LIKE %s ORDER BY {$orderby} {$order}",
+                    $table,
+                    absint( $search ),
+                    $like,
+                    $like
+                ) . $limit_sql;
+            } elseif ( ! empty( $search ) ) {
+                $like = '%' . $wpdb->esc_like( $search ) . '%';
+                $sql = $wpdb->prepare(
+                    "SELECT * FROM %i WHERE device_id LIKE %s OR subscription_option LIKE %s ORDER BY {$orderby} {$order}",
+                    $table,
+                    $like,
+                    $like
+                ) . $limit_sql;
+            } else {
+                $sql = $wpdb->prepare(
+                    "SELECT * FROM %i ORDER BY {$orderby} {$order}",
+                    $table
+                ) . $limit_sql;
             }
 
             $result = $wpdb->get_results($sql, "ARRAY_A");
@@ -169,9 +195,9 @@ if (!class_exists("PNFPB_ICFM_Device_tokens_List")) {
                 case "id":
                 case "device_id":
                 case "userid":
-                    return $item[$column_name];
+                    return esc_html( $item[ $column_name ] );
                 default:
-                    return print_r($item, true); //Show the whole array for troubleshooting purposes
+                    return esc_html( print_r( $item, true ) ); //Show the whole array for troubleshooting purposes
             }
         }
 
@@ -186,7 +212,7 @@ if (!class_exists("PNFPB_ICFM_Device_tokens_List")) {
         {
             return sprintf(
                 '<input type="checkbox" name="bulk-delete[]" value="%s" />',
-                $item["id"]
+                esc_attr( $item["id"] )
             );
         }
 
@@ -272,7 +298,7 @@ if (!class_exists("PNFPB_ICFM_Device_tokens_List")) {
         {
             $delete_nonce = wp_create_nonce("pnfpb_delete_devicetoken");
 
-            $title = "<strong>" . $item["device_id"] . "</strong>";
+            $title = "<strong>" . esc_html( $item["device_id"] ) . "</strong>";
 
             $actions = [
                 "delete" => sprintf(

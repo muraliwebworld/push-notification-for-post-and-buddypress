@@ -33,7 +33,7 @@ if ( ! function_exists( 'PNFPB_rest_api_subscription_tokens_from_app' ) ) {
 		register_rest_route( 'PNFPBpush/v1', '/subscriptiontoken', [
 			'methods' => 'POST',
 			'callback' => 'PNFPB_get_subscription_tokens_from_app',
-			'permission_callback' => '__return_true',
+			'permission_callback' => 'PNFPB_get_subscription_tokens_permission_callback',
 		] );
 
 		register_rest_route( 'PNFPBpush/v2', '/notification-delivery-counts', [
@@ -41,6 +41,20 @@ if ( ! function_exists( 'PNFPB_rest_api_subscription_tokens_from_app' ) ) {
 			'callback' => 'PNFPB_get_notification_delivery_counts_from_serviceworker',
 			'permission_callback' => '__return_true',
 		] );
+	}
+}
+
+if ( ! function_exists( 'PNFPB_get_subscription_tokens_permission_callback' ) ) {
+	function PNFPB_get_subscription_tokens_permission_callback( WP_REST_Request $request ) {
+		$encryption_key = get_option( 'PNFPB_icfcm_integrate_app_secret_code' );
+		if ( empty( $encryption_key ) || ! is_string( $encryption_key ) ) {
+			return new WP_Error(
+				'rest_forbidden',
+				__( 'Mobile app integration secret is not configured.', 'push-notification-for-post-and-buddypress' ),
+				[ 'status' => 403 ]
+			);
+		}
+		return true;
 	}
 }
 

@@ -45,6 +45,24 @@ if (
 
 $pnfpb_encryption_key = get_option("PNFPB_icfcm_integrate_app_secret_code");
 
+if ( empty( $pnfpb_encryption_key ) || ! is_string( $pnfpb_encryption_key ) ) {
+    error_log( " failed - missing encryption key " );
+
+    $pnfpb_response = [
+        "status" => 403,
+        "message" => " failed - missing encryption key",
+    ];
+
+    $pnfpb_res = new WP_REST_Response( $pnfpb_response );
+
+    $pnfpb_res->set_status( 403 );
+
+    return [
+        "req" => $pnfpb_res,
+        "tokenupdatestatus" => "failed",
+    ];
+}
+
 $pnfpb_encrypted = isset( $pnfpb_request["token"] ) ? sanitize_text_field( wp_unslash( $pnfpb_request["token"] ) ) : '';
 
 $pnfpb_subscriptionoptions = "";
@@ -59,6 +77,24 @@ if (
 }
 
 $pnfpb_parts = explode(":", $pnfpb_encrypted);
+
+if ( count( $pnfpb_parts ) < 4 ) {
+    error_log( " failed - invalid data " );
+
+    $pnfpb_response = [
+        "status" => 401,
+        "message" => " failed - invalid data",
+    ];
+
+    $pnfpb_res = new WP_REST_Response( $pnfpb_response );
+
+    $pnfpb_res->set_status( 401 );
+
+    return [
+        "req" => $pnfpb_res,
+        "tokenupdatestatus" => "failed",
+    ];
+}
 
 $pnfpb_keynonce = $pnfpb_encryption_key;
 
@@ -120,7 +156,7 @@ if (!$pnfpb_decrypted_gcm && !$pnfpb_decrypted_cbc) {
 
     $pnfpb_bphasmac = hash_hmac("sha256", $pnfpb_decrypted, $pnfpb_encryption_key);
 
-    if ($pnfpb_bphasmac !== $pnfpb_parts[3]) {
+    if ( ! hash_equals( $pnfpb_bphasmac, (string) $pnfpb_parts[3] ) ) {
         error_log(" failed - invalid data/encryption");
 
         $pnfpb_response = [
@@ -131,6 +167,24 @@ if (!$pnfpb_decrypted_gcm && !$pnfpb_decrypted_cbc) {
         $pnfpb_res = new WP_REST_Response($pnfpb_response);
 
         $pnfpb_res->set_status(401);
+
+        return [
+            "req" => $pnfpb_res,
+            "tokenupdatestatus" => "failed",
+        ];
+    }
+
+    if ( ! is_string( $pnfpb_decrypted ) || ! preg_match( '/^[A-Za-z0-9_:\-]+$/', $pnfpb_decrypted ) ) {
+        error_log( " failed - invalid token format" );
+
+        $pnfpb_response = [
+            "status" => 400,
+            "message" => " failed - invalid token format",
+        ];
+
+        $pnfpb_res = new WP_REST_Response( $pnfpb_response );
+
+        $pnfpb_res->set_status( 400 );
 
         return [
             "req" => $pnfpb_res,
